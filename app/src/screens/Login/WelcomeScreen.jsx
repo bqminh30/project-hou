@@ -38,7 +38,7 @@ const ENTRIES1 = [
 ];
 const {width: screenWidth} = Dimensions.get('window');
 
-const Home = props => {
+const WelcomeScreen = props => {
   const [entries, setEntries] = useState([]);
   const carouselRef = useRef(null);
 
@@ -85,7 +85,7 @@ const Home = props => {
   );
 };
 
-export default Home;
+export default WelcomeScreen;
 
 const styles = StyleSheet.create({
   container: {

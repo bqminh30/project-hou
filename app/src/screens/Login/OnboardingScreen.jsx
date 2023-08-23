@@ -3,9 +3,9 @@ import React from "react";
 import Onboarding from "react-native-onboarding-swiper";
 import { useNavigation } from "@react-navigation/native";
 
-const image_boarding_1 = require('../../assets/boarding/image_boarding_1.jpg')
-const image_boarding_2 = require('../../assets/boarding/image_boarding_2.jpg')
-const image_boarding_3 = require('../../assets/boarding/image_boarding_3.jpg')
+const image_boarding_1 = require('../../../assets/boarding/image_boarding_1.jpg')
+const image_boarding_2 = require('../../../assets/boarding/image_boarding_2.jpg')
+const image_boarding_3 = require('../../../assets/boarding/image_boarding_3.jpg')
 
 const OnboardingScreen = () => {
   const navigation = useNavigation();
@@ -43,8 +43,8 @@ const OnboardingScreen = () => {
 
   return (
     <Onboarding
-      onSkip={() => navigation.replace("Home")}
-      onDone={() => navigation.replace("Home")}
+      onSkip={() => navigation.replace("Welcome")}
+      onDone={() => navigation.replace("Welcome")}
       DotComponent={DotComponent}
       pages={[
         {
