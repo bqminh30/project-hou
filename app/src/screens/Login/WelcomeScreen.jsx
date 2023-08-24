@@ -1,5 +1,5 @@
-import React, {useRef, useState, useEffect} from 'react';
-import Carousel, {ParallaxImage} from 'react-native-snap-carousel';
+import React, { useRef, useState, useEffect } from "react";
+import Carousel, { ParallaxImage } from "react-native-snap-carousel";
 import {
   View,
   Text,
@@ -7,38 +7,42 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-} from 'react-native';
+  SafeAreaView,
+} from "react-native";
+import Button from "../../components/Button";
+import { COLORS } from "../../config/theme";
+import Spacer from "../../components/Spacer";
 
 const ENTRIES1 = [
   {
-    title: 'Beautiful and dramatic Antelope Canyon',
-    subtitle: 'Lorem ipsum dolor sit amet et nuncat mergitur',
-    illustration: 'https://i.imgur.com/UYiroysl.jpg',
+    title: "Beautiful and dramatic Antelope Canyon",
+    subtitle: "Lorem ipsum dolor sit amet et nuncat mergitur",
+    illustration: "https://i.imgur.com/UYiroysl.jpg",
   },
   {
-    title: 'Earlier this morning, NYC',
-    subtitle: 'Lorem ipsum dolor sit amet',
-    illustration: 'https://i.imgur.com/UPrs1EWl.jpg',
+    title: "Earlier this morning, NYC",
+    subtitle: "Lorem ipsum dolor sit amet",
+    illustration: "https://i.imgur.com/UPrs1EWl.jpg",
   },
   {
-    title: 'White Pocket Sunset',
-    subtitle: 'Lorem ipsum dolor sit amet et nuncat ',
-    illustration: 'https://i.imgur.com/MABUbpDl.jpg',
+    title: "White Pocket Sunset",
+    subtitle: "Lorem ipsum dolor sit amet et nuncat ",
+    illustration: "https://i.imgur.com/MABUbpDl.jpg",
   },
   {
-    title: 'Acrocorinth, Greece',
-    subtitle: 'Lorem ipsum dolor sit amet et nuncat mergitur',
-    illustration: 'https://i.imgur.com/KZsmUi2l.jpg',
+    title: "Acrocorinth, Greece",
+    subtitle: "Lorem ipsum dolor sit amet et nuncat mergitur",
+    illustration: "https://i.imgur.com/KZsmUi2l.jpg",
   },
   {
-    title: 'The lone tree, majestic landscape of New Zealand',
-    subtitle: 'Lorem ipsum dolor sit amet',
-    illustration: 'https://i.imgur.com/2nCt3Sbl.jpg',
+    title: "The lone tree, majestic landscape of New Zealand",
+    subtitle: "Lorem ipsum dolor sit amet",
+    illustration: "https://i.imgur.com/2nCt3Sbl.jpg",
   },
 ];
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get("window");
 
-const WelcomeScreen = props => {
+const WelcomeScreen = ({navigation}) => {
   const [entries, setEntries] = useState([]);
   const carouselRef = useRef(null);
 
@@ -46,42 +50,58 @@ const WelcomeScreen = props => {
     carouselRef.current.snapToNext();
   };
 
+  const submit = async (role) => {
+    navigation.navigate(role);
+  };
+
   useEffect(() => {
     setEntries(ENTRIES1);
   }, []);
 
-  const renderItem = ({item, index}, parallaxProps) => {
+  const renderItem = ({ item, index }, parallaxProps) => {
     return (
       <View style={styles.item}>
         <ParallaxImage
-          source={{uri: item.illustration}}
+          source={{ uri: item.illustration }}
           containerStyle={styles.imageContainer}
           style={styles.image}
           parallaxFactor={0.4}
           {...parallaxProps}
         />
-        <Text style={styles.title} numberOfLines={2}>
+        {/* <Text style={styles.title} numberOfLines={2}>
           {item.title}
-        </Text>
+        </Text> */}
       </View>
     );
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={goForward}>
-        <Text>go to next slide</Text>
-      </TouchableOpacity>
-      <Carousel
-        ref={carouselRef}
-        sliderWidth={screenWidth}
-        sliderHeight={screenWidth}
-        itemWidth={screenWidth - 60}
-        data={entries}
-        renderItem={renderItem}
-        hasParallaxImages={true}
-      />
-    </View>
+    <SafeAreaView>
+        <Spacer height={60}/>
+        <Carousel
+          ref={carouselRef}
+          sliderWidth={screenWidth}
+          sliderHeight={screenWidth}
+          itemWidth={screenWidth - 40}
+          data={entries}
+          renderItem={renderItem}
+          hasParallaxImages={true}
+        />
+        <Spacer height={40}/>
+        <Button 
+          label={"Sign In"}
+          onPress={()=> submit("SignIn")}
+          color={COLORS.white}
+          background={COLORS.black}
+        />
+        <Spacer height={10}/>
+        <Button 
+          label={"Sign Up"}
+          onPress={()=> submit("SignUp")}
+          color={COLORS.white}
+          background={COLORS.black}
+        />
+    </SafeAreaView>
   );
 };
 
@@ -92,17 +112,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   item: {
-    width: screenWidth - 60,
-    height: screenWidth - 60,
+    width: screenWidth - 40,
+    height: screenWidth - 40,
   },
   imageContainer: {
     flex: 1,
-    marginBottom: Platform.select({ios: 0, android: 1}), // Prevent a random Android rendering issue
-    backgroundColor: 'white',
+    marginBottom: Platform.select({ ios: 0, android: 1 }), // Prevent a random Android rendering issue
+    backgroundColor: "white",
     borderRadius: 8,
   },
   image: {
     ...StyleSheet.absoluteFillObject,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
 });
