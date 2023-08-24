@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { WelcomeScreen, OnboardingScreen, SignInScreen, SignUpScreen } from "../screens";
+import { WelcomeScreen, OnboardingScreen, SignInScreen, SignUpScreen, Home } from "../screens";
 // import Login from '../screens/Login/Login';
 // import LoginRules from '../screens/Login/LoginRules';
 // import PasswordForgot from '../screens/Login/PasswordForgot';
@@ -31,7 +31,7 @@ const AppStack = () => {
           component={OnboardingScreen}
         />
       )} */}
-      <Stack.Screen
+      {/* <Stack.Screen
         options={{ headerShown: false }}
         name="Welcome"
         component={WelcomeScreen}
@@ -45,7 +45,13 @@ const AppStack = () => {
         options={{ headerShown: false }}
         name="SignUp"
         component={SignUpScreen}
+      /> */}
+<Stack.Screen
+        options={{ headerShown: false }}
+        name="Home"
+        component={Home}
       />
+
     </Stack.Navigator>
   );
 };

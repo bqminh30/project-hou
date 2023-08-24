@@ -9,9 +9,9 @@ import {
   Platform,
   SafeAreaView,
 } from "react-native";
-import Button from "../../components/Button";
-import { COLORS } from "../../config/theme";
-import Spacer from "../../components/Spacer";
+import Button from "../components/Button";
+import { COLORS, SIZES } from "../config/theme";
+import Spacer from "../components/Spacer";
 
 const ENTRIES1 = [
   {
@@ -80,9 +80,9 @@ const WelcomeScreen = ({navigation}) => {
         <Spacer height={60}/>
         <Carousel
           ref={carouselRef}
-          sliderWidth={screenWidth}
-          sliderHeight={screenWidth}
-          itemWidth={screenWidth - 40}
+          sliderWidth={SIZES.width}
+          sliderHeight={SIZES.width}
+          itemWidth={SIZES.width - 40}
           data={entries}
           renderItem={renderItem}
           hasParallaxImages={true}

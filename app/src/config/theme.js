@@ -10,8 +10,8 @@ export const COLORS ={
 
 export const SIZES = {
     default: 8,
-    radius: 8,
-    padding: 12,
+    radius: 12,
+    padding: 24,
     margin: 10,
     spacing: 20,
     height: height,

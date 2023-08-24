@@ -16,7 +16,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
 
 import { useTheme } from "react-native-paper";
-import { COLORS } from "../../config/theme";
+import { COLORS } from "../config/theme";
 
 // import { AuthContext } from '../components/context';
 
@@ -223,7 +223,7 @@ const SignInScreen = ({ navigation }) => {
             }}
           >
             <LinearGradient
-              colors={[COLORS.gray, COLORS.black]}
+              colors={["grey", COLORS.black]}
               style={styles.signIn}
             >
               <Text
