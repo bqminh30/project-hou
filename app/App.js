@@ -11,7 +11,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { View } from 'react-native';
 // import useFonts from './src/config/useFonts'
 
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -23,15 +23,15 @@ export default function App() {
     'Poppins-Thin': require('./assets/fonts/Poppins-Thin.ttf'),
   });
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
+  // const onLayoutRootView = useCallback(async () => {
+   
+  // }, []);
 
-  useEffect(()=> {
-    onLayoutRootView()
-  },[])
+  // useEffect( async ()=> {
+  //   if (fontsLoaded) {
+  //     await SplashScreen.hideAsync();
+  //   }
+  // },[fontsLoaded])
 
   if (!fontsLoaded) {
     return null;

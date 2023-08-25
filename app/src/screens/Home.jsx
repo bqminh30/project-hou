@@ -55,9 +55,9 @@ const Home = () => {
         data={hotels_data}
         scrollEventThrottle={20}
         horizontal={true}
-        keyExtractor={(item, index)=> item.id}
+        keyExtractor={({item, index})=> index}
         renderItem={
-          ({item , index}) => <VerticalHome item={item}/>
+          ({item , index}) => <VerticalHome item={item} key={item.id}/>
         }
         style={{marginLeft: SIZES.padding}}
       />
