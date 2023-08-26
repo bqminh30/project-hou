@@ -6,6 +6,7 @@ export const hotels_data = [
         rate: 4.5,
         star: 4,
         location: 'ThaiLand',
+        type: 'Popular',
         reviews: [
             {
                 id: 1,
@@ -28,6 +29,7 @@ export const hotels_data = [
         rate: 3.5,
         star: 3,
         location: 'Ha Noi',
+        type: 'Luxury',
         reviews: [
             {
                 id: 1,
@@ -50,6 +52,7 @@ export const hotels_data = [
         rate: 5,
         star: 5,
         location: 'Ha Noi',
+        type: 'Popular',
         reviews: [
             {
                 id: 1,
@@ -65,4 +68,20 @@ export const hotels_data = [
             },
         ]
     }
+]
+
+export const hotel_type = [
+    {
+        id: 0,
+        name : 'All',
+    },
+    {
+        id: 1,
+        name: 'Popular'
+    },
+    {
+        id: 2,
+        name : 'Luxury'
+    }
+    
 ]
