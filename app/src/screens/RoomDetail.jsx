@@ -83,7 +83,9 @@ const RoomDetail = () => {
             marginHorizontal: SIZES.margin,
           }}
         >
-          <Text>$450</Text>
+          <Text style={styles.price}>${hotels_data[0].priceSale ? hotels_data[0].priceSale : hotels_data[0].price}{" "}
+            <Text style={styles._price}>{hotels_data[0].priceSale ? hotels_data[0].price : ''}</Text>
+          </Text>
           <ButtonBook />
         </View>
       </View>
@@ -122,10 +124,20 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "Poppins-Medium",
   },
+  
   bottom: {
     position: "absolute",
     bottom: 0,
     height: 60,
     width: "100%",
   },
+  price: {
+    fontFamily: "Poppins-MediumItalic",
+    fontSize: 24
+  },
+  _price: {
+    fontSize: 16,
+    fontFamily: "Poppins-Thin",
+    textDecorationLine: 'line-through',
+  }
 });

@@ -1,9 +1,25 @@
-var mysql = require('mysql');
-var config = require('./configDB');
+import express from 'expess';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import helmet from 'helmet';
 
-var connection = mysql.createConnection(config.databaseOptions);
+import api from './api';
 
-connection.connect(function(err) {
-    if (err) throw err;
-    console.log("Connected!");
-  });
+const app = express();
+const { PORT = 3000 } = process.env;
+
+app.use(cors());
+app.use(helmet());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use('/', api);
+
+
+app.listen(PORT, () => {
+  console.log(`server started at http://localhost:${PORT}`);
+});
+
+
+export default app;

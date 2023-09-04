@@ -1,11 +1,11 @@
 import React from 'react'
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native'
-import { SIZES } from '../config/theme'
+import { COLORS, SIZES } from '../config/theme'
 
 const ButtonBook = () => {
   return (
     <TouchableOpacity style={styles.button}>
-        <Text style={{padding: 8}}>Book Now</Text>
+        <Text style={{padding: 8, color: 'white'}}>Book Now</Text>
     </TouchableOpacity>
   )
 }
@@ -21,7 +21,7 @@ const styles= StyleSheet.create({
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
-        backgroundColor: "white",
+        backgroundColor: COLORS.main,
         width: 120
     }
 })

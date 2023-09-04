@@ -1,12 +1,12 @@
 import React from 'react'
 import {View, StyleSheet} from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { SIZES } from '../config/theme';
+import { COLORS, SIZES } from '../config/theme';
 
 const VerticalServices = ({item}) => {
   return (
     <View style={styles.card}>
-        <MaterialCommunityIcons name={`${item}`} size={24} color="black" />
+        <MaterialCommunityIcons name={`${item}`} size={24} color={`${COLORS.main}`}/>
     </View>
   )
 }

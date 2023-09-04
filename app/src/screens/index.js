@@ -4,3 +4,4 @@ export { default as SignInScreen } from "./SignInScreen";
 export { default as SignUpScreen } from "./SignUpScreen";
 export { default as Home } from "./Home";
 export { default as RoomDetail } from "./RoomDetail";
+export {default as SearchScreen } from "./SearchScreen";
