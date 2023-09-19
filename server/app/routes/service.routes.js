@@ -3,14 +3,14 @@ module.exports = app => {
   
     var router = require("express").Router();
   
-    // Create a new Typerooms
+    // Create a new service
     router.post("/", services.create);
   
-    // Retrieve all Typeroomss
+    // Retrieve all services
     router.get("/", services.findAll);
   
-    // Retrieve a single Typerooms with id
-    router.get("/:id", services.findOne);
+    // Retrieve services with id type service
+    router.get("/:id", services.findByTypeService);
   
     // Update a services with id
     router.put("/:id", services.update);
@@ -19,7 +19,7 @@ module.exports = app => {
     router.delete("/:id", services.delete);
   
     // Delete all servicess
-    router.delete("/", services.deleteAll);
+    // router.delete("/", services.deleteAll);
   
     app.use('/api/services', router);
   };

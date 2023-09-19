@@ -59,7 +59,7 @@ Service.getAll = (title, result) => {
   });
 };
 
-Service.getAllServiceByTypeService = id => {
+Service.getAllServiceByTypeService = (id, result) => {
   sql.query(`SELECT * FROM service WHERE type_service_id='${id}'`, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -114,17 +114,17 @@ Service.remove = (id, result) => {
   });
 };
 
-Service.removeAll = result => {
-  sql.query("DELETE FROM service", (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
+// Service.removeAll = result => {
+//   sql.query("DELETE FROM service", (err, res) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       result(null, err);
+//       return;
+//     }
 
-    console.log(`deleted ${res.affectedRows} service`);
-    result(null, res);
-  });
-};
+//     console.log(`deleted ${res.affectedRows} service`);
+//     result(null, res);
+//   });
+// };
 
 module.exports = Service;

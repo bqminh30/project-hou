@@ -21,8 +21,6 @@ module.exports = app => {
     // Delete a Tutorial with id
     router.delete("/:id", tutorials.delete);
   
-    // Delete all Tutorials
-    router.delete("/", tutorials.deleteAll);
   
     app.use('/api/typerooms', router);
   };
