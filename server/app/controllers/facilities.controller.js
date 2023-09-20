@@ -28,10 +28,15 @@ module.exports = {
           phone: req.body.phone,
           logo: req.body.logo,
           title: req.body.title,
+          createdAt: new Date()
         };
         // call model
         Facilities.create(inputValues, function (data) {
-          res.render("upload-form", { alertMsg: data });
+          // res.render("upload-form", { alertMsg: data });
+          res.send({
+            message: "Tạo khách sạn thành công",
+            status: 200
+          })
         });
       }
     });
@@ -58,6 +63,7 @@ module.exports = {
             phone: req.body.phone,
             logo: req.body.logo,
             title: req.body.title,
+            updatedAt: new Date()
           };
         }
         Facilities.updateFacility(
@@ -66,15 +72,15 @@ module.exports = {
             (data, err) => {
               if (err) {
                 if (err.kind === "not_found") {
-                  res.status(404).send({
+                  res.status(404).json({
                     message: `Not found Facilities with id ${req.params.id}.`,
                   });
                 } else {
-                  res.status(500).send({
+                  res.status(500).json({
                     message: "Error updating Facilities " + err,
                   });
                 }
-              } else res.status(200).send({
+              } else res.status(200).json({
                 message: "Update successfully",
                 data: data
               });

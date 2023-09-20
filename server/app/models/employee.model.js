@@ -38,7 +38,7 @@ Employee.regiser = (newEmployee, result) => {
               if (err) {
                 result({
                   status: 400,
-                  message: "Errr",
+                  message: "Err",
                 });
                 return;
               }
@@ -69,14 +69,12 @@ Employee.getEmployeeByEmail = (email) => {
 
 Employee.updateProfile = (data, userId) => {
     return new Promise((resolve, reject)=> {
-       
-        sql.query("UPDATE employee SET fullname = ?, status = ?, email = ?, code = ?, address = ?, birthday = ?, avatar = ?, role_id = ? WHERE id = ?", [
-            data.fullname, data.status, data.email, data.code, data.address, data.birthday, data.avatar, data.role_id, userId
+        sql.query("UPDATE employee SET fullname = ?,phonenumber = ?, status = ?, email = ?, code = ?, address = ?, birthday = ?, avatar = ?, role_id = ?, createdAt =? WHERE id = ?", [
+            data.fullname,data.phonenumber, data.status, data.email, data.code, data.address, data.birthday, data.avatar, data.role_id,data.createAt, userId
         ], (error, res) => {
             if(error){
                 return reject(error);
             }
-            console.log('user', res)
             return resolve();
           });
      })

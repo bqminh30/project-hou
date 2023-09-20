@@ -77,8 +77,6 @@ exports.update = (req, res) => {
     });
   }
 
-  console.log(req.body);
-
   TypeRoom.updateById(
     req.params.id,
     new TypeRoom(req.body),

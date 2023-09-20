@@ -20,13 +20,13 @@ Facilities.create = (newFacilities, result) => {
     }
 
     console.log("created facilities: ", { id: res.id, ...newFacilities });
-    result(null, { id: res.id, ...newFacilities });
+    result(null, { id: res.insertId, ...newFacilities });
   });
 };
 
 Facilities.updateFacility = (id, facilities, result) => {
   sql.query(
-    "UPDATE facilities SET name=?, location=?, phone=?, logo=?, title=?, image=? WHERE id = ?",
+    "UPDATE facilities SET name=?, location=?, phone=?, logo=?, title=?, image=?, updatedAt =? WHERE id = ?",
     [
       facilities.name,
       facilities.location,
@@ -34,6 +34,7 @@ Facilities.updateFacility = (id, facilities, result) => {
       facilities.logo,
       facilities.title,
       facilities.image,
+      facilities.updatedAt,
       id,
     ],
     (err, res) => {

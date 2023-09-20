@@ -1,8 +1,8 @@
-const express = require("express");
+var multer = require("multer");
+var imageMiddleware = require("../middleware/image-middleware");
 const jsonwebtoken = require("jsonwebtoken");
 const Employee = require("../models/employee.model.js");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
-const cookieParser = require("cookie-parser");
 
 exports.register = (req, res, next) => {
   try {
@@ -96,40 +96,59 @@ exports.login = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const fullname = req.body.fullname;
-    const email = req.body.email;
-    const phonenumber = req.body.phonenumber;
-    const status = req.body.status;
-    const address = req.body.address;
-    const birthday = req.body.birthday;
-    const avatar = req.body.avatar;
-    const code = req.body.code;
-    const role_id = req.body.role_id;
-    const data = {
-      fullname,
-      email,
-      phonenumber,
-      status,
-      address,
-      birthday,
-      avatar,
-      role_id,
-    };
-    const userId = req.params.id;
+    var upload = multer({
+      storage: imageMiddleware.image.storage(),
+      allowedImage: imageMiddleware.image.allowedImage,
+    }).single("avatar");
 
-    if (!fullname || !email || !phonenumber || !role_id || !code) {
-      return res.send({
-        status: 400,
-        message: "Invalid data 1 ",
-      });
-    } else {
-      await Employee.updateProfile(data, userId);
+    upload(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+        res.send(err);
+      } else if (err) {
+        res.send(err);
+      } else {
+        // store image in database
+        let imageName = req.file.originalname;
+        const fullname = req.body.fullname;
+        const email = req.body.email;
+        const phonenumber = req.body.phonenumber;
+        const status = req.body.status;
+        const address = req.body.address;
+        const birthday = req.body.birthday;
+        const avatar = imageName;
+        const code = req.body.code;
+        const role_id = req.body.role_id;
+        const createAt = new Date();
+        const data = {
+          fullname,
+          email,
+          phonenumber,
+          status,
+          address,
+          birthday,
+          avatar,
+          role_id,
+          code,
+          createAt,
+        };
 
-      res.send({
-        status: 200,
-        message: "Update Successfully",
-      });
-    }
+        const userId = req.params.id;
+
+        if (!email || !role_id || !code) {
+          return res.send({
+            status: 400,
+            message: "Thiếu dữ liệu yêu cầu",
+          });
+        } else {
+          Employee.updateProfile(data, userId);
+
+          res.send({
+            status: 200,
+            message: "Cập nhật thông tin thành công",
+          });
+        }
+      }
+    });
   } catch (e) {
     return res.send({
       status: 500,
