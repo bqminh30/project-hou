@@ -31,6 +31,7 @@ require("./app/routes/typeroom.routes.js")(app);
 require("./app/routes/typeservice.routes.js")(app);
 require("./app/routes/service.routes.js")(app);
 require("./app/routes/employee.routes.js")(app);
+require("./app/routes/voucher.routes.js")(app);
 app.use('/api/facilities', facilitiesRoutes);
 
 // set port, listen for requests
