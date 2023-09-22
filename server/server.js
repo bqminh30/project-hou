@@ -2,16 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser"); /* deprecated */
 const cors = require("cors");
-<<<<<<< HEAD
-const app = express();
-const facilitiesRoutes = require('./app/routes/facilities.routes');
-=======
 const path = require("path");
 const app = express();
 const facilitiesRoutes = require("./app/routes/facilities.routes");
 const apiRouter = express.Router();
 const cloudinary = require("cloudinary").v2;
->>>>>>> refs/remotes/origin/master
 
 var corsOptions = {
   origin: "http://localhost:6969",
@@ -45,12 +40,8 @@ require("./app/routes/typeservice.routes.js")(app);
 require("./app/routes/service.routes.js")(app);
 require("./app/routes/employee.routes.js")(app);
 require("./app/routes/voucher.routes.js")(app);
-<<<<<<< HEAD
-app.use('/api/facilities', facilitiesRoutes);
-=======
 require("./app/routes/room.routes.js")(app);
 app.use("/api/facilities", facilitiesRoutes);
->>>>>>> refs/remotes/origin/master
 
 // set port, listen for requests
 const PORT = process.env.PORT || 6969;
