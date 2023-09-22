@@ -2,10 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser"); /* deprecated */
 const cors = require("cors");
-const path = require('path');
 const app = express();
 const facilitiesRoutes = require('./app/routes/facilities.routes');
-const apiRouter = express.Router();
 
 var corsOptions = {
   origin: "http://localhost:6969"
