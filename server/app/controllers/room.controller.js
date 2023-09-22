@@ -47,11 +47,10 @@ exports.createRoom = (req, res) => {
   });
 };
 
-// Retrieve all TypeRooms from the database (with condition).
-exports.findAll = (req, res) => {
-  const title = req.query.title;
+// get all rooms in the databases
+exports.getAll = (req, res) => {
 
-  TypeRoom.getAll(title, (err, data) => {
+  Room.getAll((err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -61,25 +60,27 @@ exports.findAll = (req, res) => {
       res.send({
         status: 200,
         data: data,
-        message: "Tạo phòng thành công",
       });
   });
 };
 
-// Find a single TypeRoom by Id
-exports.findOne = (req, res) => {
-  TypeRoom.findById(req.params.id, (err, data) => {
+// Find a single Room by Id
+exports.findRoomById = (req, res) => {
+  Room.findRoomById(req.params.id, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
-          message: `Not found TypeRoom with id ${req.params.id}.`,
+          message: `Not found Room with id ${req.params.id}.`,
         });
       } else {
         res.status(500).send({
-          message: "Error retrieving TypeRoom with id " + req.params.id,
+          message: "Error retrieving Room with id " + req.params.id,
         });
       }
-    } else res.send(data);
+    } else res.send({
+      status: 200,
+      data: data,
+    });
   });
 };
 

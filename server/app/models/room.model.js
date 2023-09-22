@@ -124,7 +124,7 @@ Rooms.findByLabel = (data, result) => {
 }
 
 Rooms.getRoomType = (id, data, result) => {
-  
+  sql.query(`SELECT * FROM`)
 }
 
 module.exports = Rooms;
