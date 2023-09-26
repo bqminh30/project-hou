@@ -1,79 +1,167 @@
-const express = require('express');
-const router = express.Router();
-const Joi = require('joi');
-const validateRequest = require('../middleware/validate-request');
-const customerService = require('../service/customer.service');
+var multer = require("multer");
+var imageMiddleware = require("../middleware/image-middleware");
+const jsonwebtoken = require("jsonwebtoken");
+const Customer = require("../models/customer.model.js");
+const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 
-// routes
+exports.register = async (req, res, next) => {
+  try {
+    const fullname = req.body.fullname;
+    const email = req.body.email;
+    let password = req.body.passwordHash;
 
-router.get('/', getAll);
-router.get('/:id', getById);
-router.post('/', createSchema, create);
-router.put('/:id', updateSchema, update);
-router.delete('/:id', _delete);
+    if (!fullname || !email || !password) {
+      res.status(400).send({
+        message: "Value not empty!",
+      });
+      return;
+    }
+    const salt = genSaltSync(10);
+    password = hashSync(password, salt);
 
-module.exports = router;
+    const data = {
+      fullname,
+      email,
+      password,
+    };
 
-// route functions
+    try {
+      user = await Customer.getEmployeeByEmail(email);
+      if (user) {
+        return res.send({
+          message: "Invalid email or password",
+        });
+      } else {
+        Customer.regiser(data, (err, data) => {
+          if (err)
+            res.status(500).send({
+              message:
+                err.message ||
+                "Some error occurred while creating the Customer.",
+            });
+          else {
+            const jsontoken = jsonwebtoken.sign(
+              { data: data },
+              process.env.JWT_SECRET,
+              { expiresIn: "1d" }
+            );
+            res.cookie("token", jsontoken, {
+              httpOnly: true,
+              secure: true,
+              SameSite: "strict",
+              expires: new Date(Number(new Date()) + 30 * 60 * 1000),
+            }); //we add secure: true, when using https.
 
-function getAll(req, res, next) {
-    customerService.getAll()
-        .then(users => res.json(users))
-        .catch(next);
-}
+            res.send({ token: jsontoken, data: data });
+          }
+        });
+      }
+    } catch (err) {}
+  } catch {
+    console.log("Lỗi Register");
+  }
+};
 
-function getById(req, res, next) {
-    customerService.getById(req.params.id)
-        .then(user => res.json(user))
-        .catch(next);
-}
+exports.login = async (req, res, next) => {
+  try {
+    const email = req.body.email;
+    const password = req.body.passwordHash;
 
-function create(req, res, next) {
-    customerService.create(req.body)
-        .then(() => res.json({ message: 'User created' }))
-        .catch(next);
-}
+    user = await Customer.getEmployeeByEmail(email);
+    if (!user) {
+      return res.send({
+        message: "Invalid email or password",
+      });
+    } else {
+      const isValidPassword = compareSync(password, user.passwordHash);
+      if (isValidPassword) {
+        user.passwordHash = undefined;
+        const jsontoken = jsonwebtoken.sign(
+          { data: user },
+          process.env.JWT_SECRET,
+          { expiresIn: "1d" }
+        );
+        res.cookie("token", jsontoken, {
+          httpOnly: true,
+          secure: true,
+          SameSite: "strict",
+          expires: new Date(Number(new Date()) + 30 * 60 * 1000),
+        }); //we add secure: true, when using https.
 
-function update(req, res, next) {
-    customerService.update(req.params.id, req.body)
-        .then(() => res.json({ message: 'User updated' }))
-        .catch(next);
-}
-
-function _delete(req, res, next) {
-    customerService.delete(req.params.id)
-        .then(() => res.json({ message: 'User deleted' }))
-        .catch(next);
-}
-
-// schema functions
-
-function createSchema(req, res, next) {
-    const schema = Joi.object({
-        code: Joi.string().required(),
-        name: Joi.string().required(),
-        address: Joi.string().required(),
-        birthday: Joi.string().date().iso().required(),
-        phone: Joi.string().required(),
-        email: Joi.string().email().required(),
-        password: Joi.string().min(6).required(),
-        confirmPassword: Joi.string().valid(Joi.ref('password')).required()
-
-       
+        res.send({ token: jsontoken, data: user });
+      } else {
+        return res.send({
+          status: 400,
+          message: "Invalid email or password",
+        });
+      }
+    }
+  } catch {
+    return res.send({
+      status: 500,
+      message: "Invalid email or password",
     });
-    validateRequest(req, next, schema);
-}
+  }
+};
 
-function updateSchema(req, res, next) {
-    const schema = Joi.object({
-        code: Joi.string().empty(),
-        name: Joi.string().empty(),
-        address: Joi.string().empty(),
-        birthday: Joi.string().date().iso().empty(),
-        phone: Joi.string().empty(),
-        email: Joi.string().email().empty(),
-        password: Joi.string().min(6).empty(),
-        confirmPassword: Joi.string().valid(Joi.ref('password')).empty()
-    }).with('password', 'confirmPassword');
-    validateRequest(req, next, schema);
-}
+exports.update = async (req, res, next) => {
+  try {
+    const fullname = req.body.fullname;
+    const email = req.body.email;
+    const phonenumber = req.body.phonenumber;
+    const address = req.body.address;
+    const birthday = req.body.birthday;
+    const code = req.body.code;
+    const updatedAt = new Date();
+    const data = {
+      fullname,
+      email,
+      phonenumber,
+      address,
+      birthday,
+      code,
+      updatedAt,
+    };
+
+    const userId = req.params.id;
+
+    if (!email || !code) {
+      return res.send({
+        status: 400,
+        message: "Thiếu dữ liệu yêu cầu",
+      });
+    } else {
+      // Kiểm tra xem email hoặc code đã tồn tại chưa
+      try {
+        const isEmailCodeExist = await Customer.checkEmailCodeExist(
+          email,
+          userId
+        );
+
+        if (isEmailCodeExist) {
+          return res.send({
+            status: 400,
+            message: "Email hoặc code đã tồn tại trong hệ thống",
+          });
+        }
+
+        Customer.updateProfile(data, userId);
+
+        res.send({
+          status: 200,
+          message: "Cập nhật thông tin thành công",
+        });
+      } catch (error) {
+        return res.send({
+          status: 500,
+          message: `Lỗi khi kiểm tra email hoặc code: ${error}`,
+        });
+      }
+    }
+  } catch (e) {
+    return res.send({
+      status: 500,
+      message: `Không có nhân viên ${e}`,
+    });
+  }
+};

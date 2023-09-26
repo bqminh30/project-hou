@@ -6,11 +6,11 @@ const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 
 exports.register = (req, res, next) => {
   try {
-    const fullName = req.body.fullname;
+    const fullname = req.body.fullname;
     const email = req.body.email;
     let password = req.body.passwordHash;
 
-    if (!fullName || !email || !password) {
+    if (!fullname || !email || !password) {
       res.status(400).send({
         message: "Value not empty!",
       });
@@ -20,7 +20,7 @@ exports.register = (req, res, next) => {
     password = hashSync(password, salt);
 
     const data = {
-      fullName,
+      fullname,
       email,
       password,
     };
@@ -101,21 +101,22 @@ exports.update = async (req, res, next) => {
       allowedImage: imageMiddleware.image.allowedImage,
     }).single("avatar");
 
-    upload(req, res, function (err) {
+    upload(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
         res.send(err);
       } else if (err) {
         res.send(err);
       } else {
         // store image in database
-        let imageName = req.file.originalname;
+        // let imageName = req.file.originalname;
         const fullname = req.body.fullname;
         const email = req.body.email;
         const phonenumber = req.body.phonenumber;
         const status = req.body.status;
         const address = req.body.address;
         const birthday = req.body.birthday;
-        const avatar = imageName;
+        // const avatar = imageName;
+        const avatar = req.body.avatar;
         const code = req.body.code;
         const role_id = req.body.role_id;
         const createAt = new Date();
@@ -140,19 +141,36 @@ exports.update = async (req, res, next) => {
             message: "Thiếu dữ liệu yêu cầu",
           });
         } else {
-          Employee.updateProfile(data, userId);
+          // Kiểm tra xem email hoặc code đã tồn tại chưa
+          try {
+            const isEmailCodeExist = await Employee.checkEmailCodeExist(email, code, userId);
 
-          res.send({
-            status: 200,
-            message: "Cập nhật thông tin thành công",
-          });
+            if (isEmailCodeExist) {
+              return res.send({
+                status: 400,
+                message: "Email hoặc code đã tồn tại trong hệ thống",
+              });
+            }
+
+            Employee.updateProfile(data, userId);
+
+            res.send({
+              status: 200,
+              message: "Cập nhật thông tin thành công",
+            });
+          } catch (error) {
+            return res.send({
+              status: 500,
+              message: `Lỗi khi kiểm tra email hoặc code: ${error}`,
+            });
+          }
         }
       }
     });
   } catch (e) {
     return res.send({
       status: 500,
-      message: "Không có nhân viên",
+      message: `Không có nhân viên ${e}`,
     });
   }
 };
