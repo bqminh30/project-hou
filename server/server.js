@@ -5,6 +5,7 @@ const cors = require("cors");
 const path = require("path");
 const app = express();
 const facilitiesRoutes = require("./app/routes/facilities.routes");
+const roomImagesRoutes = require("./app/routes/room_image.routes");
 const apiRouter = express.Router();
 const cloudinary = require("cloudinary").v2;
 
@@ -39,9 +40,12 @@ require("./app/routes/typeroom.routes.js")(app);
 require("./app/routes/typeservice.routes.js")(app);
 require("./app/routes/service.routes.js")(app);
 require("./app/routes/employee.routes.js")(app);
+require("./app/routes/customer.routes.js")(app);
 require("./app/routes/voucher.routes.js")(app);
 require("./app/routes/room.routes.js")(app);
+require("./app/routes/room_service.routes.js")(app);
 app.use("/api/facilities", facilitiesRoutes);
+app.use("/api/room-image", roomImagesRoutes);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 6969;
