@@ -1,6 +1,6 @@
 const sql = require("../config/db.js");
 
-const Employee = function (employee) {
+const Customer = function (employee) {
   this.fullname = employee.fullname;
   this.phonenumber = employee.phonenumber;
   this.code = employee.code;
@@ -8,16 +8,14 @@ const Employee = function (employee) {
   this.address = employee.address;
   this.birthday = employee.birthday;
   this.avatar = employee.avatar;
-  this.status = employee.status;
   this.email = employee.email;
-  this.role_id = employee.role_id;
   this.createdAt = new Date();
   this.updatedAt = new Date();
 };
 
-Employee.regiser = (newEmployee, result) => {
+Customer.regiser = (newEmployee, result) => {
   sql.query(
-    "SELECT COUNT(*) AS cnt FROM employee WHERE email = ? ",
+    "SELECT COUNT(*) AS cnt FROM customer WHERE email = ? ",
     newEmployee.email,
     function (err, data) {
       if (err) {
@@ -32,7 +30,7 @@ Employee.regiser = (newEmployee, result) => {
           return;
         } else {
           sql.query(
-            "INSERT INTO employee (fullname, email, passwordHash) VALUES (?,?,?)",
+            "INSERT INTO customer (fullname, email, passwordHash) VALUES (?,?,?)",
             [newEmployee.fullname, newEmployee.email, newEmployee.password],
             (err, res) => {
               if (err) {
@@ -55,9 +53,9 @@ Employee.regiser = (newEmployee, result) => {
     }
   );
 };
-Employee.getEmployeeByEmail = (email) => {
+Customer.getEmployeeByEmail = (email) => {
   return new Promise((resolve, reject) => {
-    sql.query("SELECT * FROM employee WHERE email = ?", email, (error, res) => {
+    sql.query("SELECT * FROM customer WHERE email = ?", email, (error, res) => {
       if (error) {
         return reject(error);
       }
@@ -66,11 +64,11 @@ Employee.getEmployeeByEmail = (email) => {
   });
 };
 
-Employee.checkEmailCodeExist = (email, code, userId) => {
+Customer.checkEmailCodeExist = (email, code, userId) => {
   return new Promise((resolve, reject) => {
     const query = `
         SELECT COUNT(*) AS count
-        FROM employee
+        FROM customer
         WHERE (email = ? OR code = ?) AND id != ?
       `;
     sql.query(query, [email, code, userId], (error, res) => {
@@ -83,21 +81,18 @@ Employee.checkEmailCodeExist = (email, code, userId) => {
   });
 };
 
-Employee.updateProfile = (data, userId) => {
+Customer.updateProfile = (data, userId) => {
   return new Promise((resolve, reject) => {
     sql.query(
-      "UPDATE employee SET fullname = ?,phonenumber = ?, status = ?, email = ?, code = ?, address = ?, birthday = ?, avatar = ?, role_id = ?, createdAt =? WHERE id = ?",
+      "UPDATE customer SET fullname = ?,phonenumber = ?, email = ?, code = ?, address = ?, birthday = ?, updatedAt =? WHERE id = ?",
       [
         data.fullname,
         data.phonenumber,
-        data.status,
         data.email,
         data.code,
         data.address,
         data.birthday,
-        data.avatar,
-        data.role_id,
-        data.createAt,
+        data.updatedAt,
         userId,
       ],
       (error, res) => {
@@ -111,4 +106,4 @@ Employee.updateProfile = (data, userId) => {
   });
 };
 
-module.exports = Employee;
+module.exports = Customer;
