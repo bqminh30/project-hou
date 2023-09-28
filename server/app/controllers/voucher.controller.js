@@ -22,23 +22,18 @@ module.exports = {
 
       Voucher.create(voucher, (err, data) => {
         if (err)
-          return res.send({
-            status: 400,
+        
+          return res.status(400).json({
             message: "Thiếu dữ liệu yêu cầu",
           });
         else {
-          res.send({
-            status: 200,
-            data: data,
-            message: "Tạo voucher thành công",
-          });
+          res.status(200).json({data: data, message: "Tạo voucher thành công",});
+          
         }
       });
     } catch (error) {
-      res.send({
-        status: 500,
-        message: "Some error occurred while creating the Voucher.",
-      });
+      res.status(500).json({ message: "Some error occurred while creating the Voucher.",});
+      
     }
   },
 
@@ -62,8 +57,7 @@ module.exports = {
           });
         }
       } else
-        res.send({
-          status: 200,
+      res.status(200).send({
           message: "Update voucher success",
           data: data,
         });

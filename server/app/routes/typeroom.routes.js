@@ -1,10 +1,11 @@
 module.exports = app => {
     const typerooms = require("../controllers/typeroom.controller.js");
+    const isAuthenticated = require('../middleware/authMiddleware');
   
     var router = require("express").Router();
   
     // Create a new Typerooms
-    router.post("/", typerooms.create);
+    router.post("/",isAuthenticated, typerooms.create);
   
     // Retrieve all Typeroomss
     router.get("/", typerooms.findAll);

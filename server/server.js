@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser"); /* deprecated */
 const cors = require("cors");
 const path = require("path");
@@ -20,7 +21,7 @@ cloudinary.config({
 });
 
 app.use(cors(corsOptions));
-
+app.use(cookieParser());
 // parse requests of content-type - application/json
 app.use(express.json()); /* bodyParser.json() is deprecated */
 app.use(bodyParser.json());
