@@ -5,10 +5,10 @@ module.exports = app => {
     var router = require("express").Router();
   
     // Create a new Typerooms
-    router.post("/",isAuthenticated, typerooms.create);
+    router.post("/", isAuthenticated, typerooms.create);
   
     // Retrieve all Typeroomss
-    router.get("/", typerooms.findAll);
+    router.get("/",isAuthenticated, typerooms.findAll);
   
     // Retrieve a single Typerooms with id
     router.get("/:id", typerooms.findOne);

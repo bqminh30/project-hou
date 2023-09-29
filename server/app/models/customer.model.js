@@ -1,22 +1,22 @@
 const sql = require("../config/db.js");
 
-const Customer = function (employee) {
-  this.fullname = employee.fullname;
-  this.phonenumber = employee.phonenumber;
-  this.code = employee.code;
-  this.passwordHash = employee.passwordHash;
-  this.address = employee.address;
-  this.birthday = employee.birthday;
-  this.avatar = employee.avatar;
-  this.email = employee.email;
-  this.createdAt = new Date();
-  this.updatedAt = new Date();
+const Customer = function (customer) {
+  this.fullname = customer.fullname;
+  this.phonenumber = customer.phonenumber;
+  this.code = customer.code;
+  this.passwordHash = customer.passwordHash;
+  this.address = customer.address;
+  this.birthday = customer.birthday;
+  this.avatar = customer.avatar;
+  this.email = customer.email;
+  this.createdAt = customer.createdAt;
+  this.updatedAt = customer.updatedAt;
 };
 
-Customer.regiser = (newEmployee, result) => {
+Customer.regiser = (newcustomer, result) => {
   sql.query(
     "SELECT COUNT(*) AS cnt FROM customer WHERE email = ? ",
-    newEmployee.email,
+    newcustomer.email,
     function (err, data) {
       if (err) {
         result(err, null);
@@ -30,8 +30,13 @@ Customer.regiser = (newEmployee, result) => {
           return;
         } else {
           sql.query(
-            "INSERT INTO customer (fullname, email, passwordHash) VALUES (?,?,?)",
-            [newEmployee.fullname, newEmployee.email, newEmployee.password],
+            "INSERT INTO customer (fullname, email, passwordHash, createdAt) VALUES (?,?,?,?)",
+            [
+              newcustomer.fullname,
+              newcustomer.email,
+              newcustomer.password,
+              newcustomer.cretedAt,
+            ],
             (err, res) => {
               if (err) {
                 result({
@@ -41,11 +46,11 @@ Customer.regiser = (newEmployee, result) => {
                 return;
               }
 
-              console.log("created employee: ", {
+              console.log("created customer: ", {
                 id: res.insertId,
-                ...newEmployee,
+                ...newcustomer,
               });
-              result(null, { id: res.insertId, ...newEmployee });
+              result(null, { id: res.insertId, ...newcustomer });
             }
           );
         }
@@ -53,7 +58,7 @@ Customer.regiser = (newEmployee, result) => {
     }
   );
 };
-Customer.getEmployeeByEmail = (email) => {
+Customer.getcustomerByEmail = (email) => {
   return new Promise((resolve, reject) => {
     sql.query("SELECT * FROM customer WHERE email = ?", email, (error, res) => {
       if (error) {
@@ -72,7 +77,7 @@ Customer.checkEmailCodeExist = (email, code, userId) => {
         WHERE (email = ? OR code = ?) AND id != ?
       `;
     sql.query(query, [email, code, userId], (error, res) => {
-      console.log('res', error, res)
+      console.log("res", error, res);
       if (error) {
         return reject(error);
       }

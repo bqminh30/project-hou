@@ -1,9 +1,7 @@
 const jsonwebtoken = require('jsonwebtoken');
 
 function isAuthenticated(req, res, next) {
-  const token = req.header('Authorization');
-
-  console.log
+  const token = req.cookies.token; 
 
   if (!token) {
     return res.status(401).json({ message: 'Chưa cung cấp token' });
@@ -11,7 +9,7 @@ function isAuthenticated(req, res, next) {
 
   jsonwebtoken.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      return res.status(403).json({ message: 'Token không hợp lệ' });
+      return res.status(403).json({ message: `Token không hợp lệ ${err}` });
     }
 
     req.user = user;

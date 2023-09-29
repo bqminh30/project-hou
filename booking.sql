@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 20, 2023 at 12:22 PM
+-- Generation Time: Sep 25, 2023 at 01:25 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.1.17
 
@@ -27,20 +27,24 @@ SET time_zone = "+00:00";
 -- Table structure for table `employee`
 --
 
-CREATE TABLE `employee` (
-  `id` int(11) NOT NULL,
-  `fullname` varchar(50) DEFAULT NULL,
-  `phonenumber` varchar(20) DEFAULT NULL,
-  `code` varchar(20) DEFAULT NULL,
-  `passwordHash` varchar(255) NOT NULL,
-  `address` text DEFAULT NULL,
-  `birthday` datetime DEFAULT NULL,
-  `avatar` blob DEFAULT NULL,
-  `status` tinyint(1) NOT NULL,
-  `email` varchar(50) NOT NULL,
-  `role_id` int(11) NOT NULL,
-  `createdAt` datetime NOT NULL,
-  `updatedAt` datetime NOT NULL
+CREATE TABLE employee (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  fullname VARCHAR(50) DEFAULT NULL,
+  phonenumber VARCHAR(20) DEFAULT NULL,
+  code VARCHAR(20) DEFAULT NULL,
+  passwordHash VARCHAR(255) NOT NULL,
+  address TEXT DEFAULT NULL,
+  birthday DATETIME DEFAULT NULL,
+  avatar BLOB DEFAULT NULL,
+  status TINYINT(1) NOT NULL,
+  email VARCHAR(50) NOT NULL,
+  role_id INT(11) NOT NULL,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY unique_code (code),
+  UNIQUE KEY unique_email (email),
+  FOREIGN KEY (role_id) REFERENCES roles(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -48,7 +52,7 @@ CREATE TABLE `employee` (
 --
 
 INSERT INTO `employee` (`id`, `fullname`, `phonenumber`, `code`, `passwordHash`, `address`, `birthday`, `avatar`, `status`, `email`, `role_id`, `createdAt`, `updatedAt`) VALUES
-(20, 'Bùi Quang Minh', '0362592858', '034201000421715', '$2b$10$w1tJZQim7lqCr6AZcV210OMhqqocGTGK.bvpl3NDP7iOVx7iGhR3S', 'Thái Bình', '2001-10-30 15:30:00', 0x53637265656e73686f7420323032332d30382d3134203133343034382e706e67, 1, 'bqminh30@gmail.com', 1, '2023-09-20 14:44:39', '0000-00-00 00:00:00');
+(20, 'Bùi Quang Minh', '0362592858', '034201000421715', '$2b$10$w1tJZQim7lqCr6AZcV210OMhqqocGTGK.bvpl3NDP7iOVx7iGhR3S', 'Thái Bình', '2001-10-30 15:30:00', 0x53637265656e73686f7420323032332d30382d3134203133343034382e706e67, 1, 'bqminh30@gmail.com', 0, '2023-09-20 14:44:39', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -81,6 +85,91 @@ INSERT INTO `facilities` (`id`, `name`, `image`, `location`, `phone`, `logo`, `t
 (7, 'Khách sạn Marriott', 'Screenshot 2023-09-14 115844.png', 'Hà Nội', '0989547564', '1', 'Khách sạn số 1 Việt Nam', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
 (8, 'Khách sạn Marriott', 'Screenshot 2023-09-14 115844.png', 'Hà Nội', '0989547564', '1', 'Khách sạn số 1 Việt Nam', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer`
+--
+
+CREATE TABLE customer (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  fullname VARCHAR(50) DEFAULT NULL,
+  phonenumber VARCHAR(20) DEFAULT NULL,
+  code VARCHAR(20) DEFAULT NULL,
+  passwordHash VARCHAR(255) NOT NULL,
+  address VARCHAR(20) DEFAULT NULL,
+  birthday DATE DEFAULT NULL,
+  email VARCHAR(50) NOT NULL,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY unique_code (code),
+  UNIQUE KEY unique_email (email)
+);
+
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reviews`
+--
+
+CREATE TABLE reviews (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  content VARCHAR(255) DEFAULT NULL,
+  image VARCHAR(255) DEFAULT NULL,
+  rating FLOAT,
+  room_id int(11) NOT NULL,
+  employee_id int(11) NOT NULL,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (room_id) REFERENCES room(id),
+  FOREIGN KEY (employee_id) REFERENCES employee(id)
+);
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `orders`
+--
+
+CREATE TABLE orders (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  createdDate DATETIME NOT NULL,
+  checkinDate DATETIME NOT NULL,
+  checkoutDate DATETIME NOT NULL,
+  dateCount int NOT NULL,
+  personCount int NOT NULL,
+  status int NOT NULL,
+  total double NOT NULL,
+  note text NOT NULL,
+  customer_id int(11) NOT NULL,
+  employee_id int(11) NOT NULL,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (customer_id) REFERENCES customer(id),
+  FOREIGN KEY (employee_id) REFERENCES employee(id)
+);
+
+
+CREATE TABLE order_detail (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  createdDate DATETIME NOT NULL,
+  
+  order_id int(11) NOT NULL,
+  room_id int(11) NOT NULL,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (order_id) REFERENCES orders(id),
+  FOREIGN KEY (room_id) REFERENCES room(id)
+);
+
 -- --------------------------------------------------------
 
 --
@@ -103,6 +192,60 @@ INSERT INTO `roles` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `room_service`
+--
+
+CREATE TABLE room_service (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  quantity double DEFAULT NULL,
+  room_id INT(11) NOT NULL,
+  service_id INT(11) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (room_id) REFERENCES room (id),
+  FOREIGN KEY (service_id) REFERENCES service (id)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `room`
+--
+
+CREATE TABLE `room` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `price` double NOT NULL,
+  `priceSale` double DEFAULT NULL,
+  `rating` float DEFAULT NULL,
+  `totalRating` int(10) DEFAULT NULL,
+  `totalReview` int(10) DEFAULT NULL,
+  `numberBed` int(10) NOT NULL,
+  `numberPeople` int(10) NOT NULL,
+  `status` int(10) NOT NULL,
+  `label` int(20) NOT NULL,
+  `isLiked` tinyint(1) NOT NULL,
+  `image` varchar(255) NOT NULL,
+  `voucher_id` int(11) DEFAULT NULL,
+  `type_room_id` int(11) DEFAULT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `room`
+--
+
+INSERT INTO `room` (`id`, `name`, `title`, `description`, `price`, `priceSale`, `rating`, `totalRating`, `totalReview`, `numberBed`, `numberPeople`, `status`, `label`, `isLiked`, `image`, `voucher_id`, `type_room_id`, `createdAt`, `updatedAt`) VALUES
+(32, 'Phòng 202', 'Phòng ở tầng 2', 'Phòng đặc biệt, rộng rãi, sạch sẽ', 2000, 0, 0, 0, 0, 2, 4, 1, 1, 1, 'Screenshot 2023-08-19 141435.png', 4, 1, '2023-09-25 10:50:46', '2023-09-25 10:50:46'),
+(33, 'Phòng 201', 'Phòng ở tầng 2', 'Phòng đặc biệt, rộng rãi, sạch sẽ', 3000, 0, 0, 0, 0, 2, 4, 1, 1, 1, 'Screenshot 2023-08-14 134048.png', 2, 2, '2023-09-25 09:57:40', '2023-09-25 09:57:40'),
+(34, 'Phòng 202', 'Phòng ở tầng 2', 'Phòng đặc biệt, rộng rãi, sạch sẽ', 3000, 0, 0, 0, 0, 2, 4, 1, 1, 1, 'Screenshot 2023-08-14 134048.png', 1, NULL, '2023-09-25 09:57:43', '2023-09-25 09:57:43'),
+(35, 'Phòng 203', 'Phòng ở tầng 2', 'Phòng đặc biệt, rộng rãi, sạch sẽ', 2400, 0, 0, 0, 0, 2, 4, 1, 1, 1, 'Screenshot 2023-08-14 134048.png', 3, NULL, '2023-09-25 09:57:49', '2023-09-25 09:57:49');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `service`
 --
 
@@ -114,6 +257,25 @@ CREATE TABLE `service` (
   `type_service_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `room_image`
+--
+
+CREATE TABLE `room_image` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` varchar(20) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `data` BLOB,
+  `room_id` int(11) DEFAULT NULL,
+  `createdAt` datetime DEFAULT current_timestamp(),
+  `updatedAt` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (id),
+  FOREIGN KEY (room_id) REFERENCES room (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Dumping data for table `service`
 --
@@ -121,7 +283,8 @@ CREATE TABLE `service` (
 INSERT INTO `service` (`id`, `name`, `unit`, `price`, `type_service_id`) VALUES
 (1, 'Thuê xe máy', 'Số lượng', 50000, 1),
 (2, 'Thuê ô tô', 'Số lượng', 200000, 1),
-(3, 'Thuê xe đạp', 'Số lượng', 20000, 1);
+(3, 'Thuê xe đạp', 'Số lượng', 20000, 1),
+(5, 'Tắm bể nước nóng', 'Số lượng', 40000, 2);
 
 -- --------------------------------------------------------
 
@@ -159,7 +322,8 @@ CREATE TABLE `type_service` (
 --
 
 INSERT INTO `type_service` (`id`, `name`) VALUES
-(1, 'Thuê xe');
+(1, 'Thuê xe'),
+(2, 'Bể bơi');
 
 -- --------------------------------------------------------
 
@@ -184,7 +348,9 @@ CREATE TABLE `vouchers` (
 
 INSERT INTO `vouchers` (`id`, `name`, `value`, `isShow`, `startDate`, `endDate`, `createdAt`, `updatedAt`) VALUES
 (1, 'Giảm giá, khuyến mãi 15%', 15, 1, '2023-09-10', '2023-09-30', '2023-09-20 16:11:44', '2023-09-20 17:18:40'),
-(2, 'Giảm giá, khuyến mãi 20%', 20, 1, '2023-09-25', '2023-09-30', '2023-09-20 16:12:42', '2023-09-20 16:12:42');
+(2, 'Giảm giá, khuyến mãi 20%', 20, 1, '2023-09-25', '2023-09-30', '2023-09-20 16:12:42', '2023-09-20 16:12:42'),
+(3, 'Khuyến mãi 50%', 50, 0, '0000-00-00', '0000-00-00', '2023-09-25 17:56:14', '2023-09-25 17:56:14'),
+(4, 'Khuyến mãi 50%', 50, 1, '2023-09-01', '2023-09-15', '2023-09-25 17:56:32', '2023-09-25 17:56:32');
 
 --
 -- Indexes for dumped tables
@@ -196,7 +362,7 @@ INSERT INTO `vouchers` (`id`, `name`, `value`, `isShow`, `startDate`, `endDate`,
 ALTER TABLE `employee`
   ADD PRIMARY KEY (`id`),
   ADD KEY `role_id` (`role_id`),
-  ADD KEY `code` (`code`,`email`);
+  ADD UNIQUE KEY `code` (`code`,`email`);
 
 --
 -- Indexes for table `facilities`
@@ -209,6 +375,14 @@ ALTER TABLE `facilities`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `room`
+--
+ALTER TABLE `room`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `type_room_id` (`type_room_id`),
+  ADD KEY `voucher_id` (`voucher_id`);
 
 --
 -- Indexes for table `service`
@@ -243,43 +417,49 @@ ALTER TABLE `vouchers`
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `facilities`
 --
 ALTER TABLE `facilities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
+-- AUTO_INCREMENT for table `room`
+--
+ALTER TABLE `room`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `service`
 --
 ALTER TABLE `service`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `type_room`
 --
 ALTER TABLE `type_room`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `type_service`
 --
 ALTER TABLE `type_service`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `vouchers`
 --
 ALTER TABLE `vouchers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- Constraints for dumped tables
@@ -291,6 +471,61 @@ ALTER TABLE `vouchers`
 ALTER TABLE `service`
   ADD CONSTRAINT `service_ibfk_1` FOREIGN KEY (`type_service_id`) REFERENCES `type_service` (`id`);
 COMMIT;
+
+ALTER TABLE `room`
+  ADD CONSTRAINT `room_ibfk_1` FOREIGN KEY (`type_room_id`) REFERENCES `type_room` (`id`);
+COMMIT;
+
+ALTER TABLE `room`
+ADD CONSTRAINT `room_ibfk_2` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`);
+COMMIT;
+
+ALTER TABLE `employee`
+ADD CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
+COMMIT;
+
+
+-- GET ALL 
+SELECT r.*, GROUP_CONCAT(s.name SEPARATOR ', ') AS service 
+FROM room r 
+LEFT JOIN room_service rs ON r.id = rs.room_id 
+LEFT JOIN service s ON rs.service_id = s.id 
+LEFT JOIN room_image rm ON rm.room_id = r.id
+GROUP BY r.id;
+
+SELECT r.*, GROUP_CONCAT(s.name SEPARATOR ', ') AS service, room_image.room_image
+FROM room r 
+LEFT JOIN room_service rs ON r.id = rs.room_id 
+LEFT JOIN service s ON rs.service_id = s.id 
+LEFT JOIN (
+    SELECT room_id, GROUP_CONCAT(name SEPARATOR ', ') AS room_image
+    FROM room_image
+    GROUP BY room_id
+) room_image ON room_image.room_id = r.id
+GROUP BY r.id;
+
+-- INSERT INTO rooms WHERE 
+SELECT COUNT(*) FROM orders LEFT JOIN order_detail od ON od.room_id = 32 WHERE checkoutDate > '2023-09-29'
+
+-- GET DETAIL
+SELECT r.*, GROUP_CONCAT(s.name SEPARATOR ', ') AS service 
+FROM room r 
+LEFT JOIN room_service rs ON r.id = rs.room_id 
+LEFT JOIN service s ON rs.service_id = s.id WHERE r.id = 32
+GROUP BY r.id ORDER BY rs.createdAt;
+
+
+SELECT COUNT(*) AS cnt
+FROM orders
+LEFT JOIN order_detail od ON orders.id = od.order_id
+LEFT JOIN room r ON od.room_id = r.id
+WHERE (orders.checkoutDate > '2023-10-12' OR r.numberPeople <= 10 OR  orders.checkinDate < '2023-10-15')
+-- ORDER BY r.name;
+SELECT orders.checkinDate, orders.checkoutDate
+FROM orders
+LEFT JOIN order_detail od ON orders.id = od.order_id
+LEFT JOIN room r ON od.room_id = r.id
+WHERE r.id = 33
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
