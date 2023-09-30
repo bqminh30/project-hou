@@ -8,6 +8,8 @@ module.exports = app => {
   router.post("/login", customer.login);
   router.put("/update/:id", customer.update);
 
+  router.post("/logout", customer.logout);
+
 
   app.use('/api/customer', router);
 };

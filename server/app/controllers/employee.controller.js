@@ -23,6 +23,7 @@ exports.register = (req, res, next) => {
       fullname,
       email,
       password,
+      createdAt: new Date()
     };
 
     Employee.regiser(data, (err, data) => {
@@ -174,3 +175,16 @@ exports.update = async (req, res, next) => {
     });
   }
 };
+
+
+exports.logout = async (req, res, next) => {
+  try {
+    res.clearCookie('token');
+    res.json({ message: 'Đăng xuất thành công' });
+  }catch (err){
+    res.send({
+      status: 500,
+      message: `Lỗi không thể đăng xuất ${err}`,
+    })
+  }
+}

@@ -23,6 +23,7 @@ exports.register = async (req, res, next) => {
       fullname,
       email,
       password,
+      createdAt: new Date()
     };
 
     try {
@@ -67,39 +68,38 @@ exports.login = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.passwordHash;
 
-    user = await Customer.getEmployeeByEmail(email);
+    const user = await Customer.getEmployeeByEmail(email);
     if (!user) {
-      return res.send({
-        message: "Invalid email or password",
+      return res.status(404).json({
+        message: "User not found",
       });
-    } else {
-      const isValidPassword = compareSync(password, user.passwordHash);
-      if (isValidPassword) {
-        user.passwordHash = undefined;
-        const jsontoken = jsonwebtoken.sign(
-          { data: user },
-          process.env.JWT_SECRET,
-          { expiresIn: "1d" }
-        );
-        res.cookie("token", jsontoken, {
-          httpOnly: true,
-          secure: true,
-          SameSite: "strict",
-          expires: new Date(Number(new Date()) + 30 * 60 * 1000),
-        }); //we add secure: true, when using https.
-
-        res.send({ token: jsontoken, data: user });
-      } else {
-        return res.send({
-          status: 400,
-          message: "Invalid email or password",
-        });
-      }
     }
-  } catch {
-    return res.send({
-      status: 500,
-      message: "Invalid email or password",
+
+    const isValidPassword = compareSync(password, user.passwordHash);
+    if (!isValidPassword) {
+      return res.status(401).json({
+        message: "Invalid password",
+      });
+    }
+
+    user.passwordHash = undefined;
+    const jsontoken = jsonwebtoken.sign(
+      { data: user },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+    res.cookie("token", jsontoken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      expires: new Date(Number(new Date()) + 30 * 60 * 1000),
+    });
+
+    res.send({ token: jsontoken, data: user });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
     });
   }
 };
@@ -165,3 +165,15 @@ exports.update = async (req, res, next) => {
     });
   }
 };
+
+exports.logout = async (req, res, next) => {
+  try {
+    res.clearCookie('token');
+    res.json({ message: 'Đăng xuất thành công' });
+  }catch (err){
+    res.send({
+      status: 500,
+      message: `Lỗi không thể đăng xuất ${err}`,
+    })
+  }
+}
