@@ -1,14 +1,14 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
-// import MainLayout from 'src/layouts/main';
-import MainLayout from 'src/layouts/dashboard';
+import MainLayout from 'src/layouts/main';
+import DashboardLayout from 'src/layouts/dashboard';
 // config
-// import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { PATH_AFTER_LOGIN } from 'src/config-global';
 //
 import { mainRoutes, HomePage } from './main';
 import { authRoutes } from './auth';
 import { authDemoRoutes } from './auth-demo';
-import { dashboardRoutes, IndexPage } from './dashboard';
+import { dashboardRoutes, DashboardPage } from './dashboard';
 import { componentsRoutes } from './components';
 
 // ----------------------------------------------------------------------
@@ -28,7 +28,7 @@ export default function Router() {
       path: '/',
       element: (
         <MainLayout>
-          <IndexPage />
+          <HomePage />
         </MainLayout>
       ),
     },
