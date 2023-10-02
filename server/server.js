@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser"); /* deprecated */
 const cors = require("cors");
 const path = require("path");
@@ -11,7 +11,9 @@ const apiRouter = express.Router();
 const cloudinary = require("cloudinary").v2;
 
 var corsOptions = {
-  origin: "http://localhost:6969",
+  origin: "http://localhost:8080",
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
 };
 
 cloudinary.config({
