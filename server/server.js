@@ -41,6 +41,7 @@ require("./app/routes/typeroom.routes.js")(app);
 require("./app/routes/typeservice.routes.js")(app);
 require("./app/routes/service.routes.js")(app);
 require("./app/routes/employee.routes.js")(app);
+require("./app/routes/reviews.routes.js")(app);
 require("./app/routes/customer.routes.js")(app);
 require("./app/routes/voucher.routes.js")(app);
 require("./app/routes/room.routes.js")(app);

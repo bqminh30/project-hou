@@ -16,6 +16,13 @@ const Employee = function (employee) {
 };
 
 Employee.regiser = (newEmployee, result) => {
+  if (newEmployee.role_id !== 2) {
+    return result({
+      status: 403,
+      message: "Only admin users can create employees with the 'staff' role.",
+    }, null);
+  }
+
   sql.query(
     "SELECT COUNT(*) AS cnt FROM employee WHERE email = ? ",
     newEmployee.email,
@@ -32,7 +39,7 @@ Employee.regiser = (newEmployee, result) => {
           return;
         } else {
           sql.query(
-            "INSERT INTO employee (fullname, email, passwordHash) VALUES (?,?,?)",
+            "INSERT INTO employee (fullname, email, passwordHash, role_id) VALUES (?,?,?, 1)",
             [newEmployee.fullname, newEmployee.email, newEmployee.password],
             (err, res) => {
               if (err) {

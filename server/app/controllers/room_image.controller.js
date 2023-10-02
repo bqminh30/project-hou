@@ -9,11 +9,6 @@ module.exports = {
   },
   roomserviceCreate: function (req, res) {
     try {
-      //   if (!req.body) {
-      //     res.status(400).send({
-      //       message: "Content can not be empty!",
-      //     });
-      //   }
       const multi_upload = multer({
         storage: imageMiddleware.image.storage(),
         allowedImage: imageMiddleware.image.allowedImage,

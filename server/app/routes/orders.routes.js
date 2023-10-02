@@ -11,9 +11,17 @@ module.exports = (app) => {
     // // Create a new Room
     // router.get("/create", room.createFormRoom);
     router.post("/booking", orders.booking);
+
+    // get all orders 
+    router.get("/", orders.getOrders);
+
+    // get a order by id
+    router.get('/:id',orders.getOrderById)
   
+    // get orders status
+    router.get('/status/:id',orders.getOrderById)
     //Update a new Room
-    // router.put("/update/:id", room.updateRoom);
+    router.put("/status", orders.updateOrderStatus);
   
     app.use("/api/orders", router);
   };

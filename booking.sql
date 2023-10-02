@@ -122,12 +122,12 @@ CREATE TABLE reviews (
   image VARCHAR(255) DEFAULT NULL,
   rating FLOAT,
   room_id int(11) NOT NULL,
-  employee_id int(11) NOT NULL,
+  customer_id int(11) NOT NULL,
   createdAt DATETIME NOT NULL,
   updatedAt DATETIME NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (room_id) REFERENCES room(id),
-  FOREIGN KEY (employee_id) REFERENCES employee(id)
+  FOREIGN KEY (customer_id) REFERENCES customer(id)
 );
 
 
@@ -140,10 +140,6 @@ CREATE TABLE reviews (
 CREATE TABLE orders (
   id INT(11) NOT NULL AUTO_INCREMENT,
   createdDate DATETIME NOT NULL,
-  checkinDate DATETIME NOT NULL,
-  checkoutDate DATETIME NOT NULL,
-  dateCount int NOT NULL,
-  personCount int NOT NULL,
   status int NOT NULL,
   total double NOT NULL,
   note text NOT NULL,
@@ -157,18 +153,23 @@ CREATE TABLE orders (
 );
 
 
-CREATE TABLE order_detail (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  createdDate DATETIME NOT NULL,
-  
-  order_id int(11) NOT NULL,
-  room_id int(11) NOT NULL,
-  createdAt DATETIME NOT NULL,
-  updatedAt DATETIME NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (order_id) REFERENCES orders(id),
-  FOREIGN KEY (room_id) REFERENCES room(id)
-);
+  CREATE TABLE order_detail (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    createdDate DATETIME NOT NULL,
+    checkinDate DATETIME NOT NULL,
+    checkoutDate DATETIME NOT NULL,
+    status int NOT NULL,
+    dateCount int NOT NULL,
+    total double NOT NULL,
+    personCount int NOT NULL,
+    order_id int(11) NOT NULL,
+    room_id int(11) NOT NULL,
+    createdAt DATETIME NOT NULL,
+    updatedAt DATETIME NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (room_id) REFERENCES room(id)
+  );
 
 -- --------------------------------------------------------
 
@@ -521,11 +522,25 @@ LEFT JOIN order_detail od ON orders.id = od.order_id
 LEFT JOIN room r ON od.room_id = r.id
 WHERE (orders.checkoutDate > '2023-10-12' OR r.numberPeople <= 10 OR  orders.checkinDate < '2023-10-15')
 -- ORDER BY r.name;
-SELECT orders.checkinDate, orders.checkoutDate
-FROM orders
-LEFT JOIN order_detail od ON orders.id = od.order_id
-LEFT JOIN room r ON od.room_id = r.id
+
+
+SELECT order_detail.checkinDate, order_detail.checkoutDate
+FROM order_detail
+LEFT JOIN orders od ON od.id = order_detail.order_id
+LEFT JOIN room r ON order_detail.room_id = r.id
 WHERE r.id = 33
+
+SELECT * 
+FROM orders
+RIGHT JOIN order_detail od ON order.id = od.order_id
+RIGHT JOIN room r ON order_detail.room_id = r.id
+WHERE employee_id = AND room_id = 
+
+SELECT COUNT(*) AS cnt
+FROM orders
+RIGHT JOIN order_detail od ON orders.id = od.order_id
+RIGHT JOIN room r ON od.room_id = r.id
+WHERE employee_id = 3 AND room_id = 34
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

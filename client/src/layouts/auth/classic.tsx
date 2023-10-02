@@ -101,7 +101,7 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       }}
     >
       <Typography variant="h3" sx={{ maxWidth: 480, textAlign: 'center' }}>
-        {title || 'Hi, Welcome back'}
+        {title || 'Center Marriott'}
       </Typography>
 
       <Box
@@ -110,9 +110,9 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
         src={image || '/assets/illustrations/illustration_dashboard.png'}
         sx={{
           maxWidth: {
-            xs: 480,
-            lg: 560,
-            xl: 720,
+            xs: 440,
+            lg: 520,
+            xl: 680,
           },
         }}
       />

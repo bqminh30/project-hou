@@ -8,6 +8,7 @@ exports.register = (req, res, next) => {
   try {
     const fullname = req.body.fullname;
     const email = req.body.email;
+    const role_id = req.body.role_id;
     let password = req.body.passwordHash;
 
     if (!fullname || !email || !password) {
@@ -23,6 +24,7 @@ exports.register = (req, res, next) => {
       fullname,
       email,
       password,
+      role_id,
       createdAt: new Date()
     };
 

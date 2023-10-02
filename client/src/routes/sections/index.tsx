@@ -1,6 +1,6 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
-import MainLayout from 'src/layouts/main';
+// import MainLayout from 'src/layouts/main';
 import DashboardLayout from 'src/layouts/dashboard';
 // config
 import { PATH_AFTER_LOGIN } from 'src/config-global';
@@ -8,7 +8,7 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 import { mainRoutes, HomePage } from './main';
 import { authRoutes } from './auth';
 import { authDemoRoutes } from './auth-demo';
-import { dashboardRoutes, DashboardPage } from './dashboard';
+import { dashboardRoutes } from './dashboard';
 import { componentsRoutes } from './components';
 
 // ----------------------------------------------------------------------
@@ -26,16 +26,12 @@ export default function Router() {
     // SET INDEX PAGE WITH HOME PAGE
     {
       path: '/',
-      element: (
-        <MainLayout>
-          <HomePage />
-        </MainLayout>
-      ),
+      element: <Navigate to="/dashboard" replace />
     },
-
+    // { path: '/', element: <Navigate to="/dashboard" replace /> },
     // Auth routes
-    // ...authRoutes,
-    // ...authDemoRoutes,
+    ...authRoutes,
+    ...authDemoRoutes,
 
     // Dashboard routes
     ...dashboardRoutes,
