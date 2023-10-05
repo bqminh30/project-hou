@@ -17,6 +17,20 @@ const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics')
 const OverviewBankingPage = lazy(() => import('src/pages/dashboard/banking'));
 const OverviewBookingPage = lazy(() => import('src/pages/dashboard/booking'));
 const OverviewFilePage = lazy(() => import('src/pages/dashboard/file'));
+// TYPE ROOM
+const TypeRoomListPage = lazy(() => import('src/pages/dashboard/type-room/list'));
+const TypeRoomEditPage = lazy(() => import('src/pages/dashboard/type-room/edit'));
+// TYPE SERVICE
+const TypeServiceListPage = lazy(() => import('src/pages/dashboard/type-service/list'));
+const TypeServiceEditPage = lazy(() => import('src/pages/dashboard/type-service/edit'));
+// SERVICE
+const ServiceListPage = lazy(() => import('src/pages/dashboard/service/list'));
+// const ServiceEditPage = lazy(() => import('src/pages/dashboard/service/edit'));
+// ROOM
+const RoomListsPage = lazy(() => import('src/pages/dashboard/room/list'));
+const RoomDetailPage = lazy(() => import('src/pages/dashboard/room/details'));
+const RoomNewPage = lazy(() => import('src/pages/dashboard/room/new'));
+const RoomEditPage = lazy(() => import('src/pages/dashboard/room/edit'));
 // PRODUCT
 const ProductDetailsPage = lazy(() => import('src/pages/dashboard/product/details'));
 const ProductListPage = lazy(() => import('src/pages/dashboard/product/list'));
@@ -85,6 +99,43 @@ export const dashboardRoutes = [
       { path: 'banking', element: <OverviewBankingPage /> },
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
+      {
+        path: 'type-room',
+        children: [
+          { element: <TypeRoomListPage />, index: true },
+          { path: 'list', element: <TypeRoomListPage /> },
+          { path: ':id/edit', element: <TypeRoomEditPage /> },
+          { path: 'new', element: <TypeRoomEditPage /> }
+        ]
+      },
+      {
+        path: 'type-service',
+        children: [
+          { element: <TypeServiceListPage />, index: true },
+          { path: 'list', element: <TypeServiceListPage /> },
+          { path: ':id/edit', element: <TypeServiceEditPage /> },
+          { path: 'new', element: <TypeServiceEditPage /> }
+        ]
+      },
+      {
+        path: 'service',
+        children: [
+          { element: <ServiceListPage />, index: true },
+          { path: 'list', element: <ServiceListPage /> },
+          // { path: ':id/edit', element: <ServiceEditPage /> },
+          // { path: 'new', element: <ServiceEditPage /> }
+        ]
+      },
+      {
+        path: 'room',
+        children: [
+          { element: <RoomListsPage />, index: true },
+          { path: 'list', element: <RoomListsPage /> },
+          { path: ':id', element: <RoomDetailPage /> },
+          { path: 'new', element: <RoomNewPage /> },
+          { path: ':id/edit', element: <RoomEditPage /> },
+        ],
+      },
       {
         path: 'user',
         children: [

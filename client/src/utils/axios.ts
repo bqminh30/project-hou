@@ -50,4 +50,8 @@ export const endpoints = {
     details: '/api/product/details',
     search: '/api/product/search',
   },
+  typeRoom: {
+    list: '/api/typerooms',
+    details: '/api/typerooms'
+  }
 };

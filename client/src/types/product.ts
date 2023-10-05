@@ -72,6 +72,8 @@ export type IProductItem = {
   };
 };
 
+
+
 export type IProductTableFilterValue = string | string[];
 
 export type IProductTableFilters = {
@@ -79,3 +81,4 @@ export type IProductTableFilters = {
   stock: string[];
   publish: string[];
 };
+// ====================================

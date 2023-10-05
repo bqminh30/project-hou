@@ -107,6 +107,40 @@ export const paths = {
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
     },
+    typeRoom: {
+      root: `${ROOTS.DASHBOARD}/type-room`,
+      new: `${ROOTS.DASHBOARD}/type-room/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/type-room/${id}/edit`,
+      demo: {
+        edit: `${ROOTS.DASHBOARD}/type-room/${MOCK_ID}/edit`,
+      },
+    },
+    typeService: {
+      root: `${ROOTS.DASHBOARD}/type-service`,
+      new: `${ROOTS.DASHBOARD}/type-service/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/type-service/${id}/edit`,
+      demo: {
+        edit: `${ROOTS.DASHBOARD}/type-service/${MOCK_ID}/edit`,
+      },
+    },
+    service: {
+      root: `${ROOTS.DASHBOARD}/service`,
+      new: `${ROOTS.DASHBOARD}/service/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/service/${id}/edit`,
+      demo: {
+        edit: `${ROOTS.DASHBOARD}/service/${MOCK_ID}/edit`,
+      },
+    },
+    room: {
+      root: `${ROOTS.DASHBOARD}/room`,
+      new: `${ROOTS.DASHBOARD}/room/new`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/room/${id}`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/room/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/room/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/room/${MOCK_ID}/edit`,
+      },
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,
