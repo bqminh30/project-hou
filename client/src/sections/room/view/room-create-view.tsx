@@ -6,7 +6,7 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
-import ProductNewEditForm from '../room-new-edit-form';
+import RoomNewEditForm from '../room-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -16,24 +16,24 @@ export default function ProductCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new product"
+        heading="Tạo mới phòng"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Product',
-            href: paths.dashboard.product.root,
+            name: 'Phòng',
+            href: paths.dashboard.room.root,
           },
-          { name: 'New product' },
+          { name: 'Tạo mới phòng' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <ProductNewEditForm />
+      <RoomNewEditForm />
     </Container>
   );
 }

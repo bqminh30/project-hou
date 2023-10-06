@@ -42,6 +42,7 @@ import FormProvider, {
 } from 'src/components/hook-form';
 // types
 import { IProductItem } from 'src/types/product';
+import {IRoom} from 'src/types/room'
 
 // ----------------------------------------------------------------------
 
@@ -49,7 +50,11 @@ type Props = {
   currentProduct?: IProductItem;
 };
 
-export default function ProductNewEditForm({ currentProduct }: Props) {
+type PropRoom = {
+  currentRoom ?: IRoom;
+}
+
+export default function RoomNewEditForm({ currentProduct }: Props) {
   const router = useRouter();
 
   const mdUp = useResponsive('up', 'md');
