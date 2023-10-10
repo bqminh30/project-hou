@@ -34,7 +34,7 @@ Rooms.createRoom = (newRoom, result) => {
     }
 
     console.log("created room: ", { id: res.insertId, ...newRoom });
-    result(null, { id: res.insertId, ...newRoom });
+    result(null, { id: res.insertId,image:res.image, ...newRoom });
   });
 };
 
@@ -52,15 +52,12 @@ Rooms.updateRoomById = (id, value, result) => {
       value.title,
       value.description,
       value.price,
-      // value.rating,
-      // value.totalRating,
-      // value.totalReview,
       value.numberBed,
       value.numberPeople,
       value.status,
       value.label,
       value.isLiked,
-      value.image,
+      JSON.stringify(value.image),
       value.voucher_id,
       value.type_room_id,
       value.updatedAt,
@@ -74,7 +71,7 @@ Rooms.updateRoomById = (id, value, result) => {
         return;
       }
       console.log("updated room: ", { id: id, ...value });
-      result({ id: id, ...value });
+      result({ id: id,image:image, ...value });
     }
   );
 };
@@ -193,7 +190,7 @@ GROUP BY r.id;
       return;
     }
 
-    console.log("rooms: ", res);
+    // console.log("rooms: ", res);
     result(null, res);
   });
 };

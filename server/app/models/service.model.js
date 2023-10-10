@@ -54,7 +54,7 @@ Service.findById = (id, result) => {
     }
 
     if (res.length) {
-      console.log("found service: ", res[0]);
+      // console.log("found service: ", res[0]);
       result(null, res[0]);
       return;
     }
@@ -78,7 +78,7 @@ Service.getAll = (title, result) => {
       return;
     }
 
-    console.log("service: ", res);
+    // console.log("service: ", res);
     result(null, res);
   });
 };

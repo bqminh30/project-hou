@@ -62,29 +62,24 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
   const { typerooms, typeroomsLoading, typeroomsEmpty } = useGetTypeRooms();
   const { services, servicesLoading } = useGetServices();
-  const [idRoom, setIdRoom] = useState('')
+  const [idRoom, setIdRoom] = useState(157);
 
   const mdUp = useResponsive('up', 'md');
 
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    if (typerooms.length) {
-      setTableDataTypeRoom(typerooms);
-    }
+    setTableDataTypeRoom(typerooms);
   }, [typerooms]);
 
   useEffect(() => {
     setIsLoadingServices(true);
-    if (services.length) {
-      const options = services?.map((option) => ({
-        value: option.id,
-        label: option.name,
-      }));
-      setTableDataServices(options);
-      setIsLoadingServices(false);
-    }
-
+    const options = services?.map((option) => ({
+      value: option.id,
+      label: option.name,
+    }));
+    setTableDataServices(options);
+    setIsLoadingServices(false);
   }, [services]);
 
   const NewProductSchema = Yup.object().shape({
@@ -110,8 +105,8 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
       price: currentRoom?.price || 0,
       priceSale: currentRoom?.priceSale || 0,
       image: currentRoom?.image || '',
-      numberBed: currentRoom?.numberBed || 0,
-      numberPeople: currentRoom?.numberPeople || 0,
+      numberBed: currentRoom?.numberBed || 0 || null,
+      numberPeople: currentRoom?.numberPeople || 0 || null,
       status: currentRoom?.status || 0,
       label: currentRoom?.label || 0,
       isLiked: currentRoom?.isLiked || 0,
@@ -146,28 +141,99 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
   const onSubmit = handleSubmit(async (data) => {
     const formData = new FormData();
-    formData.append('image', data.image)
+    formData.append('image', data.image);
+    formData.append('name', data.name);
+    formData.append('title', data.title);
+    formData.append('description', data.description);
+    formData.append('price', JSON.stringify(data.price));
+    formData.append('priceSale', JSON.stringify(data.priceSale));
+    formData.append('numberBed', data.numberBed);
+    formData.append('numberPeople', data.numberPeople);
+    formData.append('status', data.status);
+    formData.append('label', data.label);
+    formData.append('isLiked', data.isLiked);
+    formData.append('type_room_id', data.type_room_id);
+    const config = {
+      headers: { 'content-type': 'multipart/form-data' },
+    };
     try {
       if (currentRoom) {
         console.info('DATA', data);
       } else {
         axios
-          .post('http://localhost:6969/api/rooms/create', data)
+          .post('http://localhost:6969/api/rooms/create', formData, config)
           .then((res) => {
-            enqueueSnackbar('Create success!');
+            enqueueSnackbar({
+              variant: 'success',
+              autoHideDuration: 3000,
+              message: 'Create success',
+            });
             setOpen(true);
-            console.log('res', res)
-            setIdRoom(res.data.id)
+            reset();
+            setIdRoom(res.data.id);
           })
           .catch((err) => {
-            console.log('err');
             enqueueSnackbar({
               variant: 'error',
-              autoHideDuration: 5000,
+              autoHideDuration: 3000,
               message: 'Create fail',
             });
           });
-        // reset();
+        reset();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  const onSubmitService = handleSubmit(async (data) => {
+    const formDataMul = new FormData();
+    formDataMul.append('room_id', JSON.stringify(idRoom));
+    for (let i = 0; i < data.roomImages.length; i += 1) {
+      formDataMul.append(`data[${i}]`, data.roomImages[i]);
+    }
+    formDataMul.append('count', data.roomImages.length)
+    const config = {
+      headers: { 'content-type': 'multipart/form-data' },
+    };
+
+
+    try {
+      if (currentRoom) {
+        console.info('DATA', data);
+      } else {
+        console.log('formDSata', formDataMul);
+        axios
+          .post('http://localhost:6969/api/room-image/create', formDataMul, config)
+          .then((res) => {
+            enqueueSnackbar('Tạo ảnh thành công!');
+            setOpen(true);
+            console.log('res', res);
+            reset();
+          })
+          .catch((err) => {
+            enqueueSnackbar({
+              variant: 'error',
+              autoHideDuration: 5000,
+              message: 'Tạo ảnh phòng thất bại',
+            });
+          });
+        // axios
+        //   .post(`http://localhost:6969/api/room_service/create-mul/${idRoom}`,
+        //     data?.service
+        //   )
+        //   .then((res) => {
+        //     enqueueSnackbar('Tạo dịch vụ thành công!');
+        //     setOpen(true);
+        //     console.log('res', res)
+        //     reset();
+        //   })
+        //   .catch((err) => {
+        //     enqueueSnackbar({
+        //       variant: 'error',
+        //       message: 'Tạo dịch vụ phòng thất bại',
+        //     });
+        //   });
 
         // router.push(paths.dashboard.room.root);
         // console.info('DATA', data);
@@ -178,65 +244,15 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     }
   });
 
-  const onSubmitService = handleSubmit(async (data) => {
-    console.log('data', data)
-    try {
-      if (currentRoom) {
-        console.info('DATA', data);
-      } else {
-        // axios
-        //   .post('http://localhost:6969/api/room-image/create', {
-        //     data: data.roomImages,
-        //     room_id: idRoom ? idRoom : 44
-        //   })
-        //   .then((res) => {
-        //     enqueueSnackbar('Create success!');
-        //     setOpen(true);
-        //     console.log('res', res)
-        //   })
-        //   .catch((err) => {
-        //     console.log('err');
-        //     enqueueSnackbar({
-        //       variant: 'error',
-        //       autoHideDuration: 5000,
-        //       message: 'Create fail',
-        //     });
-        //   });
-        // axios
-        //   .post(`http://localhost:6969/api/room_service/create-mul/${idRoom ? idRoom : 44}`,
-        //     data?.service
-        //   )
-        //   .then((res) => {
-        //     enqueueSnackbar('Create services success!');
-        //     setOpen(true);
-        //     console.log('res', res)
-        //   })
-        //   .catch((err) => {
-        //     console.log('err', err);
-        //     enqueueSnackbar({
-        //       variant: 'error',
-        //       autoHideDuration: 5000,
-        //       message: 'Create fail',
-        //     });
-        //   });
-        reset();
-
-        // router.push(paths.dashboard.room.root);
-        // console.info('DATA', data);
-      }
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-    } catch (error) {
-      console.error(error);
-    }
-  })
-
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
+      Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
       if (file) {
         setValue('image', file, { shouldValidate: true });
       }
-      console.log('file', file)
     },
     [setValue]
   );
@@ -250,7 +266,6 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
           preview: URL.createObjectURL(file),
         })
       );
-      console.log('file', newFiles)
 
       setValue('roomImages', [...files, ...newFiles], { shouldValidate: true });
     },
@@ -413,7 +428,13 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', flexDirection: 'row-reverse' }}>
-        <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          size="large"
+          loading={isSubmitting}
+          disabled={open}
+        >
           {!currentRoom ? 'Tạo phòng' : 'Save Changes'}
         </LoadingButton>
       </Grid>
@@ -471,7 +492,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
       </Grid>
 
       <Grid xs={12} md={12} sx={{ display: 'flex', flexDirection: 'row-reverse' }}>
-        <Button type="submit" variant="contained" size="large" onSubmit={() => onSubmitService()}>
+        <Button type="submit" variant="contained" size="large" onSubmit={onSubmitService}>
           {!currentRoom ? 'Thêm dịch vụ và ảnh' : 'Save Changes'}
         </Button>
       </Grid>
@@ -479,16 +500,22 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
   );
 
   return (
-    <FormProvider methods={methods} onSubmit={open === false ? onSubmit : onSubmitService}>
-      <Grid container spacing={3}>
-        {renderDetails}
+    <>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <Grid container spacing={3}>
+          {renderDetails}
 
-        {renderProperties}
+          {renderProperties}
 
-        {renderActions}
+          {renderActions}
+        </Grid>
+      </FormProvider>
 
-        {renderServiceAndImage}
-      </Grid>
-    </FormProvider>
+      <FormProvider methods={methods} onSubmit={onSubmitService}>
+        <Grid container spacing={3}>
+          {renderServiceAndImage}
+        </Grid>
+      </FormProvider>
+    </>
   );
 }

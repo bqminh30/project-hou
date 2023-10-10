@@ -49,7 +49,14 @@ module.exports = {
       const requestData = req.body; // Đổi tên biến data thành requestData
     
       const promises = []
-      requestData.forEach( async (item) => {
+      if(requestData?.length <= 0){
+        res.status(500).send({
+          message: "Không có dữ liệu ",
+          status: 500,
+        });
+      }
+      else {
+        requestData.forEach( async (item) => {
           return new Promise((resolve, reject) => {
             const inputValues = {
               quantity: 1,
@@ -84,6 +91,7 @@ module.exports = {
           data: error,
         });
       }
+      }
     
     } catch (error) {
       return res.status(500).send({
@@ -93,33 +101,5 @@ module.exports = {
     }
   }
   
-  
 
-//   voucherUpdate: function (req, res) {
-//     // Validate Request
-//     if (!req.body) {
-//       res.status(400).send({
-//         message: "Content can not be empty!",
-//       });
-//     }
-
-//     Voucher.update(req.params.id, new Voucher(req.body), (data, err) => {
-//       if (err) {
-//         if (err.kind === "not_found") {
-//           res.status(404).json({
-//             message: `Not found Facilities with id ${req.params.id}.`,
-//           });
-//         } else {
-//           res.status(500).send({
-//             message: "Error updating ",
-//           });
-//         }
-//       } else
-//         res.send({
-//           status: 200,
-//           message: "Update voucher success",
-//           data: data,
-//         });
-//     });
-//   },
 };

@@ -28,7 +28,7 @@ exports.createRoom = (req, res) => {
       // store image in database
       var imageName;
       if (req.file && req.file.originalname) {
-        imageName = req.file.originalname;
+        imageName = req.file;
       } else {
         imageName = req.body.image.preview;
       }
@@ -47,7 +47,7 @@ exports.createRoom = (req, res) => {
         status: req.body.status,
         label: req.body.label,
         isLiked: 0,
-        image: imageName,
+        image: JSON.stringify(imageName),
         voucher_id: req.body.voucher_id ? req.body.voucher_id : null,
         type_room_id: req.body.type_room_id ? req.body.type_room_id : null,
         createdAt: new Date(),
