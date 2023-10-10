@@ -1,46 +1,48 @@
-import isEqual from 'lodash/isEqual';
-import { useState, useEffect, useCallback } from 'react';
-// @mui
-import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import Container from '@mui/material/Container';
-import TableBody from '@mui/material/TableBody';
-import IconButton from '@mui/material/IconButton';
-import TableContainer from '@mui/material/TableContainer';
-// routes
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-// _mock
-import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
-// api
-import { useGetServices } from 'src/api/product';
-// components
-import { useSettingsContext } from 'src/components/settings';
+// types
+import { IProductItem, IProductTableFilterValue, IProductTableFilters } from 'src/types/product';
+import { IService, ITypeRoom } from 'src/types/room';
 import {
-  useTable,
-  getComparator,
-  emptyRows,
-  TableNoData,
-  TableSkeleton,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
+  TableNoData,
   TablePaginationCustom,
+  TableSelectedAction,
+  TableSkeleton,
+  emptyRows,
+  getComparator,
+  useTable,
 } from 'src/components/table';
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
+import { useCallback, useEffect, useState } from 'react';
+
+import Button from '@mui/material/Button';
+// @mui
+import Card from '@mui/material/Card';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import Container from '@mui/material/Container';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-// types
-import { IProductItem, IProductTableFilters, IProductTableFilterValue } from 'src/types/product';
-import { IService, ITypeRoom } from 'src/types/room';
+import IconButton from '@mui/material/IconButton';
+import Iconify from 'src/components/iconify';
+// _mock
+import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
+import { RouterLink } from 'src/routes/components';
+import Scrollbar from 'src/components/scrollbar';
 //
 import ServiceTableRow from '../service-table-row';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableContainer from '@mui/material/TableContainer';
+import Tooltip from '@mui/material/Tooltip';
+import isEqual from 'lodash/isEqual';
+// routes
+import { paths } from 'src/routes/paths';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+// api
+import { useGetServices } from 'src/api/product';
+import { useRouter } from 'src/routes/hooks';
+// components
+import { useSettingsContext } from 'src/components/settings';
+
 // import ProductTableToolbar from '../product-table-toolbar';
 // import ProductTableFiltersResult from '../product-table-filters-result';
 
@@ -131,14 +133,14 @@ export default function TypeRoomListView() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.typeRoom.edit(id));
+      router.push(paths.dashboard.service.edit(id));
     },
     [router]
   );
 
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.details(id));
+      // router.push(paths.dashboard.service.details(id));
     },
     [router]
   );

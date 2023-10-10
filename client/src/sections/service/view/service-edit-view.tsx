@@ -1,12 +1,13 @@
+// api
+import { useGetProduct, useGetService, useGetTypeRoom } from 'src/api/product';
+
 // @mui
 import Container from '@mui/material/Container';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
-import RoomNewEditForm from '../room-new-edit-form';
+import ServiceNewEditForm from '../service-new-edit-form';
 // routes
 import { paths } from 'src/routes/paths';
-// api
-import { useGetRoom } from 'src/api/product';
 // components
 import { useSettingsContext } from 'src/components/settings';
 
@@ -16,29 +17,29 @@ type Props = {
   id: string;
 };
 
-export default function RoomEditView({ id }: Props) {
+export default function ServiceEditView({ id }: Props) {
   const settings = useSettingsContext();
 
-  const { room: currentRoom } = useGetRoom(id);
+  const { service: currentProduct } = useGetService(id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading="Cập nhật"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Phòng',
-            href: paths.dashboard.room.root,
+            name: 'Loại phòng',
+            href: paths.dashboard.service.root,
           },
-          { name: currentRoom?.name },
+          { name: currentProduct?.name },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <RoomNewEditForm currentRoom={currentRoom} />
+      <ServiceNewEditForm currentProduct={currentProduct} />
     </Container>
   );
 }

@@ -1,11 +1,12 @@
-import { lazy, Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
+
 // auth
 import { AuthGuard } from 'src/auth/guard';
 // layouts
 import DashboardLayout from 'src/layouts/dashboard';
 // components
 import { LoadingScreen } from 'src/components/loading-screen';
+import { Outlet } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +26,7 @@ const TypeServiceListPage = lazy(() => import('src/pages/dashboard/type-service/
 const TypeServiceEditPage = lazy(() => import('src/pages/dashboard/type-service/edit'));
 // SERVICE
 const ServiceListPage = lazy(() => import('src/pages/dashboard/service/list'));
-// const ServiceEditPage = lazy(() => import('src/pages/dashboard/service/edit'));
+const ServiceEditPage = lazy(() => import('src/pages/dashboard/service/edit'));
 // ROOM
 const RoomListsPage = lazy(() => import('src/pages/dashboard/room/list'));
 const RoomDetailPage = lazy(() => import('src/pages/dashboard/room/details'));
@@ -122,8 +123,8 @@ export const dashboardRoutes = [
         children: [
           { element: <ServiceListPage />, index: true },
           { path: 'list', element: <ServiceListPage /> },
-          // { path: ':id/edit', element: <ServiceEditPage /> },
-          // { path: 'new', element: <ServiceEditPage /> }
+          { path: ':id/edit', element: <ServiceEditPage /> },
+          { path: 'new', element: <ServiceEditPage /> }
         ]
       },
       {

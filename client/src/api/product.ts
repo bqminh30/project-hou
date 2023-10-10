@@ -1,11 +1,12 @@
-import useSWR from 'swr';
-import { useEffect, useMemo } from 'react';
+import { IRoom, IService, ITypeRoom } from 'src/types/room';
 import axios, { AxiosRequestConfig } from 'axios';
 // utils
-import { fetcher, endpoints } from 'src/utils/axios';
+import { endpoints, fetcher } from 'src/utils/axios';
+import { useEffect, useMemo } from 'react';
+
 // types
 import { IProductItem } from 'src/types/product';
-import { ITypeRoom, IService, IRoom } from 'src/types/room';
+import useSWR from 'swr';
 
 // ----------------------------------------------------------------------
 
@@ -104,7 +105,7 @@ export function useGetTypeService(id: string) {
 
 export function useGetServices() {
   const URL = 'http://localhost:6969/api/services'
-  const fetCher = (url: string) => fetch(url).then((res) => res.json());
+  const fetCher = (url: string) => fetch(url).then((res) => res.json()).catch((err) => console.log('err', err));
   const { data, isLoading, error, isValidating } = useSWR(URL, fetCher);
 
   const memoizedValue = useMemo(

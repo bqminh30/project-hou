@@ -7,8 +7,7 @@
   "plugins": [
     "unused-imports",
     "@typescript-eslint",
-    "prettier",
-    // "simple-import-sort"
+    "prettier"
   ],
   "extends": [
     "airbnb",
@@ -53,8 +52,6 @@
     "@typescript-eslint/naming-convention": 0,
     "jsx-a11y/control-has-associated-label": 0,
     "@typescript-eslint/no-use-before-define": 0,
-    // "simple-import-sort/imports": "error",
-    // "simple-import-sort/exports": "error",
     "react/jsx-no-useless-fragment": [
       1,
       {

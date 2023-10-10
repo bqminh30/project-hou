@@ -19,7 +19,7 @@ const Rooms = function (value) {
   this.label = value.label;
   this.isLiked = value.isLiked;
   this.image = value.image;
-  this.voucher_id = value.rating;
+  this.voucher_id = value.voucher_id;
   this.type_room_id = value.type_room_id;
   this.createdAt = new Date();
   this.updatedAt = new Date();
@@ -136,7 +136,7 @@ Rooms.updatePriceSale = (newPrice, newVoucherId, roomIdToUpdate, result) => {
 
 Rooms.findRoomById = (id, result) => {
   sql.query(
-    `SELECT r.*, 
+    `SELECT r.* , 
         CONCAT('[', GROUP_CONCAT('{"id":', s.id, ',"name":"', s.name, '"}' SEPARATOR ','), ']') AS service,
         room_image.roomImages
         FROM room r 
@@ -157,8 +157,13 @@ Rooms.findRoomById = (id, result) => {
       }
 
       if (res.length) {
-        console.log("found voucher: ", res[0]);
-        result(null, res[0]);
+        const resultServices = JSON.parse(res[0].service)
+        const resultImages = JSON.parse(res[0].roomImages) 
+        result(null, {
+          data: res[0],
+          services: resultServices,
+          images: resultImages
+        });
         return;
       }
       result({ kind: "not_found" }, null);

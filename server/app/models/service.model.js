@@ -21,6 +21,30 @@ Service.create = (newService, result) => {
   });
 };
 
+Service.getById = (id, result) => {
+  let query = `
+  SELECT s.id, s.name, s.unit, s.price,s.type_service_id, type_service.name AS type_service
+   from service AS s LEFT JOIN type_service ON type_service.id = s.type_service_id WHERE s.id = ${id}`;
+
+   sql.query(query, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found service: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found Service with the id
+    result({ kind: "not_found" }, null);
+  });
+}
+
+
 Service.findById = (id, result) => {
   sql.query(`SELECT s.id, s.name, s.unit, s.price,s.type_service_id, type_service.name AS type_service from service AS s LEFT JOIN type_service ON type_service.id = s.type_service_id WHERE id = ${id}`, (err, res) => {
     if (err) {

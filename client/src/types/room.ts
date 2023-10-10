@@ -9,7 +9,7 @@ export type IService ={
   name: string;
   unit: string;
   price: number;
-  type_service_id: number;
+  type_service_id: number | null;
   type_service: string;
 }
 
@@ -24,25 +24,25 @@ export type IRoomImage = {
 }
 
 export type IRoom = {
-  id: string;
-  name: string;
-  title: string;
-  description: string;
+  id: string ;
+  name: string | any;
+  title: string | any;
+  description: string ;
   price: number;
-  priceSale: number;
-  rating: number;
-  totalRating: number;
-  totalReview: number;
-  numberBed: number;
-  numberPeople: number;
-  status: number;
-  label: number;
-  isLiked: number;
-  image: string;
-  voucher_id: number;
-  type_room_id: 1;
-  createdAt: Date;
-  updatedAt: Date;
+  priceSale: number ;
+  rating: number | any;
+  totalRating: number | any;
+  totalReview: number | any;
+  numberBed: number | any;
+  numberPeople: number | any;
+  status: number | any;
+  label: number | any;
+  isLiked: number | any;
+  image: string | any| any;
+  voucher_id: number | any | null;
+  type_room_id: number | any ;
+  createdAt: Date | any;
+  updatedAt: Date | any;
   service: IRoomService[] | any;
-  roomImages: IRoomImage[] | any;
+  roomImages: IRoomImage[] | any ;
 }
