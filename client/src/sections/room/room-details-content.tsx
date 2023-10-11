@@ -1,26 +1,27 @@
-import { m } from 'framer-motion';
+import { IRoom, IRoomImage } from 'src/types/room';
+import Lightbox, { useLightBox } from 'src/components/lightbox';
+
 // @mui
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
 import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import ListItemText from '@mui/material/ListItemText';
-// utils
-import { fDate } from 'src/utils/format-time';
-// _mock
-import { TOUR_SERVICE_OPTIONS } from 'src/_mock';
-//
-import { fCurrency } from 'src/utils/format-number';
+import Iconify from 'src/components/iconify';
 // components
 import Image from 'src/components/image';
-import Iconify from 'src/components/iconify';
+import Link from '@mui/material/Link';
+import ListItemText from '@mui/material/ListItemText';
 import Markdown from 'src/components/markdown';
+import Stack from '@mui/material/Stack';
+// _mock
+import { TOUR_SERVICE_OPTIONS } from 'src/_mock';
+import Typography from '@mui/material/Typography';
+//
+import { fCurrency } from 'src/utils/format-number';
+// utils
+import { fDate } from 'src/utils/format-time';
+import { m } from 'framer-motion';
 import { varTranHover } from 'src/components/animate';
-import Lightbox, { useLightBox } from 'src/components/lightbox';
-import { IRoom, IRoomImage } from 'src/types/room';
 
 // ----------------------------------------------------------------------
 
@@ -52,15 +53,15 @@ export default function RoomDetailsContent({ room }: Props) {
     priceSale,
   } = room;
 
-  const slides = JSON.parse(roomImages);
+  // const slides = roomImages as IRoomImage[];
 
 
-  const {
-    selected: selectedImage,
-    open: openLightbox,
-    onOpen: handleOpenLightbox,
-    onClose: handleCloseLightbox,
-  } = useLightBox(slides);
+  // const {
+  //   selected: selectedImage,
+  //   open: openLightbox,
+  //   onOpen: handleOpenLightbox,
+  //   onClose: handleCloseLightbox,
+  // } = useLightBox(slides);
 
   const renderGallery = (
     <>
@@ -87,13 +88,13 @@ export default function RoomDetailsContent({ room }: Props) {
             alt={`http://localhost:6969/upload/${image}`}
             src={`http://localhost:6969/upload/${image}`}
             ratio="1/1"
-            onClick={() => handleOpenLightbox(`http://localhost:6969/upload/${image}`)}
+            // onClick={() => handleOpenLightbox(`http://localhost:6969/upload/${image}`)}
             sx={{ borderRadius: 2, cursor: 'pointer' }}
           />
         </m.div>
 
         <Box gap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)">
-          {slides.slice(0, 4).map((item: IRoomImage) => (
+          {/* {slides.slice(0, 4).map((item: IRoomImage) => (
             <m.div
               key={`http://localhost:6969/upload/${item.name}`}
               whileHover="hover"
@@ -109,16 +110,16 @@ export default function RoomDetailsContent({ room }: Props) {
                 sx={{ borderRadius: 2, cursor: 'pointer' }}
               />
             </m.div>
-          ))}
+          ))} */}
         </Box>
       </Box>
 
-      <Lightbox
+      {/* <Lightbox
         index={selectedImage}
         slides={slides}
         open={openLightbox}
         close={handleCloseLightbox}
-      />
+      /> */}
     </>
   );
 

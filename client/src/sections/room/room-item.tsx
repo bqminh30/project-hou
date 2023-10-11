@@ -1,27 +1,28 @@
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { IRoom, IRoomImage } from 'src/types/room';
+import { useEffect, useState } from 'react';
+
 // @mui
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
-import ListItemText from '@mui/material/ListItemText';
-// routes
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
-// utils
-import { fDateTime } from 'src/utils/format-time';
-import { fCurrency } from 'src/utils/format-number';
 // types
 import { ITourItem } from 'src/types/tour';
+import IconButton from '@mui/material/IconButton';
+import Iconify from 'src/components/iconify';
 // components
 import Image from 'src/components/image';
-import Iconify from 'src/components/iconify';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { shortDateLabel } from 'src/components/custom-date-range-picker';
-import { IRoom, IRoomImage } from 'src/types/room';
+import Link from '@mui/material/Link';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import { RouterLink } from 'src/routes/components';
+import Stack from '@mui/material/Stack';
 import { constants } from 'fs';
-import { useEffect, useState } from 'react';
+import { fCurrency } from 'src/utils/format-number';
+// utils
+import { fDateTime } from 'src/utils/format-time';
+// routes
+import { paths } from 'src/routes/paths';
+import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
@@ -59,7 +60,7 @@ export default function RoomItem({ room, onView, onEdit, onDelete }: Props) {
   } = room;
   // const shortLabel = shortDateLabel(available.startDate, available.endDate);
 
-  const arrImages = JSON.parse(roomImages);
+  // const arrImages = JSON.parse(roomImages);
   const renderRating = (
     <Stack
       direction="row"
@@ -120,12 +121,12 @@ export default function RoomItem({ room, onView, onEdit, onDelete }: Props) {
             {renderRating}
             <Image alt={`http://localhost:6969/upload/${image}`} src={`http://localhost:6969/upload/${image}`} sx={{ borderRadius: 1, height: 164, width: 1 }} />
           </Stack>
-          <Stack spacing={0.5}>
+          {/* <Stack spacing={0.5}>
 
             <Image alt={`http://localhost:6969/upload/${arrImages[1]?.name}`} src={`http://localhost:6969/upload/${arrImages[1]?.name}`} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
             <Image alt={`http://localhost:6969/upload/${arrImages[2]?.name}`} src={`http://localhost:6969/upload/${arrImages[2]?.name}`} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
 
-          </Stack>
+          </Stack> */}
         </>
       }
     </Stack>
