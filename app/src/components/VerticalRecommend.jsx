@@ -1,13 +1,14 @@
-import React from "react";
+import { COLORS, SIZES } from "../config/theme";
 import {
-  Text,
-  View,
   ImageBackground,
   StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { SIZES, COLORS } from "../config/theme";
+
 import { FontAwesome } from "@expo/vector-icons";
+import React from "react";
 import Spacer from "./Spacer";
 
 const VerticalRecommend = ({ item }) => {
@@ -53,6 +54,7 @@ const styles = StyleSheet.create({
     width: SIZES.width * 0.4,
     marginRight: SIZES.padding,
     borderRadius: SIZES.radius,
+    marginBottom: 20
   },
   header: {
     padding: SIZES.margin,

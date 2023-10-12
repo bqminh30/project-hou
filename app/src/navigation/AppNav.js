@@ -1,12 +1,13 @@
+import {ActivityIndicator, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react'
-import {View, Text, ActivityIndicator} from 'react-native';
-import AppStack from './AppStack';
 
+import AppStack from './AppStack';
+import TabNavigation from './TabNavigator';
 
 const AppNav = () => {
   return (
     <>
-        <AppStack />
+        <TabNavigation />
     </>
   )
 }

@@ -27,7 +27,11 @@ exports.createRoom = (req, res) => {
     } else {
       // store image in database
       let imageName = req.body.image
-      const image = JSON.parse(imageName)
+
+      const imagePath = JSON.parse(imageName)
+
+
+
 
       // if (req.file && req.file.originalname) {
       //   imageName = req.file;
@@ -45,7 +49,6 @@ exports.createRoom = (req, res) => {
 
         return;
       }
-      console.log('imageName', req.file, req.body)
 
       const room = new Room({
         name: req.body.name,
@@ -61,7 +64,7 @@ exports.createRoom = (req, res) => {
         status: req.body.status ? req.body.status : 0,
         label: req.body.label ? req.body.label: 0,
         isLiked: req.body.isLiked ? req.body.isLiked : 0,
-        image: image.preview,
+        image: imagePath[0].preview,
         voucher_id: req.body.voucher_id ? req.body.voucher_id : null,
         type_room_id: req.body.type_room_id ? req.body.type_room_id : null,
         createdAt: new Date(),

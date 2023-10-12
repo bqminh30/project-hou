@@ -1,11 +1,16 @@
 // import AppLoading from 'expo-app-loading';
-import React, { useState, useCallback, useEffect } from "react";
+
 import "react-native-gesture-handler";
-import { NavigationContainer } from "@react-navigation/native";
 import "./ignoreWarning";
+
+import React, { useCallback, useEffect, useState } from "react";
+
 import AppNav from "./src/navigation/AppNav";
-require("moment/locale/vi");
+import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
+
+require("moment/locale/vi");
+
 
 export default function App() {
   const [fontsLoaded] = useFonts({

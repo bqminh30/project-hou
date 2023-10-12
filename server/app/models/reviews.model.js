@@ -50,6 +50,13 @@ Reviews.checkReview = (data, result) => {
   );
 };
 
+// Reviews.checkIsReview = (data, result) => {
+//   const query = `
+//   SELECT COUNT(*) AS cnt
+//   FROM reviews WHERE customer_id = ? AND room_id = ? 
+//   `
+// }
+
 Reviews.createReview = (newReview, result) => {
   // If the order meets both criteria, proceed with creating the review
   // Your database insertion logic goes here

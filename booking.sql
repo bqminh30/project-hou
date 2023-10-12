@@ -542,6 +542,19 @@ RIGHT JOIN order_detail od ON orders.id = od.order_id
 RIGHT JOIN room r ON od.room_id = r.id
 WHERE employee_id = 3 AND room_id = 34
 
+SELECT COUNT(*) AS cnt
+    FROM orders
+    RIGHT JOIN order_detail od ON orders.id = od.order_id
+    RIGHT JOIN room r ON od.room_id = r.id
+    WHERE customer_id = 2 AND room_id = 34 AND orders.status = 2
+
+  -- => cnt = 0
+
+SELECT COUNT(*) AS cnt
+    FROM orders
+    RIGHT JOIN order_detail od ON orders.id = od.order_id
+    RIGHT JOIN room r ON od.room_id = r.id
+    WHERE customer_id = 2 AND room_id = 34 AND orders.status = 1
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
