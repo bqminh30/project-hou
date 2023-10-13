@@ -1,7 +1,8 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { SIZES, COLORS } from "../config/theme";
+import { COLORS, SIZES } from "../config/theme";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
 import { FontAwesome } from "@expo/vector-icons";
+import React from "react";
 
 const stars = 5;
 const VerticalHome = ({ item }) => {
@@ -9,10 +10,11 @@ const VerticalHome = ({ item }) => {
   for (var i = 1; i <= stars; i++) {
     starPush.push(
       <FontAwesome
+        key={i}
         name={i <= item.star ? "star" : "star-o"}
         size={8}
         color={i <= item.star ? "orange" : "black"}
-        style={{paddingRight: 4}}
+        style={{ paddingRight: 4 }}
       />
     );
   }
@@ -22,15 +24,13 @@ const VerticalHome = ({ item }) => {
       <View style={styles.content}>
         <Text style={styles.name}>{item?.name}</Text>
         <View style={styles.rating}>
-          <View style={styles.rate}>
-            {starPush}
-          </View>
+          <View style={styles.rate}>{starPush}</View>
           <Text style={styles.text}>{item.rate}</Text>
         </View>
       </View>
-      <View style={[styles.content, {paddingTop: 2}]}>
-      <Text style={styles.text}>{item?.location}</Text> 
-      <Text style={styles.text}>{item?.reviews.length} reviews</Text> 
+      <View style={[styles.content, { paddingTop: 2 }]}>
+        <Text style={styles.text}>{item?.location}</Text>
+        <Text style={styles.text}>{item?.reviews.length} reviews</Text>
       </View>
     </View>
   );
@@ -74,6 +74,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: COLORS.gray,
-    fontSize: 12
+    fontSize: 12,
   },
 });

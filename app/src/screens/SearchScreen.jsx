@@ -1,13 +1,16 @@
 import { COLORS, SIZES } from "../config/theme";
+import { Calendar, LocaleConfig } from "react-native-calendars";
 import {
   FlatList,
   Image,
   ImageBackground,
   Keyboard,
   KeyboardAvoidingView,
+  Modal,
   Pressable,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -25,14 +28,72 @@ import { Ionicons } from "@expo/vector-icons";
 import Spacer from "../components/Spacer";
 import VerticalRecommend from "../components/VerticalRecommend";
 
-const image = {
-  uri: "https://pix8.agoda.net/hotelImages/22423667/-1/c8b11fd11884172c23959f0ccb4ebfc0.jpg?ca=19&ce=1",
+const array = {
+  "2012-03-08": {
+    color: "lightgreen",
+    startingDay: true,
+  },
+  "2012-03-0": { color: "lightgreen" },
+  "2012-03-04": {
+    color: "lightgreen",
+    endingDay: true,
+  },
 };
-
 const SearchScreen = () => {
   const [searchText, setSearchText] = React.useState("");
   const [keyboardStatus, setKeyboardStatus] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedDates, setSelectedDates] = useState([]);
+  const [dateObject, setDateObject] = useState({});
 
+  const handleDayPress = (day) => {
+    if (selectedDates.length === 2) {
+      // Reset mảng nếu đã chọn đủ 2 ngày
+      setSelectedDates([]);
+      setDateObject({});
+      setSelectedDates([day.dateString]);
+    } else if (selectedDates.length === 0) {
+      // Chọn ngày đầu tiên
+      setSelectedDates([day.dateString]);
+    } else {
+      let startDate = new Date(selectedDates[0]);
+      let endDate = new Date(day.dateString);
+  
+      if (startDate > endDate) {
+        //swap start end
+        const temp = startDate;
+        startDate = endDate;
+        endDate = temp;
+      }
+  
+      const newSelectedDates = {};
+      let currentDate = new Date(startDate);
+  
+      while (currentDate <= endDate) {
+        const dateString = currentDate.toISOString().split("T")[0];
+        if (dateString === startDate.toISOString().split("T")[0]) {
+          newSelectedDates[dateString] = {
+            color: "lightgreen",
+            startingDay: true,
+          };
+        } else if (dateString === endDate.toISOString().split("T")[0]) {
+          newSelectedDates[dateString] = {
+            color: "lightgreen",
+            endingDay: true,
+          };
+        } else {
+          newSelectedDates[dateString] = {
+            color: "lightgreen",
+          };
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+  
+      setSelectedDates([startDate.toISOString().split("T")[0], endDate.toISOString().split("T")[0]]);
+      setDateObject({ ...dateObject, ...newSelectedDates });
+    }
+  };
+  
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
       setKeyboardStatus("Keyboard Shown");
@@ -46,20 +107,22 @@ const SearchScreen = () => {
       hideSubscription.remove();
     };
   }, []);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
+      <StatusBar backgroundColor="#009387" barStyle="dark-content" />
       {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}> */}
       <View style={{ flex: 1 }}>
         <SafeAreaView
           style={{
             height: SIZES.height * 0.95,
-            marginHorizontal: SIZES.padding,
+            opacity: modalVisible ? 0.2 : 1,
           }}
         >
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, marginHorizontal: SIZES.padding }}>
             {/* header  */}
             <View style={styles.header}>
               <Back />
@@ -107,8 +170,10 @@ const SearchScreen = () => {
                   ]}
                 >
                   <View style={styles.option}>
-                    <Text style={styles.title}>Choose Date</Text>
-                    <Text>16-Oct To 20-Oct</Text>
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
+                      <Text style={styles.title}>Choose Date</Text>
+                      <Text>16-Oct To 20-Oct</Text>
+                    </TouchableOpacity>
                   </View>
                   <View style={styles.option}>
                     <Text style={styles.title}>Member of Room</Text>
@@ -124,8 +189,8 @@ const SearchScreen = () => {
               </View>
             </View>
           </View>
-          <Spacer height={10}/>
-          <View style={{ flex: 1.5 }}>
+          <Spacer height={10} />
+          <View style={{ flex: 1.5, marginHorizontal: SIZES.padding }}>
             <Text style={styles.headerTitlte}>Danh sách tìm kiếm</Text>
             <ScrollView
               horizontal
@@ -144,13 +209,51 @@ const SearchScreen = () => {
                 renderItem={({ item, index }) => (
                   <VerticalRecommend item={item} key={item.id} />
                 )}
-                style={{marginBottom: 24}}
+                style={{ marginBottom: 24 }}
               />
             </ScrollView>
           </View>
         </SafeAreaView>
       </View>
       {/* </TouchableWithoutFeedback> */}
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalView}>
+          <Calendar
+            // Customize the appearance of the calendar
+
+            // Specify the current date
+            // current={new Date()}
+            minDate={new Date()}
+            // Callback that gets called when the user selects a day
+            onDayPress={(day) => {
+              handleDayPress(day);
+            }}
+            // Mark specific dates as marked
+            markingType="period"
+            hideExtraDays={true}
+            //   minDate={new Date()}
+            hideArrows={false}
+            markedDates={dateObject}
+          />
+
+          <Pressable
+            style={[styles.button, styles.buttonClose]}
+            onPress={() => setModalVisible(!modalVisible)}
+          >
+            <Text style={styles.textStyle}>Hide Modal</Text>
+          </Pressable>
+          <Spacer height={10} />
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
@@ -204,5 +307,35 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     paddingVertical: 8,
+  },
+
+  modalView: {
+    justifyContent: "center",
+    alignContent: "center",
+    marginHorizontal: 20,
+    marginTop: SIZES.height / 4,
+    backgroundColor: "white",
+    borderRadius: SIZES.radius,
+    // padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  textStyle: {
+    color: COLORS.white,
+  },
+  buttonClose: {
+    backgroundColor: COLORS.black,
   },
 });
