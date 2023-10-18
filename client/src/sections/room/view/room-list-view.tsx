@@ -1,34 +1,36 @@
-import orderBy from 'lodash/orderBy';
-import { useState, useCallback, useEffect } from 'react';
-// @mui
-import Stack from '@mui/material/Stack';
+import { IRoom, ITypeRoom } from 'src/types/room';
+// types
+import { ITourFilterValue, ITourFilters, ITourItem } from 'src/types/tour';
+// _mock
+import { TOUR_SERVICE_OPTIONS, TOUR_SORT_OPTIONS, _tourGuides } from 'src/_mock';
+import { useCallback, useEffect, useState } from 'react';
+
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-// routes
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-// utils
-import { fTimestamp } from 'src/utils/format-time';
-// _mock
-import { _tourGuides, TOUR_SERVICE_OPTIONS, TOUR_SORT_OPTIONS } from 'src/_mock';
-import { useGetRooms } from 'src/api/product';
-// assets
-import { countries } from 'src/assets/data';
-
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import EmptyContent from 'src/components/empty-content';
 // components
 import Iconify from 'src/components/iconify';
-import EmptyContent from 'src/components/empty-content';
+
+import { RouterLink } from 'src/routes/components';
+// @mui
+import Stack from '@mui/material/Stack';
+// assets
+import { countries } from 'src/assets/data';
+// utils
+import { fTimestamp } from 'src/utils/format-time';
+import orderBy from 'lodash/orderBy';
+// routes
+import { paths } from 'src/routes/paths';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useGetRooms } from 'src/api/product';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-// types
-import { ITourItem, ITourFilters, ITourFilterValue } from 'src/types/tour';
-import { IRoom, ITypeRoom } from 'src/types/room';
+
 //
 import RoomList from '../room-list';
 // import TourSort from '../tour-sort';
-// import TourSearch from '../tour-search';
+import RoomSearch from '../room-search';
 // import TourFilters from '../tour-filters';
 // import TourFiltersResult from '../tour-filters-result';
 
@@ -99,26 +101,30 @@ export default function RoomListView() {
     setSortBy(newValue);
   }, []);
 
-  // const handleSearch = useCallback(
-  //   (inputValue: string) => {
-  //     setSearch((prevState) => ({
-  //       ...prevState,
-  //       query: inputValue,
-  //     }));
+  const handleSearch = useCallback(
+    (inputValue: string) => {
+      setSearch((prevState) => ({
+        ...prevState,
+        query: inputValue,
+      }));
 
-  //     if (inputValue) {
-  //       const results = rooms?.filter(
-  //         (tour) => tour.name.toLowerCase().indexOf(search.query.toLowerCase()) !== -1
-  //       );
+      if (inputValue) {
+        const results = rooms?.filter(
+          (room) => room.name.toLowerCase().indexOf(search.query.toLowerCase()) !== -1
+        );
 
-  //       setSearch((prevState) => ({
-  //         ...prevState,
-  //         results,
-  //       }));
-  //     }
-  //   },
-  //   [search.query]
-  // );
+        setSearch((prevState) => ({
+          ...prevState,
+          results,
+        }));
+      }
+    },
+    [search.query, rooms]
+  );
+
+  // useEffect(() => {
+  //   handleSearch()
+  // },[handleSearch])
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -131,12 +137,12 @@ export default function RoomListView() {
       alignItems={{ xs: 'flex-end', sm: 'center' }}
       direction={{ xs: 'column', sm: 'row' }}
     >
-      {/* <TourSearch
+      <RoomSearch
         query={search.query}
         results={search.results}
         onSearch={handleSearch}
-        hrefItem={(id: string) => paths.dashboard.tour.details(id)}
-      /> */}
+        hrefItem={(id: string) => paths.dashboard.room.details(id)}
+      />
 
       <Stack direction="row" spacing={1} flexShrink={0}>
         {/* <TourFilters

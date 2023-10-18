@@ -8,7 +8,7 @@ import { countries } from 'src/assets/data';
 
 export const ROOM_DETAILS_TABS = [
   { value: 'content', label: 'Room Content' },
-  { value: 'bookers', label: 'Booker' },
+  { value: 'reviews', label: 'Reviews' },
 ];
 
 // export const ROOM_SIZE_OPTIONS = [

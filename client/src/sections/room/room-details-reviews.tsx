@@ -14,45 +14,48 @@ import { useBoolean } from 'src/hooks/use-boolean';
 // components
 import Iconify from 'src/components/iconify';
 // types
-import { IProductReview } from 'src/types/product';
+// import { IProductReview } from 'src/types/product';
+import { IRoomReview } from 'src/types/room';
 //
-import ProductReviewList from './product-review-list';
-import ProductReviewNewForm from './product-review-new-form';
+import RoomReviewList from './room-review-list';
+
+// import ProductReviewNewForm from './product-review-new-form';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  totalRatings: number;
-  totalReviews: number;
-  ratings: {
-    name: string;
-    starCount: number;
-    reviewCount: number;
-  }[];
-  reviews: IProductReview[];
+  // totalRatings: number;
+  // totalReviews: number;
+  // ratings: {
+  //   name: string;
+  //   starCount: number;
+  //   reviewCount: number;
+  // }[];
+  reviews: IRoomReview[];
 };
 
-export default function ProductDetailsReview({
-  totalRatings,
-  totalReviews,
-  ratings,
+export default function RoomDetailsReview({
+  // totalRatings,
+  // totalReviews,
+  // ratings,
   reviews,
 }: Props) {
   const review = useBoolean();
 
-  const total = sumBy(ratings, (star) => star.starCount);
-  console.log('ratings', ratings)
-
+  const total = sumBy(reviews, (star) => star.rating);
+  const totalRatings = Number(fShortenNumber(total / reviews.length));
   const renderSummary = (
     <Stack spacing={1} alignItems="center" justifyContent="center">
       <Typography variant="subtitle2">Average rating</Typography>
 
-      <Typography variant="h2">{totalRatings}/5</Typography>
+      <Typography variant="h2">
+        {totalRatings === 0 ? 0 : fShortenNumber(total / reviews.length)}/5
+      </Typography>
 
       <Rating readOnly value={totalRatings} precision={0.1} />
 
       <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-        ({fShortenNumber(totalReviews)} reviews)
+        ({reviews.length} reviews)
       </Typography>
     </Stack>
   );
@@ -71,7 +74,7 @@ export default function ProductDetailsReview({
         }),
       }}
     >
-      {ratings
+      {/* {ratings
         .slice(0)
         .reverse()
         .map((rating) => (
@@ -101,21 +104,7 @@ export default function ProductDetailsReview({
               {fShortenNumber(rating.reviewCount)}
             </Typography>
           </Stack>
-        ))}
-    </Stack>
-  );
-
-  const renderReviewButton = (
-    <Stack alignItems="center" justifyContent="center">
-      <Button
-        size="large"
-        variant="soft"
-        color="inherit"
-        onClick={review.onTrue}
-        startIcon={<Iconify icon="solar:pen-bold" />}
-      >
-        Write your review
-      </Button>
+        ))} */}
     </Stack>
   );
 
@@ -134,15 +123,13 @@ export default function ProductDetailsReview({
         {renderSummary}
 
         {renderProgress}
-
-        {renderReviewButton}
       </Box>
 
       <Divider sx={{ borderStyle: 'dashed' }} />
 
-      <ProductReviewList reviews={reviews} />
+      <RoomReviewList reviews={reviews} />
 
-      <ProductReviewNewForm open={review.value} onClose={review.onFalse} />
+      {/* <ProductReviewNewForm open={review.value} onClose={review.onFalse} /> */}
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { IRoom, IService, ITypeRoom } from 'src/types/room';
+import { IRoom, IRoomReview, IService, ITypeRoom } from 'src/types/room';
 import axios, { AxiosRequestConfig } from 'axios';
 // utils
 import { endpoints, fetcher } from 'src/utils/axios';
@@ -161,16 +161,38 @@ export function useGetRooms() {
   return memoizedValue;
 }
 
+// ----------------------------------------------------------------------
+
 export function useGetRoom(id: string) {
   const URL = id ? [`http://localhost:6969/api/rooms/${id}` ] : null;
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
   const memoizedValue = useMemo(
     () => ({
-      room: data as IRoom,
+      room: data as any,
       roomLoading: isLoading,
       roomError: error,
       roomValidating: isValidating,
       roomEmpty: !isLoading && !data.length,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
+export function useGetReview(id: string) {
+  const URL = id ? [`http://localhost:6969/api/reviews/${id}` ] : null;
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+  const memoizedValue = useMemo(
+    () => ({
+      reviews: data as IRoomReview[],
+      reviewLoading: isLoading,
+      reviewError: error,
+      reviewValidating: isValidating,
+      reviewEmpty: !isLoading && !data.length,
     }),
     [data, error, isLoading, isValidating]
   );

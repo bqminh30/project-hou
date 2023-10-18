@@ -1,4 +1,4 @@
-import { IRoom, IRoomImage } from 'src/types/room';
+import { IRoom, IRoomImage, IService } from 'src/types/room';
 import Lightbox, { useLightBox } from 'src/components/lightbox';
 
 // @mui
@@ -22,14 +22,17 @@ import { fCurrency } from 'src/utils/format-number';
 import { fDate } from 'src/utils/format-time';
 import { m } from 'framer-motion';
 import { varTranHover } from 'src/components/animate';
+import { useEffect, useState } from 'react';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  room: IRoom;
+  data: IRoom;
+  services: IService[];
+  images: IRoomImage[];
 };
 
-export default function RoomDetailsContent({ room }: Props) {
+export default function RoomDetailsContent({ data, services, images }: Props) {
   const {
     id,
     name,
@@ -46,22 +49,24 @@ export default function RoomDetailsContent({ room }: Props) {
     status,
     title,
     totalRating,
-    totalReview, type_room_id,
+    totalReview,
+    type_room_id,
     updatedAt,
     voucher_id,
     createdAt,
     priceSale,
-  } = room;
+  } = data;
 
-  // const slides = roomImages as IRoomImage[];
+  const slides = images.map((slide: IRoomImage) => ({
+    src: slide.name,
+  }));
 
-
-  // const {
-  //   selected: selectedImage,
-  //   open: openLightbox,
-  //   onOpen: handleOpenLightbox,
-  //   onClose: handleCloseLightbox,
-  // } = useLightBox(slides);
+  const {
+    selected: selectedImage,
+    open: openLightbox,
+    onOpen: handleOpenLightbox,
+    onClose: handleCloseLightbox,
+  } = useLightBox(slides);
 
   const renderGallery = (
     <>
@@ -77,7 +82,7 @@ export default function RoomDetailsContent({ room }: Props) {
         }}
       >
         <m.div
-          key={`http://localhost:6969/upload/${image}`}
+          key={`${image}`}
           whileHover="hover"
           variants={{
             hover: { opacity: 0.8 },
@@ -85,18 +90,18 @@ export default function RoomDetailsContent({ room }: Props) {
           transition={varTranHover()}
         >
           <Image
-            alt={`http://localhost:6969/upload/${image}`}
-            src={`http://localhost:6969/upload/${image}`}
+            alt={`${image}`}
+            src={`${image}`}
             ratio="1/1"
-            // onClick={() => handleOpenLightbox(`http://localhost:6969/upload/${image}`)}
+            onClick={() => handleOpenLightbox(`${image}`)}
             sx={{ borderRadius: 2, cursor: 'pointer' }}
           />
         </m.div>
 
         <Box gap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)">
-          {/* {slides.slice(0, 4).map((item: IRoomImage) => (
+          {slides.slice(0, 4).map((item) => (
             <m.div
-              key={`http://localhost:6969/upload/${item.name}`}
+              key={`${item.src}`}
               whileHover="hover"
               variants={{
                 hover: { opacity: 0.8 },
@@ -104,22 +109,22 @@ export default function RoomDetailsContent({ room }: Props) {
               transition={varTranHover()}
             >
               <Image
-                src={`http://localhost:6969/upload/${item.name}`}
+                src={`${item.src}`}
                 ratio="1/1"
-                onClick={() => handleOpenLightbox(`http://localhost:6969/upload/${item.name}`)}
+                onClick={() => handleOpenLightbox(`${item.src}`)}
                 sx={{ borderRadius: 2, cursor: 'pointer' }}
               />
             </m.div>
-          ))} */}
+          ))}
         </Box>
       </Box>
 
-      {/* <Lightbox
+      <Lightbox
         index={selectedImage}
         slides={slides}
         open={openLightbox}
         close={handleCloseLightbox}
-      /> */}
+      />
     </>
   );
 
@@ -129,7 +134,6 @@ export default function RoomDetailsContent({ room }: Props) {
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
           {name}
         </Typography>
-
 
         <IconButton>
           <Iconify icon="solar:share-bold" />
@@ -153,7 +157,10 @@ export default function RoomDetailsContent({ room }: Props) {
             Giá tiền
           </Box>
           {!!price && (
-            <Box component="span" sx={{ color: 'grey.500', mr: 0.25, textDecoration: 'line-through' }}>
+            <Box
+              component="span"
+              sx={{ color: 'grey.500', mr: 0.25, textDecoration: 'line-through' }}
+            >
               {fCurrency(price)}
             </Box>
           )}
@@ -168,13 +175,10 @@ export default function RoomDetailsContent({ room }: Props) {
           <Link sx={{ color: 'text.secondary' }}>({totalRating} reviews)</Link>
         </Stack>
 
-
-        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'body2' }}>
+        {/* <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'body2' }}>
           <Iconify icon="mingcute:location-fill" sx={{ color: 'error.main' }} />
           {title}
-        </Stack>
-
-
+        </Stack> */}
       </Stack>
     </>
   );
@@ -246,28 +250,21 @@ export default function RoomDetailsContent({ room }: Props) {
             md: 'repeat(2, 1fr)',
           }}
         >
-          {TOUR_SERVICE_OPTIONS.map((ser) => (
+          {services.map((ser: IService) => (
             <Stack
-              key={ser.label}
+              key={ser.id}
               spacing={1}
               direction="row"
               alignItems="center"
-            // sx={{
-            //   ...(services.includes(service.label) && {
-            //     color: 'text.disabled',
-            //   }),
-            // }}
+
             >
               <Iconify
                 icon="eva:checkmark-circle-2-outline"
                 sx={{
                   color: 'primary.main',
-                  // ...(services.includes(service.label) && {
-                  //   color: 'text.disabled',
-                  // }),
                 }}
               />
-              {ser.label}
+              {ser.name}
             </Stack>
           ))}
         </Box>

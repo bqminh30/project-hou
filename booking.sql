@@ -555,6 +555,11 @@ SELECT COUNT(*) AS cnt
     RIGHT JOIN order_detail od ON orders.id = od.order_id
     RIGHT JOIN room r ON od.room_id = r.id
     WHERE customer_id = 2 AND room_id = 34 AND orders.status = 1
+
+
+SELECT cus.fullname, cus.phonenumber, cus.email, reviews.content, reviews.image, reviews.rating, reviews.status FROM reviews
+    INNER JOIN customer cus ON cus.id = reviews.customer_id
+ WHERE status = 1 AND room_id = ?
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

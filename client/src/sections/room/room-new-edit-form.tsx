@@ -118,8 +118,6 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     defaultValues,
   });
 
-
-
   const {
     reset,
     watch,
@@ -186,6 +184,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
   // });
 
   const onSubmit = handleSubmit(async (data) => {
+    console.log('data.image', data.image);
     const formData = new FormData();
     formData.append('image', JSON.stringify(data.image));
     formData.append('name', data.name);
@@ -200,18 +199,20 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     formData.append('isLiked', JSON.stringify(data.isLiked));
     formData.append('type_room_id', JSON.stringify(data.type_room_id));
 
-    const config = {
-      headers: { 'content-type': 'multipart/form-data' },
-    };
     try {
+      const config = {
+        headers: { 'content-type': 'multipart/form-data' },
+      };
       if (currentRoom) {
         console.info('DATA', data);
       } else {
-        const response = await axios.post(
-          'http://localhost:6969/api/rooms/create',
-          formData,
-          config
-        );
+        const response = await axios.post('http://localhost:6969/api/rooms/create', formData, {
+          withCredentials: false,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "multipart/form-data"
+          },
+        },);
         if (response.status === 200) {
           setIdRoom(response.data.data.id);
           const id = response.data.data.id;
@@ -248,6 +249,9 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
           preview: URL.createObjectURL(file),
         })
       );
+
+      console.log('files', files, newFiles);
+
       setValue('image', [...files, ...newFiles], { shouldValidate: true });
     },
     [setValue, values.image]
@@ -389,7 +393,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
               <RHFTextField name="numberPeople" label="Số người ở tối đa" />
 
               <RHFSelect native name="label" label="Label" InputLabelProps={{ shrink: true }}>
-                {ROOM_LABEL_OPTIONS.map((item) => (
+                {ROOM_LABEL_OPTIONS?.map((item) => (
                   <option key={item.value} value={item.value}>
                     {item.label}
                   </option>
@@ -398,18 +402,17 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
               <RHFSelect
                 native
-                defaultValue={values.type_room_id}
+                defaultValue={values?.type_room_id}
                 name="type_room_id"
                 label="Loại phòng"
                 InputLabelProps={{ shrink: true }}
               >
-                {tableDataTypeRoom.map((item) => (
+                {tableDataTypeRoom?.map((item) => (
                   <option key={item.id} value={item.id}>
                     {item.name}
                   </option>
                 ))}
               </RHFSelect>
-
             </Box>
           </Stack>
         </Card>
@@ -477,7 +480,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
   return (
     <>
-      <FormProvider methods={methods} onSubmit={onSubmit}>
+      <FormProvider methods={methods} onSubmit={onSubmit} >
         <Grid container spacing={3}>
           {renderDetails}
 
