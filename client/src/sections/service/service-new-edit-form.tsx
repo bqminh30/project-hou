@@ -74,14 +74,13 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
   }, [typeservices]);
 
   const NewProductSchema = Yup.object().shape({
-    name: Yup.string().required('Dịch vụ phải có'),
+    name: Yup.string().required('Tên dịch vụ phải có'),
   });
 
   const defaultValues = useMemo(
     () => ({
       name: currentProduct?.name || '',
       unit: currentProduct?.unit || '',
-      type_service: currentProduct?.type_service || '',
       price: currentProduct?.price || 0,
       type_service_id: currentProduct?.type_service_id || null,
     }),
@@ -110,8 +109,9 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
   }, [currentProduct, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
+    console.log('dât', data, currentProduct)
     try {
-      if (currentProduct !== undefined) {
+      if (currentProduct?.id !== undefined) {
         axios.put(`http://localhost:6969/api/services/${currentProduct.id}`, data).then((res) => {
           reset();
           enqueueSnackbar('Update success!');
@@ -147,7 +147,7 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
           {!mdUp && <CardHeader title="Details" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
-            <RHFTextField name="name" label="Loại phòng" />
+            <RHFTextField name="name" label="Tên dịch vụ" />
             <RHFTextField name="unit" label="Đơn vị" />
             <RHFTextField name="price" label="Giá tiền" />
 

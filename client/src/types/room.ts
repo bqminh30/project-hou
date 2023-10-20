@@ -1,3 +1,10 @@
+export type IRoomFilterValue = string | string[]  | null;
+
+export type IRoomFilters = {
+  labels: string;
+  services: string[];
+};
+
 export type ITypeRoom = {
   id: string;
   name: string;

@@ -135,8 +135,8 @@ export function useNavData() {
             children: [
               { title: t('Danh sách'), path: paths.dashboard.room.root },
               { title: t('Tạo mới'), path: paths.dashboard.room.new },
-              { title: t('Chi tiết'), path: paths.dashboard.room.demo.details },
-              { title: t('Chỉnh sửa'), path: paths.dashboard.room.demo.edit },
+              // { title: t('Chi tiết'), path: paths.dashboard.room.demo.details },
+              // { title: t('Chỉnh sửa'), path: paths.dashboard.room.demo.edit },
             ],
           },
           // USER
@@ -181,21 +181,21 @@ export function useNavData() {
           //   ],
           // },
 
-          // // INVOICE
-          // {
-          //   title: t('invoice'),
-          //   path: paths.dashboard.invoice.root,
-          //   icon: ICONS.invoice,
-          //   children: [
-          //     { title: t('list'), path: paths.dashboard.invoice.root },
-          //     {
-          //       title: t('details'),
-          //       path: paths.dashboard.invoice.demo.details,
-          //     },
-          //     { title: t('create'), path: paths.dashboard.invoice.new },
-          //     { title: t('edit'), path: paths.dashboard.invoice.demo.edit },
-          //   ],
-          // },
+          // INVOICE
+          {
+            title: t('invoice'),
+            path: paths.dashboard.invoice.root,
+            icon: ICONS.invoice,
+            children: [
+              { title: t('list'), path: paths.dashboard.invoice.root },
+              {
+                title: t('details'),
+                path: paths.dashboard.invoice.demo.details,
+              },
+              { title: t('create'), path: paths.dashboard.invoice.new },
+              { title: t('edit'), path: paths.dashboard.invoice.demo.edit },
+            ],
+          },
 
           // // BLOG
           // {

@@ -60,7 +60,8 @@ export default function RoomItem({ room, onView, onEdit, onDelete }: Props) {
     priceSale,
   } = room;
   // const shortLabel = shortDateLabel(available.startDate, available.endDate);
-
+  // const imagedata = window.URL.createObjectURL(image);
+  // console.log('imagedata', imagedata)
   const [arrImages, setArrImages] = useState<IRoomImage[]>([]);
   useEffect(() => {
     if (typeof roomImages === 'string') {

@@ -1,12 +1,14 @@
 const Room = require("../models/room.model.js");
 var imageMiddleware = require("../middleware/image-middleware");
 var multer = require("multer");
-const fs = require('fs')
-const axios = require('axios');
+const fs = require("fs");
+const axios = require("axios");
+var cloudinary = require("cloudinary").v2;
+const uploadCloud = require("../config/cloudinary.config.js");
 
 // Create and Save a new Room
 exports.createFormRoom = (req, res) => {
-  res.render("upload-form");
+  // res.render("upload-form");
 };
 exports.createRoom = (req, res) => {
   // Validate request
@@ -15,8 +17,6 @@ exports.createRoom = (req, res) => {
       message: "Content can not be empty!",
     });
   }
-
-  console.log('req', req.body, req.file)
 
   // Create a TypeRoom
   var upload = multer({
@@ -30,61 +30,61 @@ exports.createRoom = (req, res) => {
     } else if (err) {
       res.send(err);
     } else {
-      // store image in database
-      let imageName = req.body.image
-      console.log('image', imageName, req.file)
+      let imageName = req.body.image;
+      const imagePath = JSON.parse(imageName);
 
-      const imagePath = JSON.parse(imageName)
-
-      if(
-        req.body.name == '' || req.body.title == '' || req.body.description == '' ||  req.body.price == 0
-      ){
+      if (
+        req.body.name == "" ||
+        req.body.title == "" ||
+        req.body.description == "" ||
+        req.body.price == 0
+      ) {
         res.status(400).send({
-          message:
-             "Thiếu dữ liệu.",
+          message: "Thiếu dữ liệu.",
         });
 
         return;
       }
-      return
-      // const filePath = imagePath[0].preview
-      // console.log('req.body.image', req.body.image)
-      // const contents = fs.readFileSync(imagePath[0].path, {encoding: 'base64'});
-      // console.log('contetn', contents)
-
-      // const room = new Room({
-      //   name: req.body.name,
-      //   title: req.body.title,
-      //   description: req.body.description,
-      //   price: req.body.price ? req.body.price: 0,
-      //   priceSale: req.body.priceSale ? req.body.priceSale : 0,
-      //   rating: 0,
-      //   totalRating: 0,
-      //   totalReview: 0,
-      //   numberBed: req.body.numberBed ? req.body.numberBed : 0,
-      //   numberPeople: req.body.numberPeople ? req.body.numberPeople : 0,
-      //   status: req.body.status ? req.body.status : 0,
-      //   label: req.body.label ? req.body.label: 0,
-      //   isLiked: req.body.isLiked ? req.body.isLiked : 0,
-      //   image: imagePath[0].path ? imagePath[0].path : image,
-      //   voucher_id: req.body.voucher_id ? req.body.voucher_id : null,
-      //   type_room_id: req.body.type_room_id ? req.body.type_room_id : null,
-      //   createdAt: new Date(),
-      //   updatedAt: new Date(),
-      // });
-      // //  Save TypeRoom in the database
-      // Room.createRoom(room, (err, data) => {
-      //   if (err)
-      //     res.status(500).send({
-      //       message:
-      //         err.message || "Some error occurred while creating the Room.",
-      //     });
-      //   else
-      //     res.status(200).send({
-      //       data: data,
-      //       message: "Tạo phòng thành công",
-      //     });
-      // });
+      let dataImage = ''
+      await cloudinary.uploader
+        .upload(imagePath.preview)
+        .then((result) => dataImage = result.url)
+        .catch((err) => console.log("err", err));
+      // return;
+      
+      const room = new Room({
+        name: req.body.name,
+        title: req.body.title,
+        description: req.body.description,
+        price: req.body.price ? req.body.price: 0,
+        priceSale: req.body.priceSale ? req.body.priceSale : 0,
+        rating: 0,
+        totalRating: 0,
+        totalReview: 0,
+        numberBed: req.body.numberBed ? req.body.numberBed : 0,
+        numberPeople: req.body.numberPeople ? req.body.numberPeople : 0,
+        status: req.body.status ? req.body.status : 0,
+        label: req.body.label ? req.body.label: 0,
+        isLiked: req.body.isLiked ? req.body.isLiked : 0,
+        image: dataImage,
+        voucher_id: req.body.voucher_id ? req.body.voucher_id : null,
+        type_room_id: req.body.type_room_id ? req.body.type_room_id : null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      //  Save TypeRoom in the database
+      Room.createRoom(room, (err, data) => {
+        if (err)
+          res.status(500).send({
+            message:
+              err.message || "Some error occurred while creating the Room.",
+          });
+        else
+          res.status(200).send({
+            data: data,
+            message: "Tạo phòng thành công",
+          });
+      });
     }
   });
 };
