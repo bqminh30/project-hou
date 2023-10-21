@@ -19,18 +19,18 @@ type Props = StackProps & {
   liveLink: string;
   // publish: string;
   // onChangePublish: (newValue: string) => void;
-  // publishOptions: {
-  //   value: string;
-  //   label: string;
-  // }[];
+  publishOptions: {
+    value: string;
+    label: string;
+  }[];
 };
 
-export default function TourDetailsToolbar({
+export default function RoomDetailsToolbar({
   // publish,
   backLink,
   editLink,
   liveLink,
-  // publishOptions,
+  publishOptions,
   // onChangePublish,
   sx,
   ...other

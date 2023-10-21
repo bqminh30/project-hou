@@ -1,3 +1,10 @@
+export type IRoomFilterValue = string | string[]  | null;
+
+export type IRoomFilters = {
+  labels: string;
+  services: string[];
+};
+
 export type ITypeRoom = {
   id: string;
   name: string;
@@ -21,8 +28,23 @@ export type IRoomImage = {
   id: string;
   type: string;
   name: string;
-  data: string;
+  data: string | null;
   // type: string;
+};
+
+export type IRoomReview = {
+  id: string;
+  fullname: string;
+  phonenumber: string;
+  email:string;
+  content: string;
+  image: string;
+  rating: number;
+  status: number;
+  room_id: string;
+  customer_id: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type IRoom = {

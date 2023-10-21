@@ -52,15 +52,23 @@ export default function RoomItem({ room, onView, onEdit, onDelete }: Props) {
     status,
     title,
     totalRating,
-    totalReview, type_room_id,
+    totalReview,
+    type_room_id,
     updatedAt,
     voucher_id,
     createdAt,
     priceSale,
   } = room;
   // const shortLabel = shortDateLabel(available.startDate, available.endDate);
+  // const imagedata = window.URL.createObjectURL(image);
+  // console.log('imagedata', imagedata)
+  const [arrImages, setArrImages] = useState<IRoomImage[]>([]);
+  useEffect(() => {
+    if (typeof roomImages === 'string') {
+      setArrImages(JSON.parse(roomImages));
+    }
+  }, [roomImages]);
 
-  // const arrImages = JSON.parse(roomImages);
   const renderRating = (
     <Stack
       direction="row"
@@ -114,21 +122,33 @@ export default function RoomItem({ room, onView, onEdit, onDelete }: Props) {
         p: (theme) => theme.spacing(1, 1, 0, 1),
       }}
     >
-      {image && roomImages &&
+      {image && roomImages && (
         <>
           <Stack flexGrow={1} sx={{ position: 'relative' }}>
             {renderPrice}
             {renderRating}
-            <Image alt={`http://localhost:6969/upload/${image}`} src={`http://localhost:6969/upload/${image}`} sx={{ borderRadius: 1, height: 164, width: 1 }} />
+            <Image
+              alt={`${image}`}
+              src={`${image}`}
+              sx={{ borderRadius: 1, height: 164, width: 1 }}
+            />
           </Stack>
-          {/* <Stack spacing={0.5}>
-
-            <Image alt={`http://localhost:6969/upload/${arrImages[1]?.name}`} src={`http://localhost:6969/upload/${arrImages[1]?.name}`} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
-            <Image alt={`http://localhost:6969/upload/${arrImages[2]?.name}`} src={`http://localhost:6969/upload/${arrImages[2]?.name}`} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
-
-          </Stack> */}
+          <Stack spacing={0.5}>
+            <Image
+              alt={`${arrImages[0]?.name}`}
+              src={`${arrImages[0]?.name}`}
+              ratio="1/1"
+              sx={{ borderRadius: 1, width: 80 }}
+            />
+            <Image
+              alt={`${arrImages[1]?.name}`}
+              src={`${arrImages[1]?.name}`}
+              ratio="1/1"
+              sx={{ borderRadius: 1, width: 80 }}
+            />
+          </Stack>
         </>
-      }
+      )}
     </Stack>
   );
 

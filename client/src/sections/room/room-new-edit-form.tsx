@@ -41,6 +41,9 @@ import { useSnackbar } from 'src/components/snackbar';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 // ----------------------------------------------------------------------
+interface CustomFile extends File {
+  preview?: string;
+}
 
 type PropRoom = {
   currentRoom?: IRoom;
@@ -50,7 +53,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
   const router = useRouter();
   const [isLoadingServices, setIsLoadingServices] = useState(false);
 
-  const [tableDataServices, setTableDataServices] = useState<any>();
+  const [tableDataServices, setTableDataServices] = useState<any>([]);
   const [tableDataTypeRoom, setTableDataTypeRoom] = useState<ITypeRoom[]>([]);
 
   const { typerooms, typeroomsLoading, typeroomsEmpty } = useGetTypeRooms();
@@ -67,12 +70,15 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
   useEffect(() => {
     setIsLoadingServices(true);
-    const options = services?.map((option) => ({
-      value: option.id,
-      label: option.name,
-    }));
-    setTableDataServices(options);
-    setIsLoadingServices(false);
+    if (services) {
+      const options = services?.map((option) => ({
+        value: option.id,
+        label: option.name,
+      }));
+      setTableDataServices(options);
+      setIsLoadingServices(false);
+    }
+
   }, [services]);
 
   const NewProductSchema = Yup.object().shape({
@@ -99,7 +105,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
       description: currentRoom?.description || '',
       price: currentRoom?.price || 0,
       priceSale: currentRoom?.priceSale || 0,
-      image: currentRoom?.image || '',
+      image: currentRoom?.image || null,
       numberBed: currentRoom?.numberBed || 0,
       numberPeople: currentRoom?.numberPeople || 0,
       status: currentRoom?.status || 0,
@@ -117,8 +123,6 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     resolver: yupResolver(NewProductSchema),
     defaultValues,
   });
-
-
 
   const {
     reset,
@@ -187,7 +191,8 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
   const onSubmit = handleSubmit(async (data) => {
     const formData = new FormData();
-    formData.append('image', JSON.stringify(data.image));
+    formData.append('image', JSON.stringify(data.image[0]));
+    // formData.append('image', data.image[0]);
     formData.append('name', data.name);
     formData.append('title', data.title);
     formData.append('description', data.description);
@@ -199,23 +204,25 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     formData.append('label', JSON.stringify(data.label));
     formData.append('isLiked', JSON.stringify(data.isLiked));
     formData.append('type_room_id', JSON.stringify(data.type_room_id));
-
     const config = {
-      headers: { 'content-type': 'multipart/form-data' },
+      withCredentials: false,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'multipart/form-data',
+      },
     };
     try {
+
       if (currentRoom) {
         console.info('DATA', data);
       } else {
-        const response = await axios.post(
-          'http://localhost:6969/api/rooms/create',
-          formData,
-          config
-        );
+        const response = await axios.post('http://localhost:6969/api/rooms/create', formData, config);
         if (response.status === 200) {
           setIdRoom(response.data.data.id);
           const id = response.data.data.id;
           if (id) {
+            console.log('data.roomImages', data.roomImages)
+            console.log('cònig', config)
             const formData2 = new FormData();
             formData2.append('room_id', JSON.stringify(id));
             formData2.append('roomImage', JSON.stringify(data.roomImages));
@@ -242,12 +249,19 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const files = values.image || '';
-      const newFiles = acceptedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        })
-      );
+      const files: CustomFile[] = values.image || [];
+      const newFiles: CustomFile[] = acceptedFiles?.map((file: any) => {
+        const reader = new FileReader();
+        reader.onload = (event: any) => {
+          const base64Image: string | ArrayBuffer | null = event.target.result;
+          if (typeof base64Image === 'string') {
+            file.preview = base64Image;
+          }
+        };
+        reader.readAsDataURL(file);
+        return file;
+      });
+
       setValue('image', [...files, ...newFiles], { shouldValidate: true });
     },
     [setValue, values.image]
@@ -255,18 +269,36 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
   const handleDropMul = useCallback(
     (acceptedFiles: File[]) => {
-      const files = values?.roomImages || [];
+      const files: CustomFile[] = values?.roomImages || [];
+      const newFiles = acceptedFiles?.map((file) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
 
-      const newFiles = acceptedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
+          reader.onload = (event: any) => {
+            const base64Image = event.target.result;
+            if (typeof base64Image === 'string') {
+              resolve({ preview: base64Image });
+            } else {
+              reject(new Error('Failed to read image data.'));
+            }
+          };
+
+          reader.readAsDataURL(file);
         })
       );
 
-      setValue('roomImages', [...files, ...newFiles], { shouldValidate: true });
+      Promise.all(newFiles)
+        .then((images) => {
+          setValue('roomImages', [...files, ...images], { shouldValidate: true });
+        })
+        .catch((error) => {
+          console.error('Error reading images:', error);
+        });
     },
     [setValue, values.roomImages]
   );
+
+
 
   const handleRemoveFile = useCallback(
     (inputFile: File | string) => {
@@ -389,7 +421,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
               <RHFTextField name="numberPeople" label="Số người ở tối đa" />
 
               <RHFSelect native name="label" label="Label" InputLabelProps={{ shrink: true }}>
-                {ROOM_LABEL_OPTIONS.map((item) => (
+                {ROOM_LABEL_OPTIONS?.map((item) => (
                   <option key={item.value} value={item.value}>
                     {item.label}
                   </option>
@@ -398,18 +430,17 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
               <RHFSelect
                 native
-                defaultValue={values.type_room_id}
+                // defaultValue={values?.type_room_id ? values?.type_room_id : tableDataTypeRoom[0].id}
                 name="type_room_id"
                 label="Loại phòng"
                 InputLabelProps={{ shrink: true }}
               >
-                {tableDataTypeRoom.map((item) => (
+                {tableDataTypeRoom?.map((item) => (
                   <option key={item.id} value={item.id}>
                     {item.name}
                   </option>
                 ))}
               </RHFSelect>
-
             </Box>
           </Stack>
         </Card>
@@ -483,19 +514,9 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
           {renderProperties}
 
-          {/* {renderActions} */}
-
           {renderServiceAndImage}
         </Grid>
       </FormProvider>
-
-      {/* {open && (
-        <FormProvider methods={methods2} onSubmit={onSubmit}>
-          <Grid container spacing={3}>
-
-          </Grid>
-        </FormProvider>
-      )} */}
     </>
   );
 }

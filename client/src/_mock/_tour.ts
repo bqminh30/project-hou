@@ -11,6 +11,8 @@ export const TOUR_DETAILS_TABS = [
   { value: 'bookers', label: 'Booker' },
 ];
 
+
+
 export const TOUR_SORT_OPTIONS = [
   { value: 'latest', label: 'Latest' },
   { value: 'popular', label: 'Popular' },

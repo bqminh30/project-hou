@@ -24,14 +24,14 @@ export default function TourList({ rooms, roomsLoading }: Props) {
 
   const handleView = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.tour.details(id));
+      router.push(paths.dashboard.room.details(id));
     },
     [router]
   );
 
   const handleEdit = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.tour.edit(id));
+      router.push(paths.dashboard.room.edit(id));
     },
     [router]
   );
