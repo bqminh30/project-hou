@@ -7,7 +7,7 @@ export type IInvoiceTableFilterValue = string | string[] | Date | null;
 export type IInvoiceTableFilters = {
   name: string;
   service: string[];
-  status: string;
+  status: number | string;
   startDate: Date | null;
   endDate: Date | null;
 };

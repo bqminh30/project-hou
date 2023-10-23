@@ -505,6 +505,25 @@ LEFT JOIN (
 ) room_image ON room_image.room_id = r.id
 GROUP BY r.id;
 
+SELECT r.* , 
+        CONCAT('[', GROUP_CONCAT('{"id":', s.id, ',"name":"', s.name, '"}' SEPARATOR ','), ']') AS service,
+        room_image.roomImages
+        FROM room r 
+          LEFT JOIN room_service rs ON r.id = rs.room_id 
+          LEFT JOIN service s ON rs.service_id = s.id 
+          LEFT JOIN (
+            SELECT room_id, CONCAT('[', GROUP_CONCAT('{"id":', room_image.id, ',"name":"', room_image.data, '" }' SEPARATOR ','), ']') AS roomImages
+        FROM room_image
+          GROUP BY room_id
+        ) room_image ON room_image.room_id = r.id WHERE r.id = ${id}
+    GROUP BY r.id
+
+SELECT od.* ,
+  CONCAT('[', GROUP_CONCAT('{"fullname":"', cus.fullname, '", "email":"', cus.email, '"}' SEPARATOR ','), ']') AS customer
+  FROM orders od
+    LEFT JOIN customer cus ON od.customer_id = cus.id 
+GROUP BY od.id
+
 -- INSERT INTO rooms WHERE 
 SELECT COUNT(*) FROM orders LEFT JOIN order_detail od ON od.room_id = 32 WHERE checkoutDate > '2023-09-29'
 

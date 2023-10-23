@@ -27,7 +27,7 @@ type Props = {
   id: string;
 };
 
-export default function TourDetailsView({ id }: Props) {
+export default function RoomDetailsView({ id }: Props) {
   const settings = useSettingsContext();
 
   const { room, roomLoading, roomEmpty } = useGetRoom(id)
@@ -59,7 +59,7 @@ export default function TourDetailsView({ id }: Props) {
           label={tab.label}
           icon={
             tab.value === 'reviews' ? (
-              <Label variant="filled">{reviews ? reviews.length : 0}</Label>
+              <Label variant="filled">{reviews?.length}</Label>
             ) : (
               ''
             )

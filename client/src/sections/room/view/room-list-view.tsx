@@ -70,22 +70,12 @@ export default function RoomListView() {
     }
   }, [rooms])
 
-  // const dateError =
-  //   filters.startDate && filters.endDate
-  //     ? filters.startDate.getTime() > filters.endDate.getTime()
-  //     : false;
-
-
   const dataFiltered = applyFilter({
     inputData: rooms,
     filters,
     sortBy,
     // dateError,
   });
-
-  // const canReset
-  //   !!filters.labels.length
-  //   || filters.labels.services;
 
   const canReset = !isEqual(defaultFilters, filters);
 
@@ -237,9 +227,6 @@ const applyFilter = ({
   sortBy: string;
 }) => {
   const { labels, services } = filters;
-  // console.log('labels', labels)
-
-  // const tourGuideIds = tourGuides.map((tourGuide) => tourGuide.id);
 
   // SORT BY
   if (sortBy === 'latest') {

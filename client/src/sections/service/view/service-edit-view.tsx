@@ -4,12 +4,13 @@ import { useGetProduct, useGetService, useGetTypeRoom } from 'src/api/product';
 // @mui
 import Container from '@mui/material/Container';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-//
-import ServiceNewEditForm from '../service-new-edit-form';
 // routes
 import { paths } from 'src/routes/paths';
 // components
 import { useSettingsContext } from 'src/components/settings';
+
+//
+import ServiceNewEditForm from '../service-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -25,14 +26,14 @@ export default function ServiceEditView({ id }: Props) {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Cập nhật"
+        heading={id === 'undefined' ? 'Tạo mới' : 'Cập nhật'}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Loại phòng',
+            name: 'Dịch vụ',
             href: paths.dashboard.service.root,
           },
-          { name: currentProduct?.name },
+          { name: currentProduct.name ? currentProduct.name : 'Tạo mới dịch vụ' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

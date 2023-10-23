@@ -135,8 +135,17 @@ export function useNavData() {
             children: [
               { title: t('Danh sách'), path: paths.dashboard.room.root },
               { title: t('Tạo mới'), path: paths.dashboard.room.new },
-              // { title: t('Chi tiết'), path: paths.dashboard.room.demo.details },
-              // { title: t('Chỉnh sửa'), path: paths.dashboard.room.demo.edit },
+            ],
+          },
+          {
+            title: t('Đặt phòng'),
+            path: paths.dashboard.orderBooking.root,
+            icon: ICONS.invoice,
+            children: [
+              { title: t('list'), path: paths.dashboard.orderBooking.root },
+
+              // { title: t('create'), path: paths.dashboard.orderBooking.new },
+              // { title: t('edit'), path: paths.dashboard.orderBooking.demo.edit },
             ],
           },
           // USER
