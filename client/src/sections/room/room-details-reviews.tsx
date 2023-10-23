@@ -8,7 +8,7 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 // utils
-import { fShortenNumber } from 'src/utils/format-number';
+import { fShortenNumber, fData } from 'src/utils/format-number';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
@@ -19,29 +19,16 @@ import { IRoomReview } from 'src/types/room';
 //
 import RoomReviewList from './room-review-list';
 
-// import ProductReviewNewForm from './product-review-new-form';
-
 // ----------------------------------------------------------------------
 
 type Props = {
-  // totalRatings: number;
-  // totalReviews: number;
-  // ratings: {
-  //   name: string;
-  //   starCount: number;
-  //   reviewCount: number;
-  // }[];
   reviews: IRoomReview[];
 };
 
 export default function RoomDetailsReview({
-  // totalRatings,
-  // totalReviews,
-  // ratings,
   reviews,
 }: Props) {
   const review = useBoolean();
-
   const total = sumBy(reviews, (star) => star.rating);
   const totalRatings = Number(fShortenNumber(total / reviews.length));
   const renderSummary = (

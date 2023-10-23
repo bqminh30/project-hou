@@ -70,3 +70,29 @@ export type IRoom = {
   service: IRoomService[];
   roomImages: IRoomImage[] ;
 };
+
+
+export type IBookingOrder = {
+  id: string;
+  createdDate: Date;
+  count: number;
+  status: number;
+  total: number;
+  note: string;
+  customer_id: number;
+  employee_id: number | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  customer: string;
+}
+
+
+export type IOrderBookingTableFilterValue = string | string[] | Date | null;
+
+export type IOrderBookingTableFilters = {
+  customer: string;
+  service: string[];
+  status: number | string;
+  createdDate: Date | null;
+  endDate: Date | null;
+};

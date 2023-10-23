@@ -25,9 +25,9 @@ import Grid from '@mui/material/Unstable_Grid2';
 // types
 import InputAdornment from '@mui/material/InputAdornment';
 // @mui
+import MenuItem from '@mui/material/MenuItem';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
 // routes
@@ -140,6 +140,8 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     }
   }, [currentRoom, defaultValues, reset]);
 
+
+
   // const onSubmit = handleSubmit2(async (data) => {
 
   //   const formData = new FormData();
@@ -192,7 +194,6 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
   const onSubmit = handleSubmit(async (data) => {
     const formData = new FormData();
     formData.append('image', JSON.stringify(data.image[0]));
-    // formData.append('image', data.image[0]);
     formData.append('name', data.name);
     formData.append('title', data.title);
     formData.append('description', data.description);
@@ -428,17 +429,18 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
                 ))}
               </RHFSelect>
 
+
+
               <RHFSelect
-                native
-                // defaultValue={values?.type_room_id ? values?.type_room_id : tableDataTypeRoom[0].id}
                 name="type_room_id"
                 label="Loại phòng"
                 InputLabelProps={{ shrink: true }}
+                PaperPropsSx={{ textTransform: 'capitalize' }}
               >
                 {tableDataTypeRoom?.map((item) => (
-                  <option key={item.id} value={item.id}>
+                  <MenuItem key={item.id} value={item.id}>
                     {item.name}
-                  </option>
+                  </MenuItem>
                 ))}
               </RHFSelect>
             </Box>

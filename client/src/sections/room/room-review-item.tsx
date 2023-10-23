@@ -95,7 +95,7 @@ export default function ProductReviewItem({ review }: Props) {
         </Stack>
       )}
 
-      <Stack direction="row" spacing={2} sx={{ pt: 1.5 }}>
+      {/* <Stack direction="row" spacing={2} sx={{ pt: 1.5 }}>
         <Stack direction="row" alignItems="center" sx={{ typography: 'caption' }}>
           <Iconify icon="solar:like-outline" width={16} sx={{ mr: 0.5 }} />
           123
@@ -105,7 +105,7 @@ export default function ProductReviewItem({ review }: Props) {
           <Iconify icon="solar:dislike-outline" width={16} sx={{ mr: 0.5 }} />
           34
         </Stack>
-      </Stack>
+      </Stack> */}
     </Stack>
   );
 
