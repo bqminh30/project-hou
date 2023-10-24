@@ -524,6 +524,32 @@ SELECT od.* ,
     LEFT JOIN customer cus ON od.customer_id = cus.id 
 GROUP BY od.id
 
+
+SELECT od.*,
+  CONCAT('[', GROUP_CONCAT('{"checkinDate":"', od_detail.checkinDate, '",
+  "checkoutDate":"', od_detail.checkoutDate, '",
+  "status":"', od_detail.status, '",
+  "dateCount":"', od_detail.dateCount, '",
+  "total":"', od_detail.total, '",
+  "personCount":"', od_detail.personCount, '",
+  "room_name":"', r.name, '"}' SEPARATOR ','), ']') AS od_detail,
+  c.fullname,
+  c.email,
+  c.phonenumber
+FROM orders od
+LEFT JOIN order_detail od_detail ON od_detail.order_id = od.id 
+LEFT JOIN room r ON r.id = od_detail.room_id
+LEFT JOIN customer c ON c.id = od.customer_id
+WHERE od.id = 4
+GROUP BY od.id;
+
+
+LEFT JOIN (
+      SELECT fullname, email, phonenumber AS customer_profile FROM customer
+      GROUP BY id
+    ) customer ON od.customer_id = customer.id 
+
+
 -- INSERT INTO rooms WHERE 
 SELECT COUNT(*) FROM orders LEFT JOIN order_detail od ON od.room_id = 32 WHERE checkoutDate > '2023-09-29'
 
@@ -579,6 +605,53 @@ SELECT COUNT(*) AS cnt
 SELECT cus.fullname, cus.phonenumber, cus.email, reviews.content, reviews.image, reviews.rating, reviews.status FROM reviews
     INNER JOIN customer cus ON cus.id = reviews.customer_id
  WHERE status = 1 AND room_id = ?
+
+
+[
+  {
+    checkinDate: '2023-10-23 00:00:00',
+    checkoutDate: '2023-10-25 00:00:00',
+    room_id: 40
+  },
+  {
+    checkinDate: '2023-10-25 00:00:00',
+    checkoutDate: '2023-10-28 00:00:00',
+    room_id: 40
+  },
+  {
+    checkinDate: '2023-10-28 00:00:00',
+    checkoutDate: '2023-10-31 00:00:00',
+    room_id: 41
+  }
+]
+SELECT room.id
+FROM room
+WHERE room.id NOT IN (
+    SELECT chi_tiet_don_hang.room_id
+    FROM order_detail AS chi_tiet_don_hang
+    INNER JOIN orders AS don_hang ON chi_tiet_don_hang.order_id = don_hang.id
+    WHERE '2023-10-27 00:00:00' >= chi_tiet_don_hang.checkinDate
+    AND '2023-11-06 00:00:00' <= chi_tiet_don_hang.checkoutDate
+)
+
+SELECT *
+FROM room
+WHERE room.id NOT IN (
+    SELECT chi_tiet_don_hang.room_id
+    FROM order_detail AS chi_tiet_don_hang
+    WHERE (
+        '2023-11-01 00:00:00' >= chi_tiet_don_hang.checkinDate
+        AND '2023-11-06 00:00:00' <= chi_tiet_don_hang.checkoutDate
+    ) OR (
+        '2023-11-01 00:00:00' >= chi_tiet_don_hang.checkinDate
+        AND '2023-11-01 00:00:00' <= chi_tiet_don_hang.checkoutDate
+    )
+    OR (
+        '2023-11-06 00:00:00' >= chi_tiet_don_hang.checkinDate
+        AND '2023-11-06 00:00:00' <= chi_tiet_don_hang.checkoutDate
+    )
+)
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
