@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -17,14 +17,15 @@ import TableContainer from '@mui/material/TableContainer';
 import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
 // _mock
-import { INVOICE_STATUS_OPTIONS } from 'src/_mock';
+import { ORDER_BOOKING_STATUS_OPTIONS } from 'src/_mock';
 // types
-import { IInvoice } from 'src/types/invoice';
+import { IBookingOrderData, IBookingOrderDetail } from 'src/types/room';
 // components
 import Label from 'src/components/label';
 import Scrollbar from 'src/components/scrollbar';
 //
-import InvoiceToolbar from './invoice-toolbar';
+import OrderBookingToolbar from './order-booking-toolbar';
+
 
 // ----------------------------------------------------------------------
 
@@ -40,11 +41,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 type Props = {
-  invoice: IInvoice;
+  order: IBookingOrderData;
+  order_detail: IBookingOrderDetail[];
 };
 
-export default function InvoiceDetails({ invoice }: Props) {
-  const [currentStatus, setCurrentStatus] = useState(invoice.status);
+export default function InvoiceDetails({ order, order_detail }: Props) {
+  const [currentStatus, setCurrentStatus] = useState(order?.status);
+
+
+  useEffect(() => {
+    setCurrentStatus(order?.status)
+  }, [order?.status])
 
   const handleChangeStatus = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentStatus(event.target.value);
@@ -60,37 +67,15 @@ export default function InvoiceDetails({ invoice }: Props) {
         </TableCell>
         <TableCell width={120} sx={{ typography: 'subtitle2' }}>
           <Box sx={{ mt: 2 }} />
-          {fCurrency(invoice.subTotal)}
+          {fCurrency(order?.total)}
         </TableCell>
-      </StyledTableRow>
-
-      <StyledTableRow>
-        <TableCell colSpan={3} />
-        <TableCell sx={{ color: 'text.secondary' }}>Shipping</TableCell>
-        <TableCell width={120} sx={{ color: 'error.main', typography: 'body2' }}>
-          {fCurrency(-invoice.shipping)}
-        </TableCell>
-      </StyledTableRow>
-
-      <StyledTableRow>
-        <TableCell colSpan={3} />
-        <TableCell sx={{ color: 'text.secondary' }}>Discount</TableCell>
-        <TableCell width={120} sx={{ color: 'error.main', typography: 'body2' }}>
-          {fCurrency(-invoice.discount)}
-        </TableCell>
-      </StyledTableRow>
-
-      <StyledTableRow>
-        <TableCell colSpan={3} />
-        <TableCell sx={{ color: 'text.secondary' }}>Taxes</TableCell>
-        <TableCell width={120}>{fCurrency(invoice.taxes)}</TableCell>
       </StyledTableRow>
 
       <StyledTableRow>
         <TableCell colSpan={3} />
         <TableCell sx={{ typography: 'subtitle1' }}>Total</TableCell>
         <TableCell width={140} sx={{ typography: 'subtitle1' }}>
-          {fCurrency(invoice.totalAmount)}
+          {fCurrency(order?.total)}
         </TableCell>
       </StyledTableRow>
     </>
@@ -122,36 +107,36 @@ export default function InvoiceDetails({ invoice }: Props) {
             <TableRow>
               <TableCell width={40}>#</TableCell>
 
-              <TableCell sx={{ typography: 'subtitle2' }}>Description</TableCell>
+              <TableCell sx={{ typography: 'subtitle2' }}>Tên phòng</TableCell>
 
-              <TableCell>Qty</TableCell>
+              <TableCell>Số lượng</TableCell>
 
-              <TableCell align="right">Unit price</TableCell>
+              <TableCell align="right">Giá tiền phòng</TableCell>
 
-              <TableCell align="right">Total</TableCell>
+              <TableCell align="right">Tổng tiền</TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {invoice.items.map((row, index) => (
+            {order_detail?.map((row, index) => (
               <TableRow key={index}>
                 <TableCell>{index + 1}</TableCell>
 
                 <TableCell>
                   <Box sx={{ maxWidth: 560 }}>
-                    <Typography variant="subtitle2">{row.title}</Typography>
+                    <Typography variant="subtitle2">{row.room_name}</Typography>
 
                     <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-                      {row.description}
+                      {fDate(row?.checkinDate)}  -  {fDate(row?.checkoutDate)}
                     </Typography>
                   </Box>
                 </TableCell>
 
-                <TableCell>{row.quantity}</TableCell>
+                <TableCell>{row.dateCount}</TableCell>
 
-                <TableCell align="right">{fCurrency(row.price)}</TableCell>
+                <TableCell align="right">{fCurrency(row.total)} /ngày</TableCell>
 
-                <TableCell align="right">{fCurrency(row.price * row.quantity)}</TableCell>
+                <TableCell align="right">{fCurrency((Number(row.total)) * Number(row.dateCount))}</TableCell>
               </TableRow>
             ))}
 
@@ -164,11 +149,11 @@ export default function InvoiceDetails({ invoice }: Props) {
 
   return (
     <>
-      <InvoiceToolbar
-        invoice={invoice}
-        currentStatus={currentStatus || ''}
+      <OrderBookingToolbar
+        order={order}
+        currentStatus={currentStatus}
         onChangeStatus={handleChangeStatus}
-        statusOptions={INVOICE_STATUS_OPTIONS}
+        statusOptions={ORDER_BOOKING_STATUS_OPTIONS}
       />
 
       <Card sx={{ pt: 5, px: 5 }}>
@@ -192,54 +177,52 @@ export default function InvoiceDetails({ invoice }: Props) {
             <Label
               variant="soft"
               color={
-                (currentStatus === 'paid' && 'success') ||
-                (currentStatus === 'pending' && 'warning') ||
-                (currentStatus === 'overdue' && 'error') ||
+                (currentStatus === 1 && 'success') ||
+                (currentStatus === 0 && 'warning') ||
+                (currentStatus === 2 && 'error') ||
                 'default'
               }
             >
-              {currentStatus}
+              {
+                (currentStatus === 1 && 'paid') ||
+                (currentStatus === 0 && 'pending') ||
+                (currentStatus === 2 && 'overdue') ||
+                'default'
+              }
             </Label>
 
-            <Typography variant="h6">{invoice.invoiceNumber}</Typography>
+            <Typography variant="h6">{`HD-${order?.id}`}</Typography>
           </Stack>
 
           <Stack sx={{ typography: 'body2' }}>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Invoice From
+              Thông tin khách hàng
             </Typography>
-            {invoice.invoiceFrom.name}
+            Họ tên: {order?.fullname}
             <br />
-            {invoice.invoiceFrom.fullAddress}
+            Email: {order?.email}
             <br />
-            Phone: {invoice.invoiceFrom.phoneNumber}
+            Phone: {order?.phonenumber}
             <br />
           </Stack>
 
           <Stack sx={{ typography: 'body2' }}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Invoice To
-            </Typography>
-            {invoice.invoiceTo.name}
-            <br />
-            {invoice.invoiceTo.fullAddress}
-            <br />
-            Phone: {invoice.invoiceTo.phoneNumber}
-            <br />
+            <>
+            </>
           </Stack>
 
           <Stack sx={{ typography: 'body2' }}>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Date Create
+              Ngày tạo đơn
             </Typography>
-            {fDate(invoice.createDate)}
+            {fDate(order?.createdDate)}
           </Stack>
 
           <Stack sx={{ typography: 'body2' }}>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Due Date
+              Ghi chú
             </Typography>
-            {fDate(invoice.dueDate)}
+            {order?.note === '' ? 'Không có ghi chú' : order?.note}
           </Stack>
         </Box>
 

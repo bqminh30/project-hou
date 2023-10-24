@@ -86,6 +86,33 @@ export type IBookingOrder = {
   customer: string;
 }
 
+export type IBookingOrderData = {
+  id: number | string;
+  createdDate: Date;
+  count: number;
+  status: number | string;
+  total: number;
+  note: string;
+  customer: number;
+  employee: number | null;
+  createdAt: Date;
+  updatedAt: Date | null;
+  od_detail: string;
+  email: string;
+  phonenumber: string;
+  fullname: string;
+}
+
+export type IBookingOrderDetail = {
+  checkinDate: Date | string | any;
+  checkoutDate: Date | string | any;
+  status: string;
+  dateCount: string;
+  total: string;
+  room_name: string;
+  room_id: string;
+}
+
 
 export type IOrderBookingTableFilterValue = string | string[] | Date | null;
 

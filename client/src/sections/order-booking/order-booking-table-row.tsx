@@ -141,7 +141,7 @@ export default function InvoiceTableRow({
           <Iconify icon="solar:eye-bold" />
           View
         </MenuItem>
-
+        <Divider sx={{ borderStyle: 'dashed' }} />
         <MenuItem
           onClick={() => {
             onEditRow();
@@ -152,9 +152,9 @@ export default function InvoiceTableRow({
           Edit
         </MenuItem>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem
+
+        {/* <MenuItem
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
@@ -163,7 +163,7 @@ export default function InvoiceTableRow({
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
           Delete
-        </MenuItem>
+        </MenuItem> */}
       </CustomPopover>
 
       <ConfirmDialog

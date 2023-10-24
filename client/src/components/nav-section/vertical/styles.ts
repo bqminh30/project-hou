@@ -22,17 +22,17 @@ export const StyledItem = styled(ListItemButton, {
   const activeStyles = {
     root: {
       color:
-        theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.primary.light,
-      backgroundColor: alpha(theme.palette.primary.main, 0.08),
+        theme.palette.mode === 'light' ? 'white' : theme.palette.primary.light,
+      backgroundColor: theme.palette.action.selected,
       '&:hover': {
-        backgroundColor: alpha(theme.palette.primary.main, 0.16),
+        backgroundColor: theme.palette.action.disabled,
       },
     },
     sub: {
-      color: theme.palette.text.primary,
+      color: theme.palette.action.disabled,
       backgroundColor: 'transparent',
       '&:hover': {
-        backgroundColor: theme.palette.action.hover,
+        backgroundColor: theme.palette.action.disabledOpacity,
       },
     },
   };
@@ -87,13 +87,13 @@ export const StyledDotIcon = styled('span')<StyledDotIconProps>(({ active, theme
   width: 4,
   height: 4,
   borderRadius: '50%',
-  backgroundColor: theme.palette.text.disabled,
+  backgroundColor: theme.palette.action.disabled,
   transition: theme.transitions.create(['transform'], {
     duration: theme.transitions.duration.shorter,
   }),
   ...(active && {
     transform: 'scale(2)',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.action.selected,
   }),
 }));
 

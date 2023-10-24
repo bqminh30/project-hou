@@ -1,14 +1,20 @@
+import { useEffect, useState } from 'react';
+// api
+import { useGetOrderDetail } from 'src/api/order';
 // @mui
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
 // _mock
 import { _invoices } from 'src/_mock';
+
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
-import InvoiceDetails from '../invoice-details';
+import OrderBookingDetail from '../order-booking-details';
+
+
 
 // ----------------------------------------------------------------------
 
@@ -16,30 +22,39 @@ type Props = {
   id: string;
 };
 
-export default function InvoiceDetailsView({ id }: Props) {
+export default function OrderBookingDetailView({ id }: Props) {
   const settings = useSettingsContext();
+  const [tableDataOrder, setTableDataOrder] = useState<any>();
+  const { order, orderLoading, orderEmpty } = useGetOrderDetail(id)
 
-  const currentInvoice = _invoices.filter((invoice) => invoice.id === id)[0];
-
+  useEffect(() => {
+    if (order) {
+      setTableDataOrder(order)
+    }
+  }, [order])
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={currentInvoice?.invoiceNumber}
+        heading={`Chi tiết đơn đặt phòng HD-${order?.data?.id}`}
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Đơn đặt phòng',
+            name: 'Chi tiết đơn đặt phòng',
             href: paths.dashboard.orderBooking.root,
           },
-          { name: currentInvoice?.invoiceNumber },
+          { name: `HD-${order?.data?.id}` },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <InvoiceDetails invoice={currentInvoice} />
+      {
+        orderLoading !== true &&
+        <OrderBookingDetail order={tableDataOrder?.data} order_detail={tableDataOrder?.order_detail} />
+      }
+
     </Container>
   );
 }

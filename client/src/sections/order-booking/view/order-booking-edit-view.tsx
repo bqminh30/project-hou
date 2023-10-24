@@ -1,14 +1,19 @@
+import React from 'react';
 // @mui
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
 // _mock
 import { _invoices } from 'src/_mock';
+
+import { useGetOrderDetail } from 'src/api/order';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
-import InvoiceNewEditForm from '../invoice-new-edit-form';
+import OrderBookingEditForm from '../order-booking-edit-form';
+
+
 
 // ----------------------------------------------------------------------
 
@@ -16,32 +21,39 @@ type Props = {
   id: string;
 };
 
-export default function InvoiceEditView({ id }: Props) {
+export default function OrderBookingEditView({ id }: Props) {
   const settings = useSettingsContext();
+  const [tableDataOrder, setTableDataOrder] = React.useState<any>();
+  const { order, orderLoading, orderEmpty } = useGetOrderDetail(id)
 
-  const currentInvoice = _invoices.find((invoice) => invoice.id === id);
-
+  React.useEffect(() => {
+    if (order) {
+      setTableDataOrder(order)
+    }
+  }, [order])
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading={`Cập nhật đơn đặt phòng HD-${order?.data?.id}`}
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Invoice',
-            href: paths.dashboard.invoice.root,
+            name: 'Chi tiết đơn đặt phòng',
+            href: paths.dashboard.orderBooking.root,
           },
-          { name: currentInvoice?.invoiceNumber },
+          { name: `HD-${order?.data?.id}` },
         ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
+        sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <InvoiceNewEditForm currentInvoice={currentInvoice} />
+      {
+        orderLoading !== true &&
+        <OrderBookingEditForm order={tableDataOrder?.data} order_detail={tableDataOrder?.order_detail} />
+      }
+
     </Container>
   );
 }

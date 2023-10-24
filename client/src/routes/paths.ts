@@ -143,8 +143,8 @@ export const paths = {
     },
     orderBooking: {
       root: `${ROOTS.DASHBOARD}/order-booking`,
-      details: (id: string) => `${ROOTS.DASHBOARD}/order-booking/${id}`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/order-booking/${id}/edit`,
+      details: (id: string|number) => `${ROOTS.DASHBOARD}/order-booking/${id}`,
+      edit: (id: string| number) => `${ROOTS.DASHBOARD}/order-booking/${id}/edit`,
       demo: {
         details: `${ROOTS.DASHBOARD}/order-booking/${MOCK_ID}`,
         edit: `${ROOTS.DASHBOARD}/order-booking/${MOCK_ID}/edit`,

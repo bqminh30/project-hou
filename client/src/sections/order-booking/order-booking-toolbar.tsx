@@ -17,26 +17,27 @@ import { useRouter } from 'src/routes/hooks';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // types
-import { IInvoice } from 'src/types/invoice';
+import { IBookingOrderData } from 'src/types/room';
 // components
 import Iconify from 'src/components/iconify';
 //
 import InvoicePDF from './invoice-pdf';
 
+
 // ----------------------------------------------------------------------
 
 type Props = {
-  invoice: IInvoice;
-  currentStatus: string;
+  order: IBookingOrderData;
+  currentStatus: string | number;
   onChangeStatus: (event: React.ChangeEvent<HTMLInputElement>) => void;
   statusOptions: {
-    value: string;
+    value: number | string;
     label: string;
   }[];
 };
 
 export default function InvoiceToolbar({
-  invoice,
+  order,
   currentStatus,
   statusOptions,
   onChangeStatus,
@@ -46,8 +47,8 @@ export default function InvoiceToolbar({
   const view = useBoolean();
 
   const handleEdit = useCallback(() => {
-    router.push(paths.dashboard.invoice.edit(invoice.id));
-  }, [invoice.id, router]);
+    router.push(paths.dashboard.orderBooking.edit(order?.id));
+  }, [order?.id, router]);
 
   return (
     <>
@@ -70,7 +71,7 @@ export default function InvoiceToolbar({
             </IconButton>
           </Tooltip>
 
-          <PDFDownloadLink
+          {/* <PDFDownloadLink
             document={<InvoicePDF invoice={invoice} currentStatus={currentStatus} />}
             fileName={invoice.invoiceNumber}
             style={{ textDecoration: 'none' }}
@@ -86,7 +87,7 @@ export default function InvoiceToolbar({
                 </IconButton>
               </Tooltip>
             )}
-          </PDFDownloadLink>
+          </PDFDownloadLink> */}
 
           <Tooltip title="Print">
             <IconButton>
@@ -137,11 +138,11 @@ export default function InvoiceToolbar({
             </Button>
           </DialogActions>
 
-          <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
+          {/* <Box sx={{ flexGrow: 1, height: 1, overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               <InvoicePDF invoice={invoice} currentStatus={currentStatus} />
             </PDFViewer>
-          </Box>
+          </Box> */}
         </Box>
       </Dialog>
     </>

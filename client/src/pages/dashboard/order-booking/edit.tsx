@@ -2,11 +2,11 @@ import { Helmet } from 'react-helmet-async';
 // routes
 import { useParams } from 'src/routes/hooks';
 // sections
-import { InvoiceEditView } from 'src/sections/invoice/view';
+import { OrderBookingEditView } from 'src/sections/order-booking/view';
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceEditPage() {
+export default function InvoiceDetailsPage() {
   const params = useParams();
 
   const { id } = params;
@@ -14,10 +14,10 @@ export default function InvoiceEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Invoice Edit</title>
+        <title> Dashboard: Order Booking Edit</title>
       </Helmet>
 
-      <InvoiceEditView id={`${id}`} />
+      <OrderBookingEditView id={`${id}`} />
     </>
   );
 }

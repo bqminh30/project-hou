@@ -1,4 +1,4 @@
-import { IBookingOrder } from 'src/types/room';
+import { IBookingOrder, IBookingOrderDetail , IBookingOrderData} from 'src/types/room';
 import axios, { AxiosRequestConfig } from 'axios';
 // utils
 import { endpoints, fetcher } from 'src/utils/axios';
@@ -25,6 +25,24 @@ export function useGetOrderBookings() {
     }),
     [data, error, isLoading, isValidating]
   );
+
+  return memoizedValue;
+}
+
+export function useGetOrderDetail(id: string) {
+  const URL = id ? [`http://localhost:6969/api/orders/${id}` ] : null;
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+  const memoizedValue = useMemo(
+    () => ({
+      order: data as any | [],
+      orderLoading: isLoading,
+      orderError: error,
+      orderValidating: isValidating,
+      orderEmpty: !isLoading && !data.length,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
 
   return memoizedValue;
 }
