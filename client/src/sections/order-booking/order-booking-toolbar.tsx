@@ -23,7 +23,6 @@ import Iconify from 'src/components/iconify';
 //
 import InvoicePDF from './invoice-pdf';
 
-
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -108,22 +107,24 @@ export default function InvoiceToolbar({
           </Tooltip>
         </Stack>
 
-        <TextField
-          fullWidth
-          select
-          label="Status"
-          value={currentStatus}
-          onChange={onChangeStatus}
-          sx={{
-            maxWidth: 160,
-          }}
-        >
-          {statusOptions.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
+        {currentStatus !== undefined && (
+          <TextField
+            fullWidth
+            select
+            label="Trạng thái đơn"
+            value={currentStatus}
+            onChange={onChangeStatus}
+            sx={{
+              maxWidth: 160,
+            }}
+          >
+            {statusOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        )}
       </Stack>
 
       <Dialog fullScreen open={view.value}>

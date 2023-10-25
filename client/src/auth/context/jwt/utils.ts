@@ -40,19 +40,16 @@ export const tokenExpired = (exp: number) => {
   let expiredTimer;
 
   const currentTime = Date.now();
-
   // Test token expires after 10s
-  // const timeLeft = currentTime + 10000 - currentTime; // ~10s
-  const timeLeft = exp * 1000 - currentTime;
+  const timeLeft = currentTime + exp + 60 * 60 * 1000 * 24;
+  // const timeLeft = currentTime + (60*60*1000*24);
 
   clearTimeout(expiredTimer);
 
   expiredTimer = setTimeout(() => {
-    alert('Token expired');
-
-    sessionStorage.removeItem('accessToken');
-
-    window.location.href = paths.auth.jwt.login;
+    // alert('Token expired');
+    // localStorage.removeItem('accessToken');
+    // window.location.href = PATH_AUTH.login;
   }, timeLeft);
 };
 

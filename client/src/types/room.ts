@@ -108,6 +108,7 @@ export type IBookingOrderDetail = {
   checkoutDate: Date | string | any;
   status: string;
   dateCount: string;
+  personCount: string;
   total: string;
   room_name: string;
   room_id: string;

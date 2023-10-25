@@ -50,7 +50,7 @@ export default function OrderBookingEditView({ id }: Props) {
       />
 
       {
-        orderLoading !== true &&
+        orderLoading !== true && tableDataOrder?.data && tableDataOrder?.order_detail &&
         <OrderBookingEditForm order={tableDataOrder?.data} order_detail={tableDataOrder?.order_detail} />
       }
 

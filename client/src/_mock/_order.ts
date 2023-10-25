@@ -3,8 +3,8 @@ import { _mock } from './_mock';
 // ----------------------------------------------------------------------
 
 export const ORDER_BOOKING_STATUS_OPTIONS = [
-  { value: 1, label: 'Paid' },
   { value: 0, label: 'Pending' },
+  { value: 1, label: 'Paid' },
   { value: 2, label: 'Overdue' },
   { value: 3, label: 'Draft' },
 ];

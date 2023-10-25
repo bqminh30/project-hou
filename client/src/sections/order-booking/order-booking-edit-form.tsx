@@ -18,151 +18,120 @@ import { useBoolean } from 'src/hooks/use-boolean';
 // components
 import FormProvider from 'src/components/hook-form';
 //
-import InvoiceNewEditDetails from './invoice-new-edit-details';
-import InvoiceNewEditAddress from './invoice-new-edit-address';
-import InvoiceNewEditStatusDate from './invoice-new-edit-status-date';
+import OrderBookingEditDetails from './order-booking-edit-details';
+import OrderBookingEditAddress from './order-booking-edit-address';
+import OrderBookingEditStatusDate from './order-booking-edit-status-date';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   order: IBookingOrderData;
-  order_detail: IBookingOrderDetail[];
+  order_detail: IBookingOrderDetail;
 };
 
-// export default function OrderBookingEditForm({ order, order_detail }: Props) {
-//   const router = useRouter();
-
-//   const loadingSave = useBoolean();
-
-//   const loadingSend = useBoolean();
-
-//   const NewInvoiceSchema = Yup.object().shape({
-//     invoiceTo: Yup.mixed<any>().nullable().required('Invoice to is required'),
-//     createDate: Yup.mixed<any>().nullable().required('Create date is required'),
-//     dueDate: Yup.mixed<any>()
-//       .required('Due date is required')
-//       .test(
-//         'date-min',
-//         'Due date must be later than create date',
-//         (value, { parent }) => value.getTime() > parent.createDate.getTime()
-//       ),
-//     // not required
-//     taxes: Yup.number(),
-//     status: Yup.string(),
-//     discount: Yup.number(),
-//     shipping: Yup.number(),
-//     invoiceFrom: Yup.mixed(),
-//     totalAmount: Yup.number(),
-//     invoiceNumber: Yup.string(),
-//   });
-
-//   const defaultValues = useMemo(
-//     () => ({
-//       invoiceNumber: currentInvoice?.invoiceNumber || 'INV-1990',
-//       createDate: currentInvoice?.createDate || new Date(),
-//       dueDate: currentInvoice?.dueDate || null,
-//       taxes: currentInvoice?.taxes || 0,
-//       shipping: currentInvoice?.shipping || 0,
-//       status: currentInvoice?.status || 'draft',
-//       discount: currentInvoice?.discount || 0,
-//       invoiceFrom: currentInvoice?.invoiceFrom || _addressBooks[0],
-//       invoiceTo: currentInvoice?.invoiceTo || null,
-//       items: currentInvoice?.items || [
-//         {
-//           title: '',
-//           description: '',
-//           service: '',
-//           quantity: 1,
-//           price: 0,
-//           total: 0,
-//         },
-//       ],
-//       totalAmount: currentInvoice?.totalAmount || 0,
-//     }),
-//     [currentInvoice]
-//   );
-
-//   const methods = useForm({
-//     resolver: yupResolver(NewInvoiceSchema),
-//     defaultValues,
-//   });
-
-//   const {
-//     reset,
-
-//     handleSubmit,
-//     formState: { isSubmitting },
-//   } = methods;
-
-//   const handleSaveAsDraft = handleSubmit(async (data) => {
-//     loadingSave.onTrue();
-
-//     try {
-//       await new Promise((resolve) => setTimeout(resolve, 500));
-//       reset();
-//       loadingSave.onFalse();
-//       router.push(paths.dashboard.invoice.root);
-//       console.info('DATA', JSON.stringify(data, null, 2));
-//     } catch (error) {
-//       console.error(error);
-//       loadingSave.onFalse();
-//     }
-//   });
-
-//   const handleCreateAndSend = handleSubmit(async (data) => {
-//     loadingSend.onTrue();
-
-//     try {
-//       await new Promise((resolve) => setTimeout(resolve, 500));
-//       reset();
-//       loadingSend.onFalse();
-//       router.push(paths.dashboard.invoice.root);
-//       console.info('DATA', JSON.stringify(data, null, 2));
-//     } catch (error) {
-//       console.error(error);
-//       loadingSend.onFalse();
-//     }
-//   });
-
-//   return (
-//     <FormProvider methods={methods}>
-//       <Card>
-//         <InvoiceNewEditAddress />
-
-//         <InvoiceNewEditStatusDate />
-
-//         <InvoiceNewEditDetails />
-//       </Card>
-
-//       <Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
-//         <LoadingButton
-//           color="inherit"
-//           size="large"
-//           variant="outlined"
-//           loading={loadingSave.value && isSubmitting}
-//           onClick={handleSaveAsDraft}
-//         >
-//           Save as Draft
-//         </LoadingButton>
-
-//         <LoadingButton
-//           size="large"
-//           variant="contained"
-//           loading={loadingSend.value && isSubmitting}
-//           onClick={handleCreateAndSend}
-//         >
-//           {currentInvoice ? 'Update' : 'Create'} & Send
-//         </LoadingButton>
-//       </Stack>
-//     </FormProvider>
-//   );
-// }
 export default function OrderBookingEditForm({ order, order_detail }: Props) {
+  const router = useRouter();
+
+  const loadingSave = useBoolean();
+
+  const loadingSend = useBoolean();
+
+  const NewInvoiceSchema = Yup.object().shape({
+  });
+
+  const defaultValues = useMemo(
+    () => ({
+      id: order?.id || '',
+      createdDate: order?.createdDate || new Date(),
+      count: order?.count || 0,
+      status: order?.status || 0,
+      total: order?.total || 0,
+      note: order?.note || '',
+      employee: order?.employee,
+      od_detail: order?.od_detail || '',
+      email: order?.email || '',
+      phonenumber: order?.phonenumber || '',
+      fullname: order?.fullname || '',
+      order_details: order_detail || [
+        {
+          checkinDate: new Date(),
+          checkoutDate: new Date(),
+          statusDetail: '',
+          dateCount: '',
+          total: '',
+          room_name: '',
+        }
+      ]
+
+    }),
+    [order, order_detail]
+  );
+
+
+  const methods = useForm({
+    resolver: yupResolver(NewInvoiceSchema),
+    defaultValues,
+  });
+
+  const {
+    reset,
+
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  const handleSaveAsDraft = handleSubmit(async (data) => {
+    loadingSave.onTrue();
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      reset();
+      loadingSave.onFalse();
+      router.push(paths.dashboard.orderBooking.root);
+      console.info('DATA', JSON.stringify(data, null, 2));
+    } catch (error) {
+      console.error(error);
+      loadingSave.onFalse();
+    }
+  });
+
+  const handleCreateAndSend = handleSubmit(async (data) => {
+    loadingSend.onTrue();
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      reset();
+      loadingSend.onFalse();
+      router.push(paths.dashboard.orderBooking.root);
+      console.info('DATA', JSON.stringify(data, null, 2));
+    } catch (error) {
+      console.error(error);
+      loadingSend.onFalse();
+    }
+  });
+
   return (
-    <>
+    <FormProvider methods={methods}>
       <Card>
-        <p>123</p>
+        <OrderBookingEditAddress />
+
+        <OrderBookingEditStatusDate />
+
+        <OrderBookingEditDetails />
       </Card>
-    </>
-  )
+
+      <Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
+
+        <LoadingButton
+          size="large"
+          variant="contained"
+          loading={loadingSend.value && isSubmitting}
+          onClick={handleCreateAndSend}
+        >
+          {order && order_detail ? 'Update' : 'Create'} & Send
+        </LoadingButton>
+      </Stack>
+    </FormProvider>
+  );
 }
+

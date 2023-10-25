@@ -102,7 +102,7 @@ const COMMON = {
   divider: alpha(GREY[500], 0.2),
   action: {
     hover: alpha(GREY[800], 0.08),
-    selected: alpha(GREY[800], 1),
+    selected: alpha(GREY[800], 0.4),
     disabled: alpha(GREY[800], 0.8),
     disabledBackground: alpha(GREY[800], 0.24),
     focus: alpha(GREY[800], 0.24),

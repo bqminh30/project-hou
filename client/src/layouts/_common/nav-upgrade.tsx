@@ -8,7 +8,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { useLocales } from 'src/locales';
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+// auth
+import { useAuthContext } from 'src/auth/hooks';
 
 // hooks
 
@@ -22,7 +23,7 @@ import { useMockedUser } from 'src/hooks/use-mocked-user';
 // ----------------------------------------------------------------------
 
 export default function NavUpgrade() {
-  const { user } = useMockedUser();
+  const { user, logout } = useAuthContext();
 
   const { t } = useLocales();
 
@@ -36,7 +37,17 @@ export default function NavUpgrade() {
     >
       <Stack alignItems="center">
         <Box sx={{ position: 'relative' }}>
-          <Avatar src={user?.photoURL} alt={user?.displayName} sx={{ width: 48, height: 48 }} />
+          <Avatar
+            src='https://api-dev-minimal-v510.vercel.app/assets/images/avatar/avatar_25.jpg'
+            alt={user?.fullname}
+            sx={{
+              width: 36,
+              height: 36,
+              border: (theme) => `solid 2px ${theme.palette.background.default}`,
+            }}
+          >
+            {user?.fullname?.charAt(0).toUpperCase()}
+          </Avatar>
           <Label
             color="success"
             variant="filled"
@@ -49,13 +60,13 @@ export default function NavUpgrade() {
               borderBottomLeftRadius: 2,
             }}
           >
-            Free
+            {user?.role_id === 0 ? 'Nhân viên' : "Quản lý"}
           </Label>
         </Box>
 
         <Stack spacing={0.5} sx={{ mt: 1.5, mb: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {user?.displayName}
+            {user?.fullname}
           </Typography>
 
           <Typography variant="body2" noWrap sx={{ color: 'text.disabled' }}>
@@ -63,9 +74,6 @@ export default function NavUpgrade() {
           </Typography>
         </Stack>
 
-        {/* <Button variant="contained" href={paths.minimalUI} target="_blank" rel="noopener">
-          {t('upgrade_to_pro')}
-        </Button> */}
       </Stack>
     </Stack>
   );

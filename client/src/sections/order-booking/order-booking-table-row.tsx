@@ -152,18 +152,6 @@ export default function InvoiceTableRow({
           Edit
         </MenuItem>
 
-
-
-        {/* <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
-        </MenuItem> */}
       </CustomPopover>
 
       <ConfirmDialog

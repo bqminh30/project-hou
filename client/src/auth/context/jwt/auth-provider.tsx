@@ -90,7 +90,8 @@ export function AuthProvider({ children }: Props) {
         setSession(accessToken);
         console.log('endpoints.auth.me', endpoints.auth.me)
 
-        const res = await axios.get(endpoints.auth.me);
+        const res = await axios.get('http://localhost:6969/api/employee/check-auth');
+        console.log('res', res.data)
 
         const { user } = res.data;
 
@@ -127,24 +128,25 @@ export function AuthProvider({ children }: Props) {
   }, [initialize]);
 
   // LOGIN
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (email: string, passwordHash: string) => {
     const data = {
       email,
-      password,
+      passwordHash,
     };
 
-    const res = await axios.post(endpoints.auth.login, data);
+    const urlHttp = 'http://localhost:6969/api/employee/login'
+    const res = await axios.post(urlHttp, data);
 
-    const { accessToken, user } = res.data;
+    const { token, user } = res.data;
 
-    setSession(accessToken);
+    setSession(token);
 
     dispatch({
       type: Types.LOGIN,
       payload: {
         user: {
           ...user,
-          accessToken,
+          token,
         },
       },
     });
