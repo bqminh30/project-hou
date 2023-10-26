@@ -1,10 +1,7 @@
 const Room = require("../models/room.model.js");
 var imageMiddleware = require("../middleware/image-middleware");
 var multer = require("multer");
-const fs = require("fs");
-const axios = require("axios");
 var cloudinary = require("cloudinary").v2;
-const uploadCloud = require("../config/cloudinary.config.js");
 
 // Create and Save a new Room
 exports.createFormRoom = (req, res) => {
