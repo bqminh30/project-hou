@@ -1,14 +1,18 @@
+import { useEffect, useState } from 'react';
 // @mui
 import Container from '@mui/material/Container';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-//
-import RoomNewEditForm from '../room-new-edit-form';
+
 // routes
 import { paths } from 'src/routes/paths';
 // api
 import { useGetRoom } from 'src/api/product';
 // components
 import { useSettingsContext } from 'src/components/settings';
+
+//
+import RoomNewEditForm from '../room-edit-view';
+
 
 // ----------------------------------------------------------------------
 
@@ -31,14 +35,14 @@ export default function RoomEditView({ id }: Props) {
             name: 'Phòng',
             href: paths.dashboard.room.root,
           },
-          { name: currentRoom?.name },
+          { name: currentRoom?.data.name },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <RoomNewEditForm currentRoom={currentRoom} />
+      <RoomNewEditForm currentRoom={currentRoom?.data} />
     </Container>
   );
 }

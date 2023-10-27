@@ -139,8 +139,9 @@ export const dashboardRoutes = [
           { element: <RoomListsPage />, index: true },
           { path: 'list', element: <RoomListsPage /> },
           { path: ':id', element: <RoomDetailPage /> },
-          { path: 'new', element: <RoomNewPage /> },
           { path: ':id/edit', element: <RoomEditPage /> },
+          { path: 'new', element: <RoomNewPage /> },
+
         ],
       },
       {

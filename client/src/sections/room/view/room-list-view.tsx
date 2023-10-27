@@ -257,7 +257,7 @@ const applyFilter = ({
 
   if (services.length) {
     inputData = inputData.filter((room) =>
-      room?.service.some((item) => services.includes(item.id))
+      room?.service?.some((item: any) => services.includes(item.id))
     );
   }
 

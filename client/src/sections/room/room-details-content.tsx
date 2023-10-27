@@ -57,8 +57,8 @@ export default function RoomDetailsContent({ data, services, images }: Props) {
     priceSale,
   } = data;
 
-  const slides = images.map((slide: IRoomImage) => ({
-    src: slide.name,
+  const slides = images?.map((slide: IRoomImage | any) => ({
+    src: slide?.name,
   }));
 
   const {
@@ -99,7 +99,7 @@ export default function RoomDetailsContent({ data, services, images }: Props) {
         </m.div>
 
         <Box gap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)">
-          {slides.slice(0, 4).map((item) => (
+          {slides.length > 0 && slides.slice(0, 4).map((item) => (
             <m.div
               key={`${item.src}`}
               whileHover="hover"
@@ -119,12 +119,14 @@ export default function RoomDetailsContent({ data, services, images }: Props) {
         </Box>
       </Box>
 
-      <Lightbox
-        index={selectedImage}
-        slides={slides}
-        open={openLightbox}
-        close={handleCloseLightbox}
-      />
+      {slides.length > 0 &&
+        <Lightbox
+          index={selectedImage}
+          slides={slides}
+          open={openLightbox}
+          close={handleCloseLightbox}
+        />
+      }
     </>
   );
 
@@ -274,7 +276,7 @@ export default function RoomDetailsContent({ data, services, images }: Props) {
 
   return (
     <>
-      {renderGallery}
+      {slides.length > 0 && renderGallery}
 
       <Stack sx={{ maxWidth: 720, mx: 'auto' }}>
         {renderHead}

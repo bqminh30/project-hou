@@ -122,6 +122,25 @@ export function useGetServices() {
   return memoizedValue;
 }
 
+export function useGetRoomServices() {
+  const URL = 'http://localhost:6969/api/services'
+  const fetCher = (url: string) => fetch(url).then((res) => res.json()).catch((err) => console.log('err', err));
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetCher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      services: (data as IService[]) || [],
+      servicesLoading: isLoading,
+      servicesError: error,
+      servicesValidating: isValidating,
+      servicesEmpty: !isLoading && !data.length,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
 export function useGetService(id: string) {
   const URL = id ? [`http://localhost:6969/api/services/${id}` ] : null;
   const fetCher = (url: string) => fetch(url).then((res) => res.json());
@@ -166,6 +185,7 @@ export function useGetRooms() {
 export function useGetRoom(id: string) {
   const URL = id ? [`http://localhost:6969/api/rooms/${id}` ] : null;
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+
   const memoizedValue = useMemo(
     () => ({
       room: data as any,

@@ -73,10 +73,8 @@ export default function RoomDetailsView({ id }: Props) {
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <RoomDetailsToolbar
         backLink={paths.dashboard.room.root}
-        editLink={paths.dashboard.room.edit(`${room?.id}`)}
+        editLink={paths.dashboard.room.edit(`${room?.data?.id}`)}
         liveLink="#"
-        // publish={publish || ''}
-        // onChangePublish={handleChangePublish}
         publishOptions={TOUR_PUBLISH_OPTIONS}
       />
       {renderTabs}

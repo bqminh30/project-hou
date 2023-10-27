@@ -2,11 +2,11 @@ import { Helmet } from 'react-helmet-async';
 // routes
 import { useParams } from 'src/routes/hooks';
 // sections
-import { TourEditView } from 'src/sections/tour/view';
+import { RoomEditView } from 'src/sections/room/view';
 
 // ----------------------------------------------------------------------
 
-export default function TourEditPage() {
+export default function RoomEditPage() {
   const params = useParams();
 
   const { id } = params;
@@ -14,10 +14,10 @@ export default function TourEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Tour Edit</title>
+        <title> Dashboard: Room Edit</title>
       </Helmet>
 
-      <TourEditView id={`${id}`} />
+      <RoomEditView id={`${id}`} />
     </>
   );
 }

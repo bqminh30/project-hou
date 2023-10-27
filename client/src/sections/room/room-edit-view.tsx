@@ -10,7 +10,7 @@ import FormProvider, {
   RHFTextField,
   RHFUpload,
 } from 'src/components/hook-form';
-import { IRoom, ITypeRoom } from 'src/types/room';
+import { IRoom, IRoomImage, IRoomService, ITypeRoom } from 'src/types/room';
 // _mock
 import { ROOM_LABEL_OPTIONS, _tags } from 'src/_mock';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -49,16 +49,26 @@ type PropRoom = {
   currentRoom?: IRoom;
 };
 
-export default function RoomNewEditForm({ currentRoom }: PropRoom) {
-  const router = useRouter();
-  const [isLoadingServices, setIsLoadingServices] = useState(false);
+const dfasdf = [
+  { value: 1, label: 'Thuê xe máy' },
 
+  { value: 2, label: 'Thuê ô tô' },
+
+  { value: 3, label: 'Thuê xe đạp' },
+
+  { value: 5, label: 'Tắm bể nước nóng' },
+
+  { value: 6, label: 'Message' }
+]
+
+export default function RoomNewEditForm({ currentRoom }: PropRoom) {
+
+  const router = useRouter();
   const [tableDataServices, setTableDataServices] = useState<any>([]);
   const [tableDataTypeRoom, setTableDataTypeRoom] = useState<ITypeRoom[]>([]);
 
   const { typerooms, typeroomsLoading, typeroomsEmpty } = useGetTypeRooms();
   const { services, servicesLoading } = useGetServices();
-  const [idRoom, setIdRoom] = useState();
 
   const mdUp = useResponsive('up', 'md');
 
@@ -69,14 +79,12 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
   }, [typerooms]);
 
   useEffect(() => {
-    setIsLoadingServices(true);
     if (services) {
       const options = services?.map((option) => ({
         value: option.id,
         label: option.name,
       }));
       setTableDataServices(options);
-      setIsLoadingServices(false);
     }
 
   }, [services]);
@@ -140,12 +148,11 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     }
   }, [currentRoom, defaultValues, reset]);
 
-  const onSubmit = handleSubmit(async (data) => {
-    console.log('data.image', data)
-    const formData = new FormData();
 
+  const onSubmit = handleSubmit(async (data) => {
+    const formData = new FormData();
+    formData.append('image', typeof data.image === 'string' ? data.image : JSON.stringify(data.image));
     formData.append('name', data.name);
-    formData.append('image', JSON.stringify(data.image));
     formData.append('title', data.title);
     formData.append('description', data.description);
     formData.append('price', JSON.stringify(data.price));
@@ -156,6 +163,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     formData.append('label', JSON.stringify(data.label));
     formData.append('isLiked', JSON.stringify(data.isLiked));
     formData.append('type_room_id', JSON.stringify(data.type_room_id));
+    formData.append('roomImage', JSON.stringify(data.roomImages));
     const config = {
       withCredentials: false,
       headers: {
@@ -165,29 +173,19 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     };
     try {
       if (currentRoom) {
-        console.info('DATA', data);
-      } else {
-        const response = await axios.post('http://localhost:6969/api/rooms/create', formData, config);
-        if (response.status === 200) {
-          setIdRoom(response.data.data.id);
-          const id = response.data.data.id;
-          if (id) {
-            const formData2 = new FormData();
-            formData2.append('room_id', JSON.stringify(id));
-            formData2.append('roomImage', JSON.stringify(data.roomImages));
-            await axios.post('http://localhost:6969/api/room-image/create', formData2, config);
-            await axios.post(
-              `http://localhost:6969/api/room_service/create-mul/${id}`,
-              data.service
-            );
-            enqueueSnackbar('Tạo phòng thành công!');
-            reset();
-          }
+        formData.append('id', currentRoom?.id);
+        const res1 = await axios.put(`http://localhost:6969/api/rooms/update/${currentRoom.id}`, formData, config);
+        const res2 = await axios.put('http://localhost:6969/api/room-image/update', formData, config);
+        const res3 = await axios.post(`http://localhost:6969/api/room_service/update/${currentRoom?.id}`, data.service);
+        if (res1.status === 200 && res2.status === 200 && res3.status === 200) {
+          enqueueSnackbar('Cập nhật phòng thành công!');
+          reset();
+
         } else {
           enqueueSnackbar({
             variant: 'error',
             autoHideDuration: 3000,
-            message: 'Tạo phòng thất bại',
+            message: 'Cập nhật phòng thất bại',
           });
         }
       }
@@ -226,16 +224,15 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     [setValue, values.roomImages]
   );
 
-
-
   const handleRemoveFile = useCallback(
-    (inputFile: File | string) => {
+    (inputFile: any) => {
       const filtered =
-        values.roomImages && values.roomImages?.filter((file: any) => file !== inputFile);
+        values.roomImages && values.roomImages?.filter((file: any) => file.id !== inputFile.id);
       setValue('roomImages', filtered);
     },
     [setValue, values.roomImages]
   );
+
 
   const handleRemoveAllFiles = useCallback(() => {
     setValue('roomImages', []);
@@ -395,16 +392,18 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1}>
               <Typography variant="subtitle2">Services</Typography>
-              {servicesLoading === false && isLoadingServices === false && (
+              {servicesLoading === false && tableDataServices.length > 0 && (
                 <>
                   <RHFMultiCheckbox
                     name="service"
-                    options={tableDataServices}
+                    options={dfasdf}
                     sx={{
                       display: 'grid',
                       gridTemplateColumns: 'repeat(2, 1fr)',
                     }}
                   />
+
+
                 </>
               )}
             </Stack>

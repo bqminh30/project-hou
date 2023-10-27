@@ -68,7 +68,7 @@ export type IRoom = {
   createdAt: Date;
   updatedAt: Date;
   service: IRoomService[];
-  roomImages: IRoomImage[] ;
+  roomImages: IRoomImage[];
 };
 
 
