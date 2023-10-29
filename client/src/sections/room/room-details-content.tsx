@@ -57,9 +57,16 @@ export default function RoomDetailsContent({ data, services, images }: Props) {
     priceSale,
   } = data;
 
-  const slides = images?.map((slide: IRoomImage | any) => ({
-    src: slide?.name,
-  }));
+  const [slides, setSlides] = useState<IRoomImage[] | any>([])
+
+  useEffect(() => {
+    const slidess = images?.map((slide: IRoomImage | any) => ({
+      src: slide?.name,
+    }));
+    setSlides(slidess)
+  }, [images])
+
+  console.log('slides', images)
 
   const {
     selected: selectedImage,
@@ -99,7 +106,7 @@ export default function RoomDetailsContent({ data, services, images }: Props) {
         </m.div>
 
         <Box gap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)">
-          {slides.length > 0 && slides.slice(0, 4).map((item) => (
+          {slides.length > 0 && slides.slice(0, 4).map((item: any) => (
             <m.div
               key={`${item.src}`}
               whileHover="hover"
