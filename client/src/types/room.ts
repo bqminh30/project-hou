@@ -20,6 +20,17 @@ export type IService = {
   type_service: string;
 };
 
+export type IVoucher = {
+  id: string;
+  name: string;
+  value: number;
+  isShow: number;
+  startDate: Date;
+  endDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type IRoomService = {
   id: string;
   name: string;
@@ -63,7 +74,7 @@ export type IRoom = {
   label: number;
   isLiked: number;
   image: string |any;
-  voucher_id: number | null;
+  voucher_id: number ;
   type_room_id: number;
   createdAt: Date;
   updatedAt: Date;
@@ -101,6 +112,8 @@ export type IBookingOrderData = {
   email: string;
   phonenumber: string;
   fullname: string;
+  emp_email: string;
+  emp_fullname: string;
 }
 
 export type IBookingOrderDetail = {

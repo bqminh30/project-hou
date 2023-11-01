@@ -652,6 +652,27 @@ WHERE room.id NOT IN (
     )
 )
 
+SELECT * FROM room WHERE voucher_id IS NOT NULL  (
+  SELECT * 
+  FROM vouchers as vou 
+  WHERE (
+    vou.startDate <= '2023-10-31 00:00:00'
+    AND vou.endDate >= '2023-10-31 00:00:00'
+  )
+)
+
+
+
+UPDATE room
+JOIN vouchers ON room.voucher_id = vouchers.id
+SET room.priceSale = room.price * ((100 - vouchers.value) / 100)
+WHERE room.voucher_id IS NOT NULL
+  AND vouchers.startDate <= '2023-10-31 00:00:00'
+  AND vouchers.endDate >= '2023-10-31 00:00:00'
+  AND vouchers.isShow = 1;
+
+
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

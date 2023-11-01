@@ -10,15 +10,14 @@ import FormProvider, {
   RHFTextField,
   RHFUpload,
 } from 'src/components/hook-form';
-import { IRoom, IRoomImage, IRoomService, ITypeRoom } from 'src/types/room';
+import { IRoom, IRoomImage, IRoomService, ITypeRoom, IVoucher } from 'src/types/room';
 // _mock
 import { ROOM_LABEL_OPTIONS, _tags } from 'src/_mock';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 // api
-import { useGetServices, useGetTypeRooms } from 'src/api/product';
+import { useGetServices, useGetTypeRooms, useGetVouchers } from 'src/api/product';
 
 import Box from '@mui/material/Box';
-import { Button } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -41,34 +40,22 @@ import { useSnackbar } from 'src/components/snackbar';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 // ----------------------------------------------------------------------
-interface CustomFile extends File {
-  preview?: string;
-}
 
 type PropRoom = {
   currentRoom?: IRoom;
 };
 
-const dfasdf = [
-  { value: 1, label: 'Thuê xe máy' },
-
-  { value: 2, label: 'Thuê ô tô' },
-
-  { value: 3, label: 'Thuê xe đạp' },
-
-  { value: 5, label: 'Tắm bể nước nóng' },
-
-  { value: 6, label: 'Message' }
-]
 
 export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
   const router = useRouter();
   const [tableDataServices, setTableDataServices] = useState<any>([]);
   const [tableDataTypeRoom, setTableDataTypeRoom] = useState<ITypeRoom[]>([]);
+  const [tableDataVoucher, setTableDataVoucher] = useState<any>([]);
 
   const { typerooms, typeroomsLoading, typeroomsEmpty } = useGetTypeRooms();
   const { services, servicesLoading } = useGetServices();
+  const { vouchers, vouchersLoading } = useGetVouchers();
 
   const mdUp = useResponsive('up', 'md');
 
@@ -79,6 +66,10 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
   }, [typerooms]);
 
   useEffect(() => {
+    setTableDataVoucher(vouchers);
+  }, [vouchers]);
+
+  useEffect(() => {
     if (services) {
       const options = services?.map((option) => ({
         value: option.id,
@@ -86,8 +77,9 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
       }));
       setTableDataServices(options);
     }
-
   }, [services]);
+
+
 
   const NewProductSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -96,6 +88,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     image: Yup.mixed<any>().nullable().required('Image is required'),
     status: Yup.number().required('Status is required'),
     type_room_id: Yup.number(),
+    voucher_id: Yup.number(),
     price: Yup.number().moreThan(0, 'Price should not be $0.00'),
     priceSale: Yup.number(),
     label: Yup.number(),
@@ -132,6 +125,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     defaultValues,
   });
 
+
   const {
     reset,
     watch,
@@ -163,6 +157,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     formData.append('label', JSON.stringify(data.label));
     formData.append('isLiked', JSON.stringify(data.isLiked));
     formData.append('type_room_id', JSON.stringify(data.type_room_id));
+    formData.append('voucher_id', JSON.stringify(data?.voucher_id));
     formData.append('roomImage', JSON.stringify(data.roomImages));
     const config = {
       withCredentials: false,
@@ -287,7 +282,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
             Properties
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Additional functions and attributes...
+            Thông tin phòng...
           </Typography>
         </Grid>
       )}
@@ -343,11 +338,15 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
               <RHFTextField name="numberBed" label="Số lượng giường" />
               <RHFTextField name="numberPeople" label="Số người ở tối đa" />
 
-              <RHFSelect native name="label" label="Label" InputLabelProps={{ shrink: true }}>
+              <RHFSelect
+                name="label"
+                label="Label"
+                InputLabelProps={{ shrink: true }}
+                PaperPropsSx={{ textTransform: 'capitalize' }}>
                 {ROOM_LABEL_OPTIONS?.map((item) => (
-                  <option key={item.value} value={item.value}>
+                  <MenuItem key={item.value} value={item.value}>
                     {item.label}
-                  </option>
+                  </MenuItem>
                 ))}
               </RHFSelect>
 
@@ -360,6 +359,19 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
                 PaperPropsSx={{ textTransform: 'capitalize' }}
               >
                 {tableDataTypeRoom?.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+
+              <RHFSelect
+                name="voucher_id"
+                label="Vouchers"
+                InputLabelProps={{ shrink: true }}
+                PaperPropsSx={{ textTransform: 'capitalize' }}
+              >
+                {tableDataVoucher?.map((item: any) => (
                   <MenuItem key={item.id} value={item.id}>
                     {item.name}
                   </MenuItem>
@@ -396,14 +408,12 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
                 <>
                   <RHFMultiCheckbox
                     name="service"
-                    options={dfasdf}
+                    options={tableDataServices}
                     sx={{
                       display: 'grid',
                       gridTemplateColumns: 'repeat(2, 1fr)',
                     }}
                   />
-
-
                 </>
               )}
             </Stack>

@@ -114,6 +114,31 @@ export default function RoomItem({ room, onView, onEdit, onDelete }: Props) {
     </Stack>
   );
 
+  const renderLabel = (
+    <Stack
+      direction="row"
+      alignItems="center"
+      sx={{
+        top: 48,
+        left: 16,
+        zIndex: 9,
+        borderRadius: 1,
+        bgcolor: 'success.main',
+        position: 'absolute',
+        p: '2px 6px 2px 4px',
+        color: 'common.white',
+        typography: 'subtitle2',
+      }}
+    >
+      {
+        (label === 1 && 'Excellent') ||
+        (label === 2 && 'Very good') ||
+        (label === 3 && 'Exceptional') ||
+        'default'
+      }
+    </Stack>
+  );
+
   const renderImages = (
     <Stack
       spacing={0.5}
@@ -223,6 +248,7 @@ export default function RoomItem({ room, onView, onEdit, onDelete }: Props) {
         {renderImages}
 
         {renderTexts}
+        {renderLabel}
 
         {renderInfo}
       </Card>
@@ -253,7 +279,7 @@ export default function RoomItem({ room, onView, onEdit, onDelete }: Props) {
           Edit
         </MenuItem>
 
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             popover.onClose();
             onDelete();
@@ -262,7 +288,7 @@ export default function RoomItem({ room, onView, onEdit, onDelete }: Props) {
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
           Delete
-        </MenuItem>
+        </MenuItem> */}
       </CustomPopover>
     </>
   );

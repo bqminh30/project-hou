@@ -150,6 +150,10 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/order-booking/${MOCK_ID}/edit`,
       },
     },
+    createEmployee: {
+      root: `${ROOTS.DASHBOARD}/create-employee`,
+    }
+    ,
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,

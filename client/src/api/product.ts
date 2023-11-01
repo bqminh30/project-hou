@@ -1,4 +1,4 @@
-import { IRoom, IRoomReview, IService, ITypeRoom } from 'src/types/room';
+import { IRoom, IRoomReview, IService, ITypeRoom, IVoucher } from 'src/types/room';
 import axios, { AxiosRequestConfig } from 'axios';
 // utils
 import { endpoints, fetcher } from 'src/utils/axios';
@@ -41,6 +41,25 @@ export function useGetTypeRooms() {
       typeroomsError: error,
       typeroomsValidating: isValidating,
       typeroomsEmpty: !isLoading && !data.length,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+export function useGetVouchers() {
+  const URL = 'http://localhost:6969/api/voucher/'
+  const fetCher = (url: string) => fetch(url).then((res) => res.json());
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetCher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      vouchers: (data as IVoucher[]) || [],
+      vouchersLoading: isLoading,
+      vouchersError: error,
+      vouchersValidating: isValidating,
+      vouchersEmpty: !isLoading && !data.length,
     }),
     [data, error, isLoading, isValidating]
   );

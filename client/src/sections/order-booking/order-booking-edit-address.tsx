@@ -82,10 +82,7 @@ export default function OrderBookingEditAddress() {
             <br />
           </Stack>
 
-          <Stack sx={{ typography: 'body2' }}>
-            <>
-            </>
-          </Stack>
+
 
           <Stack sx={{ typography: 'body2' }}>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
@@ -100,6 +97,7 @@ export default function OrderBookingEditAddress() {
             </Typography>
             {values?.note === '' ? 'Không có ghi chú' : values?.note}
           </Stack>
+
         </Box>
       </Stack>
 
