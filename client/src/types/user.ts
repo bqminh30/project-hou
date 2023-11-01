@@ -109,6 +109,25 @@ export type IUserItem = {
   isVerified: boolean;
 };
 
+export type IUserItem_2 = {
+  id: string;
+  name: string;
+  city: string;
+  role: string;
+  email: string;
+  state: string;
+  status?: string;
+  address: string;
+  country: string;
+  zipCode: string;
+  company: string;
+  avatarUrl: string;
+  phoneNumber: string;
+  isVerified: boolean;
+  birthday: Date;
+  password: string;
+};
+
 export type IUserAccount = {
   email: string;
   isPublic: boolean;

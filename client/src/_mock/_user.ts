@@ -12,6 +12,11 @@ export const USER_STATUS_OPTIONS = [
   { value: 'rejected', label: 'Rejected' },
 ];
 
+export const USER_ROLE_STATUS_OPTIONS = [
+  { value: '1', label: 'Quản lý' },
+  { value: '2', label: 'Nhân viên' },
+];
+
 export const _userAbout = {
   id: _mock.id(1),
   role: _mock.role(1),

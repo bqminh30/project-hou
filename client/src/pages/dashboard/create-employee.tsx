@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 // sections
-import { FaqsView } from 'src/sections/faqs/view';
+import { UserCreateView } from 'src/sections/create-user/view';
 
 // ----------------------------------------------------------------------
 
-export default function FaqsPage() {
+export default function UserCreatePage() {
   return (
     <>
       <Helmet>
-        <title> Faqs</title>
+        <title> Dashboard: Tạo mới nhân viên</title>
       </Helmet>
 
-      <FaqsView />
+      <UserCreateView />
     </>
   );
 }
