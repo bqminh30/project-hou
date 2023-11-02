@@ -1,4 +1,4 @@
-import { IRoom, IRoomReview, IService, ITypeRoom, IVoucher } from 'src/types/room';
+import { IRoom, IRoomReview, IService, ITypeRoom, IVoucher, IUser } from 'src/types/room';
 import axios, { AxiosRequestConfig } from 'axios';
 // utils
 import { endpoints, fetcher } from 'src/utils/axios';
@@ -122,6 +122,29 @@ export function useGetTypeService(id: string) {
   return memoizedValue;
 }
 
+// ----------------------------------------------------------------------
+
+export function useGetEmployees() {
+  const URL = 'http://localhost:6969/api/employee/list'
+  const fetCher = (url: string) => fetch(url).then((res) => res.json());
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetCher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      employees: (data as IUser[]) || [],
+      employeesLoading: isLoading,
+      employeesError: error,
+      employeesValidating: isValidating,
+      employeesEmpty: !isLoading && !data.length,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
 export function useGetServices() {
   const URL = 'http://localhost:6969/api/services'
   const fetCher = (url: string) => fetch(url).then((res) => res.json()).catch((err) => console.log('err', err));
@@ -215,7 +238,6 @@ export function useGetRoom(id: string) {
     }),
     [data, error, isLoading, isValidating]
   );
-
 
   return memoizedValue;
 }

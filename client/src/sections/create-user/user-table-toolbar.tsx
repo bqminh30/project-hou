@@ -11,7 +11,8 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 // types
-import { IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
+import { IUserTableFilterValue } from 'src/types/user';
+import { IUser, IUserTableFilters } from 'src/types/room';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -43,7 +44,7 @@ export default function UserTableToolbar({
   const handleFilterRole = useCallback(
     (event: SelectChangeEvent<string[]>) => {
       onFilters(
-        'role',
+        'role_id',
         typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
       );
     },
@@ -74,7 +75,7 @@ export default function UserTableToolbar({
 
           <Select
             multiple
-            value={filters.role}
+            value={filters.role_id}
             onChange={handleFilterRole}
             input={<OutlinedInput label="Role" />}
             renderValue={(selected) => selected.map((value) => value).join(', ')}
@@ -86,7 +87,7 @@ export default function UserTableToolbar({
           >
             {roleOptions.map((option) => (
               <MenuItem key={option} value={option}>
-                <Checkbox disableRipple size="small" checked={filters.role.includes(option)} />
+                <Checkbox disableRipple size="small" checked={filters.role_id.includes(option)} />
                 {option}
               </MenuItem>
             ))}

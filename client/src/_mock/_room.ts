@@ -11,19 +11,10 @@ export const ROOM_DETAILS_TABS = [
   { value: 'reviews', label: 'Reviews' },
 ];
 
-// export const ROOM_SIZE_OPTIONS = [
-//   { value: '7', label: '7' },
-//   { value: '8', label: '8' },
-//   { value: '8.5', label: '8.5' },
-//   { value: '9', label: '9' },
-//   { value: '9.5', label: '9.5' },
-//   { value: '10', label: '10' },
-//   { value: '10.5', label: '10.5' },
-//   { value: '11', label: '11' },
-//   { value: '11.5', label: '11.5' },
-//   { value: '12', label: '12' },
-//   { value: '13', label: '13' },
-// ];
+export const EMPLOYEE_STATUS_OPTIONS = [
+  { value: '1', label: 'Active' },
+  { value: '0', label: 'Rejected' },
+];
 
 export const ROOM_LABEL_OPTIONS = [
   { value: '1', label: 'Excellent' },

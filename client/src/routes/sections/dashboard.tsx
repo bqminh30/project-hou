@@ -84,7 +84,10 @@ const KanbanPage = lazy(() => import('src/pages/dashboard/kanban'));
 const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission'));
 // BLANK PAGE
 const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
-const CreateEmployeePage = lazy(() => import('src/pages/dashboard/create-employee'));
+//
+const CreateEmployeePage = lazy(() => import('src/pages/dashboard/create-employee/new'));
+const ListEmployeePage = lazy(() => import('src/pages/dashboard/create-employee/list'));
+const EmployeeAccountPage = lazy(() => import('src/pages/dashboard/create-employee/account'));
 
 // ----------------------------------------------------------------------
 
@@ -159,6 +162,8 @@ export const dashboardRoutes = [
         path: 'create-employee',
         children: [
           { element: <CreateEmployeePage />, index: true },
+          { path: 'list', element: <ListEmployeePage /> },
+          { path: 'account', element: <EmployeeAccountPage /> },
           // { path: 'new', element: <InvoiceCreatePage /> },
         ],
       },

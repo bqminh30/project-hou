@@ -152,6 +152,8 @@ export const paths = {
     },
     createEmployee: {
       root: `${ROOTS.DASHBOARD}/create-employee`,
+      list: `${ROOTS.DASHBOARD}/create-employee/list`,
+      account: `${ROOTS.DASHBOARD}/create-employee/account`,
     }
     ,
     user: {

@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -17,9 +17,10 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 // _mock
-import { _userList, _roles, USER_STATUS_OPTIONS } from 'src/_mock';
+import { _userList, _roles, EMPLOYEE_STATUS_OPTIONS } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useGetEmployees } from 'src/api/product';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -38,28 +39,30 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 // types
-import { IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
+import { IUserTableFilterValue } from 'src/types/user';
+import { IUser, IUserTableFilters } from 'src/types/room';
 //
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
 import UserTableFiltersResult from '../user-table-filters-result';
 
+
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...EMPLOYEE_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'phoneNumber', label: 'Phone Number', width: 180 },
-  { id: 'company', label: 'Company', width: 220 },
-  { id: 'role', label: 'Role', width: 180 },
+  { id: 'fullname', label: 'Name' },
+  { id: 'phonenumber', label: 'Phone Number', width: 180 },
+  { id: 'address', label: 'Address', width: 220 },
+  { id: 'role_id', label: 'Role', width: 180 },
   { id: 'status', label: 'Status', width: 100 },
   { id: '', width: 88 },
 ];
 
 const defaultFilters: IUserTableFilters = {
   name: '',
-  role: [],
+  role_id: [],
   status: 'all',
 };
 
@@ -74,12 +77,14 @@ export default function UserListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_userList);
+  const [tableData, setTableData] = useState();
+
+  const { employees, employeesLoading, employeesEmpty } = useGetEmployees()
 
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: employees,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -108,24 +113,24 @@ export default function UserListView() {
 
   const handleDeleteRow = useCallback(
     (id: string) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      setTableData(deleteRow);
+      const deleteRow = employees.filter((row) => row.id !== id);
+      // setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, table, tableData]
+    [dataInPage.length, table, employees]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
+    const deleteRows = employees.filter((row) => !table.selected.includes(row.id));
+    // setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
+      totalRows: employees.length,
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
     });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+  }, [dataFiltered.length, dataInPage.length, table, employees]);
 
   const handleEditRow = useCallback(
     (id: string) => {
@@ -152,17 +157,17 @@ export default function UserListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.root },
+            { name: 'User', href: paths.dashboard.createEmployee.list },
             { name: 'List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.user.new}
+              href={paths.dashboard.createEmployee.root}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New User
+              New Employee
             </Button>
           }
           sx={{
@@ -191,22 +196,16 @@ export default function UserListView() {
                       ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
                     }
                     color={
-                      (tab.value === 'active' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'banned' && 'error') ||
+                      (tab.value === '1' && 'success') ||
+                      (tab.value === '0' && 'default') ||
                       'default'
                     }
                   >
-                    {tab.value === 'all' && _userList.length}
-                    {tab.value === 'active' &&
-                      _userList.filter((user) => user.status === 'active').length}
-
-                    {tab.value === 'pending' &&
-                      _userList.filter((user) => user.status === 'pending').length}
-                    {tab.value === 'banned' &&
-                      _userList.filter((user) => user.status === 'banned').length}
-                    {tab.value === 'rejected' &&
-                      _userList.filter((user) => user.status === 'rejected').length}
+                    {tab.value === 'all' && employees.length}
+                    {tab.value === '1' &&
+                      employees.filter((user) => user.status === '1').length}
+                    {tab.value === '0' &&
+                      employees.filter((user) => user.status === '0').length}
                   </Label>
                 }
               />
@@ -236,11 +235,11 @@ export default function UserListView() {
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
-              rowCount={tableData.length}
+              rowCount={employees.length}
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  tableData.map((row) => row.id)
+                  employees.map((row) => row.id)
                 )
               }
               action={
@@ -258,13 +257,13 @@ export default function UserListView() {
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
+                  rowCount={employees.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      tableData.map((row) => row.id)
+                      employees.map((row) => row.id)
                     )
                   }
                 />
@@ -288,7 +287,7 @@ export default function UserListView() {
 
                   <TableEmptyRows
                     height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, employees.length)}
                   />
 
                   <TableNoData notFound={notFound} />
@@ -343,11 +342,11 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: IUserItem[];
+  inputData: IUser[];
   comparator: (a: any, b: any) => number;
   filters: IUserTableFilters;
 }) {
-  const { name, status, role } = filters;
+  const { name, status } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -361,7 +360,7 @@ function applyFilter({
 
   if (name) {
     inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (user) => user.fullname.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
@@ -369,9 +368,9 @@ function applyFilter({
     inputData = inputData.filter((user) => user.status === status);
   }
 
-  if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.role));
-  }
+  // if (role.length) {
+  //   inputData = inputData.filter((user) => role.includes(user.role));
+  // }
 
   return inputData;
 }

@@ -11,7 +11,7 @@ import ListItemText from '@mui/material/ListItemText';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // types
-import { IUserItem } from 'src/types/user';
+import { IUser } from 'src/types/room';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -25,7 +25,7 @@ import UserQuickEditForm from './user-quick-edit-form';
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
-  row: IUserItem;
+  row: IUser;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
 };
@@ -37,7 +37,7 @@ export default function UserTableRow({
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  const { name, avatarUrl, company, role, status, email, phoneNumber } = row;
+  const { fullname, avatar, address, role_id, status, email, phonenumber, formatted_birthday } = row;
 
   const confirm = useBoolean();
 
@@ -53,10 +53,10 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={name} src={avatarUrl} sx={{ mr: 2 }} />
+          <Avatar alt={fullname} src={avatar} sx={{ mr: 2 }} />
 
           <ListItemText
-            primary={name}
+            primary={fullname}
             secondary={email}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
@@ -66,23 +66,20 @@ export default function UserTableRow({
           />
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNumber}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phonenumber}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{company}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{address}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {(role_id === 1 && 'Quản lý') || (role_id === 2 && 'Nhân viên ')}
+        </TableCell>
 
         <TableCell>
           <Label
             variant="soft"
-            color={
-              (status === 'active' && 'success') ||
-              (status === 'pending' && 'warning') ||
-              (status === 'banned' && 'error') ||
-              'default'
-            }
+            color={(status === '1' && 'success') || (status === '0' && 'default') || 'default'}
           >
-            {status}
+            {(status === '1' && 'active') || (status === '0' && 'rejected')}
           </Label>
         </TableCell>
 

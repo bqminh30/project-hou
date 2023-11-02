@@ -155,7 +155,10 @@ export function useNavData() {
           title: t('Tạo tài khoản'),
           path: paths.dashboard.createEmployee.root,
           icon: ICONS.user,
-          children: [{ title: t('create'), path: paths.dashboard.createEmployee.root }],
+          children: [
+            { title: t('create'), path: paths.dashboard.createEmployee.root },
+            { title: t('List'), path: paths.dashboard.createEmployee.list },
+            { title: t('Account'), path: paths.dashboard.createEmployee.account }],
         });
       }
 

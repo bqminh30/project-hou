@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -12,23 +12,33 @@ import MenuItem from '@mui/material/MenuItem';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+//
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // _mock
-import { USER_STATUS_OPTIONS } from 'src/_mock';
-// types
-import { IUserItem } from 'src/types/user';
-// assets
-import { countries } from 'src/assets/data';
+import { IUser } from 'src/types/room';
+import { USER_ROLE_STATUS_OPTIONS } from 'src/_mock';
 // components
-import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
+import FormProvider, {
+  RHFSwitch,
+  RHFTextField,
+  RHFUploadAvatar,
+  RHFAutocomplete,
+  RHFSelect,
+} from 'src/components/hook-form';
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
+interface State {
+  date: string;
+}
 
 type Props = {
   open: boolean;
   onClose: VoidFunction;
-  currentUser?: IUserItem;
+  currentUser?: IUser;
 };
 
 export default function UserQuickEditForm({ currentUser, open, onClose }: Props) {
@@ -39,26 +49,24 @@ export default function UserQuickEditForm({ currentUser, open, onClose }: Props)
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     phoneNumber: Yup.string().required('Phone number is required'),
     address: Yup.string().required('Address is required'),
-    country: Yup.string().required('Country is required'),
-    company: Yup.string().required('Company is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    role: Yup.string().required('Role is required'),
+    password: Yup.string().required('Password is required'),
+    role: Yup.number(),
+    zipCode: Yup.string().required('Zip code is required'),
+    birthday: Yup.mixed<any>().nullable().required('Birthday is required'),
+    // not required
   });
 
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.name || '',
+      id: currentUser?.id || '',
+      name: currentUser?.fullname || '',
+      role: currentUser?.role_id || 2,
       email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || '',
       address: currentUser?.address || '',
-      country: currentUser?.country || '',
-      state: currentUser?.state || '',
-      city: currentUser?.city || '',
-      zipCode: currentUser?.zipCode || '',
-      status: currentUser?.status,
-      company: currentUser?.company || '',
-      role: currentUser?.role || '',
+      password: currentUser?.passwordHash || '',
+      zipCode: currentUser?.code || '',
+      birthday: currentUser?.birthday || null,
+      phoneNumber: currentUser?.phonenumber || '',
     }),
     [currentUser]
   );
@@ -70,21 +78,37 @@ export default function UserQuickEditForm({ currentUser, open, onClose }: Props)
 
   const {
     reset,
+    watch,
+    control,
+    setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
+  const values = watch();
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      onClose();
-      enqueueSnackbar('Update success!');
-      console.info('DATA', data);
+      const response = await axios.put(
+        `http://localhost:6969/api/employee/update-quick/${defaultValues.id}`,
+        data
+      );
+      if (response.status === 200) {
+        enqueueSnackbar('Update success!');
+        reset();
+        onClose();
+      }
     } catch (error) {
       console.error(error);
     }
   });
+
+  // const handleChange = (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setValue({ ...values, [prop]: event.target.value });
+  // };
+
+  const inputDate = values?.birthday ? new Date(values?.birthday) : null;
+  const formattedDate = inputDate ? inputDate.toString() : 'N/A';
 
   return (
     <Dialog
@@ -113,54 +137,51 @@ export default function UserQuickEditForm({ currentUser, open, onClose }: Props)
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFSelect name="status" label="Status">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </RHFSelect>
-
-            <Box sx={{ display: { xs: 'none', sm: 'block' } }} />
-
             <RHFTextField name="name" label="Full Name" />
             <RHFTextField name="email" label="Email Address" />
             <RHFTextField name="phoneNumber" label="Phone Number" />
 
-            <RHFAutocomplete
-              name="country"
-              label="Country"
-              options={countries.map((country) => country.label)}
-              getOptionLabel={(option) => option}
-              renderOption={(props, option) => {
-                const { code, label, phone } = countries.filter(
-                  (country) => country.label === option
-                )[0];
-
-                if (!label) {
-                  return null;
-                }
-
-                return (
-                  <li {...props} key={label}>
-                    <Iconify
-                      key={label}
-                      icon={`circle-flags:${code.toLowerCase()}`}
-                      width={28}
-                      sx={{ mr: 1 }}
-                    />
-                    {label} ({code}) +{phone}
-                  </li>
-                );
-              }}
+            {/* <Stack spacing={1.5}>
+              <Controller
+                name="birthday"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <DateField
+                    {...field}
+                    // format="dd/MM/yyyy"
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: !!error,
+                        helperText: error?.message,
+                      },
+                    }}
+                  />
+                )}
+              />
+            </Stack> */}
+            <DatePicker
+              label="Date Picker"
+              value={new Date(values.birthday)}
+              onChange={(newValue) => setValue('birthday', newValue)}
             />
 
-            <RHFTextField name="state" label="State/Region" />
-            <RHFTextField name="city" label="City" />
+
             <RHFTextField name="address" label="Address" />
             <RHFTextField name="zipCode" label="Zip/Code" />
-            <RHFTextField name="company" label="Company" />
-            <RHFTextField name="role" label="Role" />
+            <RHFSelect
+              fullWidth
+              name="role"
+              label="Chức vụ"
+              InputLabelProps={{ shrink: true }}
+              PaperPropsSx={{ textTransform: 'capitalize' }}
+            >
+              {USER_ROLE_STATUS_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </RHFSelect>
           </Box>
         </DialogContent>
 

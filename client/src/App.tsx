@@ -29,6 +29,7 @@ import Router from 'src/routes/sections';
 import ThemeProvider from 'src/theme';
 // locales
 import { LocalizationProvider } from 'src/locales';
+
 // hooks
 import { useScrollToTop } from 'src/hooks/use-scroll-to-top';
 // components

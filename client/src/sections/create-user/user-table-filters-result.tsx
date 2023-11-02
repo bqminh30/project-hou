@@ -5,7 +5,8 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Stack, { StackProps } from '@mui/material/Stack';
 // types
-import { IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
+import { IUserTableFilterValue } from 'src/types/user';
+import { IUser, IUserTableFilters } from 'src/types/room';
 // components
 import Iconify from 'src/components/iconify';
 
@@ -34,14 +35,14 @@ export default function UserTableFiltersResult({
   };
 
   const handleRemoveRole = (inputValue: string) => {
-    const newValue = filters.role.filter((item) => item !== inputValue);
+    const newValue = filters.role_id.filter((item) => item !== inputValue);
     onFilters('role', newValue);
   };
 
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
-        <strong>{results}</strong>
+        <strong>{results}{" "}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
           results found
         </Box>
@@ -50,14 +51,14 @@ export default function UserTableFiltersResult({
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.status !== 'all' && (
           <Block label="Status:">
-            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+            <Chip size="small" label={filters.status === '0' ? ' Rejected' : 'Active'} onDelete={handleRemoveStatus} />
           </Block>
         )}
 
-        {!!filters.role.length && (
+        {!!filters.role_id.length && (
           <Block label="Role:">
-            {filters.role.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
+            {filters.role_id.map((item) => (
+              <Chip key={item} label={item === '0' ? ' rejected' : 'active'} size="small" onDelete={() => handleRemoveRole(item)} />
             ))}
           </Block>
         )}

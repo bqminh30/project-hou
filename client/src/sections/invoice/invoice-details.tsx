@@ -50,6 +50,8 @@ export default function InvoiceDetails({ invoice }: Props) {
     setCurrentStatus(event.target.value);
   }, []);
 
+  console.log('invoice', invoice)
+
   const renderTotal = (
     <>
       <StyledTableRow>
