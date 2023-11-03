@@ -8,6 +8,8 @@ import {
   StyleSheet,
   StatusBar,
   Alert,
+  TouchableWithoutFeedback,
+  Keyboard
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 // import LinearGradient from 'react-native-linear-gradient';
@@ -18,7 +20,9 @@ import Feather from "react-native-vector-icons/Feather";
 import { useTheme } from "react-native-paper";
 import { COLORS } from "../config/theme";
 
-// import { AuthContext } from '../components/context';
+//redux
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { loginAction } from "../redux/actions/authAction";
 
 // import Users from '../model/users';
 
@@ -31,6 +35,8 @@ const SignInScreen = ({ navigation }) => {
     isValidUser: true,
     isValidPassword: true,
   });
+
+  const dispatch = useDispatch();
 
   const { colors } = useTheme();
 
@@ -55,7 +61,7 @@ const SignInScreen = ({ navigation }) => {
   };
 
   const handlePasswordChange = (val) => {
-    if (val.trim().length >= 8) {
+    if (val.trim().length >= 3) {
       setData({
         ...data,
         password: val,
@@ -91,7 +97,7 @@ const SignInScreen = ({ navigation }) => {
     }
   };
 
-  const loginHandle = (userName, password) => {
+  const loginHandle = async (userName, password) => {
     // const foundUser = Users.filter( item => {
     //     return userName == item.username && password == item.password;
     // } );
@@ -105,16 +111,17 @@ const SignInScreen = ({ navigation }) => {
       return;
     }
 
-    if (foundUser.length == 0) {
-      Alert.alert("Invalid User!", "Username or password is incorrect.", [
-        { text: "Okay" },
-      ]);
-      return;
-    }
-    // signIn(foundUser);
+    // if (foundUser.length == 0) {
+    //   Alert.alert("Invalid User!", "Username or password is incorrect.", [
+    //     { text: "Okay" },
+    //   ]);
+    //   return;
+    // }
+    dispatch(loginAction(userName, password));
   };
 
   return (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
     <View style={styles.container}>
       <StatusBar backgroundColor="#009387" barStyle="light-content" />
       <View style={styles.header}>
@@ -264,6 +271,7 @@ const SignInScreen = ({ navigation }) => {
         </View>
       </Animatable.View>
     </View>
+    </TouchableWithoutFeedback>
   );
 };
 

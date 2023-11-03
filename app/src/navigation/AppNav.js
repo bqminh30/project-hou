@@ -1,15 +1,45 @@
-import {ActivityIndicator, Text, View} from 'react-native';
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from "react";
+import { View, ActivityIndicator, StatusBar } from "react-native";
 
-import AppStack from './AppStack';
-import TabNavigation from './TabNavigator';
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { Provider, useDispatch, useSelector } from "react-redux";
+
+import AppStack from "./AppStack";
+import TabNavigation from "./TabNavigator";
 
 const AppNav = () => {
+  const { authToken, user } = useSelector((state) => state.authReducer);
+  const [loading, setLoading] = useState(true);
+  const dispath = useDispatch();
+  const navigation = useNavigation();
+  console.log('App Nav', authToken, user)
+
+  const init = async () => {
+    await dispath(initialize());
+  };
+
+  useEffect(() => {
+    init();
+    setLoading(false);
+  }, []);
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <ActivityIndicator size="small" />
+      </View>
+    );
+  }
+
   return (
     <>
+      <StatusBar backgroundColor="black" barStyle="light-content" />
+      {authToken == undefined || authToken == null ? (
+        <AppStack />
+      ) : (
         <TabNavigation />
+      )}
     </>
-  )
-}
+  );
+};
 
-export default AppNav
+export default AppNav;
