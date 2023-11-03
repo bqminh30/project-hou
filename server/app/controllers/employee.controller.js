@@ -189,19 +189,35 @@ exports.update = async (req, res, next) => {
       } else if (err) {
         res.send(err);
       } else {
+        console.log('req.body', req.body)
+        let dataImage = "";
         // store image in database
-        // let imageName = req.file.originalname;
         const fullname = req.body.fullname;
         const email = req.body.email;
         const phonenumber = req.body.phonenumber;
         const status = req.body.status;
         const address = req.body.address;
         const birthday = req.body.birthday;
-        // const avatar = imageName;
-        const avatar = req.body.avatar;
         const code = req.body.code;
         const role_id = req.body.role_id;
         const createAt = new Date();
+
+        let imageName = req.body.image;
+        const containsCloudinary = imageName.indexOf("res.cloudinary.com") !== -1;
+        if(containsCloudinary){
+          dataImage = imageName
+        }else {
+          const imagePath = JSON.parse(imageName);
+          await cloudinary.uploader
+          .upload(
+            imagePath.path
+              ? `G:/ProjectHou/images/p2/${imagePath.path}`
+              : req.body.image
+          )
+          .then((result) => (dataImage = result.url))
+          .catch((err) => console.log("err", err));
+        }
+
         const data = {
           fullname,
           email,
@@ -209,7 +225,7 @@ exports.update = async (req, res, next) => {
           status,
           address,
           birthday,
-          avatar,
+          avatar: dataImage,
           role_id,
           code,
           createAt,
@@ -273,8 +289,7 @@ exports.updateQuick = async (req, res, next) => {
     const role_id = req.body.role;
 
     const inputDate = new Date(birthday);
-  const formattedDate = inputDate.toString();
-
+    const formattedDate = inputDate.toString();
 
     const data = {
       fullname,
@@ -319,7 +334,7 @@ exports.updateQuick = async (req, res, next) => {
           } else {
             res.status(200).send({
               message: "Cập nhật thông tin thành công",
-              data: data
+              data: data,
             });
           }
         });

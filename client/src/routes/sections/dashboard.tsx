@@ -87,8 +87,10 @@ const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
 //
 const CreateEmployeePage = lazy(() => import('src/pages/dashboard/create-employee/new'));
 const ListEmployeePage = lazy(() => import('src/pages/dashboard/create-employee/list'));
-const EmployeeAccountPage = lazy(() => import('src/pages/dashboard/create-employee/account'));
+const EmployeeAccountPage = lazy(() => import('src/pages/dashboard/account/account'));
 
+// FICILITIES
+const OverviewFicilitiesPage = lazy(() => import('src/pages/dashboard/facilities'))
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -110,6 +112,7 @@ export const dashboardRoutes = [
       { path: 'banking', element: <OverviewBankingPage /> },
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
+      { path: 'ficilities', element: <OverviewFicilitiesPage /> },
       {
         path: 'type-room',
         children: [
@@ -159,12 +162,16 @@ export const dashboardRoutes = [
         ],
       },
       {
+        path: 'account-employee',
+        children: [
+          { element: <EmployeeAccountPage />, index: true },
+        ],
+      },
+      {
         path: 'create-employee',
         children: [
           { element: <CreateEmployeePage />, index: true },
           { path: 'list', element: <ListEmployeePage /> },
-          { path: 'account', element: <EmployeeAccountPage /> },
-          // { path: 'new', element: <InvoiceCreatePage /> },
         ],
       },
       {

@@ -1,83 +1,132 @@
 import * as Yup from 'yup';
-import { useCallback } from 'react';
-import { useForm } from 'react-hook-form';
+import { useCallback, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
+import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+// auth
+import { useAuthContext } from 'src/auth/hooks';
+// _mock
+import { USER_ROLE_STATUS_OPTIONS } from 'src/_mock';
 // utils
 import { fData } from 'src/utils/format-number';
-// assets
-import { countries } from 'src/assets/data';
+// routes
+import { useRouter } from 'src/routes/hooks';
+// types
+import { IUserItem_2 } from 'src/types/user';
 // components
-import Iconify from 'src/components/iconify';
+import Label from 'src/components/label';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFSwitch,
   RHFTextField,
   RHFUploadAvatar,
   RHFAutocomplete,
+  RHFSelect,
 } from 'src/components/hook-form';
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
 export default function AccountGeneral() {
+  const router = useRouter();
+
+  const { user, logout } = useAuthContext();
+
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useMockedUser();
-
-  const UpdateUserSchema = Yup.object().shape({
-    displayName: Yup.string().required('Name is required'),
+  const NewUserSchema = Yup.object().shape({
+    fullname: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    photoURL: Yup.mixed<any>().nullable().required('Avatar is required'),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    country: Yup.string().required('Country is required'),
+    phonenumber: Yup.string().required('Phone number is required'),
     address: Yup.string().required('Address is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    zipCode: Yup.string().required('Zip code is required'),
-    about: Yup.string().required('About is required'),
+    role_id: Yup.string().required('Role is required'),
+    code: Yup.string().required('Zip code is required'),
+    avatar: Yup.mixed<any>().nullable().required('Avatar is required'),
+    birthday: Yup.mixed<any>().nullable().required('Expired date is required'),
     // not required
-    isPublic: Yup.boolean(),
+    status: Yup.string(),
   });
 
-  const defaultValues = {
-    displayName: user?.displayName || '',
-    email: user?.email || '',
-    photoURL: user?.photoURL || null,
-    phoneNumber: user?.phoneNumber || '',
-    country: user?.country || '',
-    address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
-    zipCode: user?.zipCode || '',
-    about: user?.about || '',
-    isPublic: user?.isPublic || false,
-  };
+  const defaultValues = useMemo(
+    () => ({
+      id: user?.id || '',
+      fullname: user?.fullname || '',
+      email: user?.email || '',
+      phonenumber: user?.phonenumber || '',
+      address: user?.address || '',
+      role_id: user?.role_id || '',
+      code: user?.code || '',
+      avatar: user?.avatar || null,
+      birthday: user?.birthday || null,
+      status: user?.status || '',
+    }),
+    [user]
+  );
 
   const methods = useForm({
-    resolver: yupResolver(UpdateUserSchema),
+    // resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
 
   const {
+    reset,
+    watch,
+    control,
     setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
+  const values = watch();
+
   const onSubmit = handleSubmit(async (data) => {
+    const formData = new FormData();
+    formData.append('fullname', data.fullname);
+    formData.append('image', data.avatar);
+    formData.append('birthday', data.birthday);
+    formData.append('email', data.email);
+    formData.append('phonenumber', data.phonenumber);
+    formData.append('code', data.code);
+    formData.append('role_id', data.role_id);
+    formData.append('status', data.status);
+    formData.append('address', data.address);
+    const config = {
+      withCredentials: false,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'multipart/form-data',
+      },
+    };
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      enqueueSnackbar('Update success!');
-      console.info('DATA', data);
+      const response = await axios.put(
+        `http://localhost:6969/api/employee/update/${defaultValues.id}`,
+        formData,
+        config
+      );
+      if (response.status === 200) {
+        enqueueSnackbar({
+          variant: 'success',
+          autoHideDuration: 3000,
+          message: 'Update success',
+        });
+        // reset();
+      } else {
+        enqueueSnackbar({
+          variant: 'error',
+          autoHideDuration: 3000,
+          message: 'Update error',
+        });
+      }
     } catch (error) {
       console.error(error);
     }
@@ -92,7 +141,7 @@ export default function AccountGeneral() {
       });
 
       if (file) {
-        setValue('photoURL', newFile, { shouldValidate: true });
+        setValue('avatar', newFile, { shouldValidate: true });
       }
     },
     [setValue]
@@ -102,38 +151,40 @@ export default function AccountGeneral() {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Card sx={{ pt: 10, pb: 5, px: 3, textAlign: 'center' }}>
-            <RHFUploadAvatar
-              name="photoURL"
-              maxSize={3145728}
-              onDrop={handleDrop}
-              helperText={
-                <Typography
-                  variant="caption"
-                  sx={{
-                    mt: 3,
-                    mx: 'auto',
-                    display: 'block',
-                    textAlign: 'center',
-                    color: 'text.disabled',
-                  }}
-                >
-                  Allowed *.jpeg, *.jpg, *.png, *.gif
-                  <br /> max size of {fData(3145728)}
-                </Typography>
+          <Card sx={{ pt: 10, pb: 5, px: 3 }}>
+            <Label
+              color={
+                (values.status === '1' && 'success') ||
+                (values.status === '0' && 'error') ||
+                'warning'
               }
-            />
+              sx={{ position: 'absolute', top: 24, right: 24 }}
+            >
+              {values.status === '1' ? 'active' : 'banned'}
+            </Label>
 
-            <RHFSwitch
-              name="isPublic"
-              labelPlacement="start"
-              label="Public Profile"
-              sx={{ mt: 5 }}
-            />
-
-            <Button variant="soft" color="error" sx={{ mt: 3 }}>
-              Delete User
-            </Button>
+            <Box sx={{ mb: 5 }}>
+              <RHFUploadAvatar
+                name="avatar"
+                maxSize={3145728}
+                onDrop={handleDrop}
+                helperText={
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      mt: 3,
+                      mx: 'auto',
+                      display: 'block',
+                      textAlign: 'center',
+                      color: 'text.disabled',
+                    }}
+                  >
+                    Allowed *.jpeg, *.jpg, *.png, *.gif
+                    <br /> max size of {fData(3145728)}
+                  </Typography>
+                }
+              />
+            </Box>
           </Card>
         </Grid>
 
@@ -148,47 +199,34 @@ export default function AccountGeneral() {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="displayName" label="Name" />
+              <RHFTextField name="fullname" label="Full Name" />
               <RHFTextField name="email" label="Email Address" />
-              <RHFTextField name="phoneNumber" label="Phone Number" />
-              <RHFTextField name="address" label="Address" />
+              <RHFTextField name="phonenumber" label="Phone Number" />
 
-              <RHFAutocomplete
-                name="country"
-                label="Country"
-                options={countries.map((country) => country.label)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => {
-                  const { code, label, phone } = countries.filter(
-                    (country) => country.label === option
-                  )[0];
-
-                  if (!label) {
-                    return null;
-                  }
-
-                  return (
-                    <li {...props} key={label}>
-                      <Iconify
-                        key={label}
-                        icon={`circle-flags:${code.toLowerCase()}`}
-                        width={28}
-                        sx={{ mr: 1 }}
-                      />
-                      {label} ({code}) +{phone}
-                    </li>
-                  );
-                }}
+              <DatePicker
+                label="Date Picker"
+                value={new Date(values.birthday)}
+                onChange={(newValue) => setValue('birthday', newValue)}
               />
 
-              <RHFTextField name="state" label="State/Region" />
-              <RHFTextField name="city" label="City" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
+              <RHFTextField name="address" label="Address" />
+              <RHFTextField name="code" label="Zip/Code" />
+              {/* <RHFSelect
+                fullWidth
+                name="role_id"
+                label="Chức vụ"
+                InputLabelProps={{ shrink: true }}
+                PaperPropsSx={{ textTransform: 'capitalize' }}
+              >
+                {USER_ROLE_STATUS_OPTIONS.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </RHFSelect> */}
             </Box>
 
-            <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              <RHFTextField name="about" multiline rows={4} label="About" />
-
+            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Save Changes
               </LoadingButton>

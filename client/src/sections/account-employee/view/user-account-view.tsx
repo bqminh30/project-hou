@@ -13,9 +13,6 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import AccountGeneral from '../account-general';
-import AccountBilling from '../account-billing';
-import AccountSocialLinks from '../account-social-links';
-import AccountNotifications from '../account-notifications';
 import AccountChangePassword from '../account-change-password';
 
 // ----------------------------------------------------------------------
@@ -51,7 +48,7 @@ export default function AccountView() {
         heading="Account"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.createEmployee.root },
+          { name: 'User', href: paths.dashboard.accountEmployee.root },
           { name: 'Account' },
         ]}
         sx={{

@@ -5,6 +5,18 @@ export type IRoomFilters = {
   services: string[];
 };
 
+export type IFacilities = {
+  id: string;
+  name: string;
+  image: string;
+  location: string;
+  phone: string;
+  logo: string;
+  title: string;
+  updatedAt: Date;
+  createdAt: Date;
+};
+
 export type ITypeRoom = {
   id: string;
   name: string;

@@ -90,6 +90,11 @@ export function useNavData() {
               path: paths.dashboard.general.file,
               icon: ICONS.file,
             },
+            {
+              title: t('ficilities'),
+              path: paths.dashboard.general.ficilities,
+              icon: ICONS.banking,
+            },
           ],
         },
         // MANAGEMENT
@@ -145,6 +150,14 @@ export function useNavData() {
                 { title: t('Danh sách'), path: paths.dashboard.orderBooking.root },
               ],
             },
+            {
+              title: t('Cá nhân'),
+              path: paths.dashboard.accountEmployee.root,
+              icon: ICONS.user,
+              children: [
+                { title: t('Cá nhân'), path: paths.dashboard.accountEmployee.root },
+              ],
+            }
           ],
         },
       ];
@@ -157,8 +170,8 @@ export function useNavData() {
           icon: ICONS.user,
           children: [
             { title: t('create'), path: paths.dashboard.createEmployee.root },
-            { title: t('List'), path: paths.dashboard.createEmployee.list },
-            { title: t('Account'), path: paths.dashboard.createEmployee.account }],
+            { title: t('List'), path: paths.dashboard.createEmployee.list }
+          ],
         });
       }
 

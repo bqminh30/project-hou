@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 // sections
-import { AccountView } from 'src/sections/account/view';
+import { OverviewFacilitiesView } from 'src/sections/overview/file/view';
 
 // ----------------------------------------------------------------------
 
-export default function AccountPage() {
+export default function OverviewFilePage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Account Settings</title>
+        <title> Dashboard: File</title>
       </Helmet>
 
-      <AccountView />
+      <OverviewFacilitiesView />
     </>
   );
 }

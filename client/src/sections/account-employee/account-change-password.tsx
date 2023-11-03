@@ -1,6 +1,8 @@
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+// auth
+import { useAuthContext } from 'src/auth/hooks';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Card from '@mui/material/Card';
@@ -18,6 +20,8 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 export default function AccountChangePassword() {
   const { enqueueSnackbar } = useSnackbar();
+
+  const { user, logout } = useAuthContext();
 
   const password = useBoolean();
 

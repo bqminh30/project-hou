@@ -1,4 +1,4 @@
-import { IRoom, IRoomReview, IService, ITypeRoom, IVoucher, IUser } from 'src/types/room';
+import { IRoom, IRoomReview, IService, ITypeRoom, IVoucher, IUser, IFacilities } from 'src/types/room';
 import axios, { AxiosRequestConfig } from 'axios';
 // utils
 import { endpoints, fetcher } from 'src/utils/axios';
@@ -24,6 +24,25 @@ export function useGetProducts() {
       productsEmpty: !isLoading && !data?.products.length,
     }),
     [data?.products, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+export function useGetFacilities() {
+  const URL = 'http://localhost:6969/api/facilities'
+  const fetCher = (url: string) => fetch(url).then((res) => res.json());
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetCher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      facilities: (data as IFacilities) || [],
+      facilitiesLoading: isLoading,
+      facilitiesError: error,
+      facilitiesValidating: isValidating,
+      facilitiesEmpty: !isLoading && !data.length,
+    }),
+    [data, error, isLoading, isValidating]
   );
 
   return memoizedValue;

@@ -96,7 +96,7 @@ Employee.checkEmailCodeExist = (email, code, userId) => {
 Employee.updateProfile = (data, userId) => {
   return new Promise((resolve, reject) => {
     sql.query(
-      "UPDATE employee SET fullname = ?,phonenumber = ?, status = ?, email = ?, code = ?, address = ?, birthday = ?, avatar = ?, role_id = ?, createdAt =? WHERE id = ?",
+      "UPDATE employee SET fullname = ?,phonenumber = ?, status = ?, email = ?, code = ?, address = ?, birthday = ?, avatar = ?, role_id = ?, updatedAt =? WHERE id = ?",
       [
         data.fullname,
         data.phonenumber,
@@ -107,7 +107,7 @@ Employee.updateProfile = (data, userId) => {
         data.birthday,
         data.avatar,
         data.role_id,
-        data.createAt,
+        new Date(),
         userId,
       ],
       (error, res) => {
