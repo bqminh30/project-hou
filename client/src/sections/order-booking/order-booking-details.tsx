@@ -94,7 +94,7 @@ export default function InvoiceDetails({ order, order_detail }: Props) {
       <Grid xs={12} md={3} sx={{ py: 3, textAlign: 'right' }}>
         <Typography variant="subtitle2">Have a Question?</Typography>
 
-        <Typography variant="body2">support@minimals.cc</Typography>
+        <Typography variant="body2">minh.dev@gmail.com</Typography>
       </Grid>
     </Grid>
   );
@@ -207,8 +207,12 @@ export default function InvoiceDetails({ order, order_detail }: Props) {
           </Stack>
 
           <Stack sx={{ typography: 'body2' }}>
-            <>
-            </>
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              Thông tin nhân viên
+            </Typography>
+            Họ tên: {order?.emp_fullname}
+            <br />
+            Email: {order?.emp_email}
           </Stack>
 
           <Stack sx={{ typography: 'body2' }}>

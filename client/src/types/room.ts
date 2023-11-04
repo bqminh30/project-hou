@@ -1,8 +1,20 @@
-export type IRoomFilterValue = string | string[]  | null;
+export type IRoomFilterValue = string | string[] | null;
 
 export type IRoomFilters = {
   labels: string;
   services: string[];
+};
+
+export type IFacilities = {
+  id: string;
+  name: string;
+  image: string;
+  location: string;
+  phone: string;
+  logo: string;
+  title: string;
+  updatedAt: Date;
+  createdAt: Date;
 };
 
 export type ITypeRoom = {
@@ -18,6 +30,17 @@ export type IService = {
   price: number;
   type_service_id: number | null;
   type_service: string;
+};
+
+export type IVoucher = {
+  id: string;
+  name: string;
+  value: number;
+  isShow: number;
+  startDate: Date;
+  endDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type IRoomService = {
@@ -36,7 +59,7 @@ export type IRoomReview = {
   id: string;
   fullname: string;
   phonenumber: string;
-  email:string;
+  email: string;
   content: string;
   image: string;
   rating: number;
@@ -62,15 +85,14 @@ export type IRoom = {
   status: number;
   label: number;
   isLiked: number;
-  image: string |any;
-  voucher_id: number | null;
+  image: string | any;
+  voucher_id: number;
   type_room_id: number;
   createdAt: Date;
   updatedAt: Date;
   service: IRoomService[];
   roomImages: IRoomImage[];
 };
-
 
 export type IBookingOrder = {
   id: string;
@@ -84,7 +106,7 @@ export type IBookingOrder = {
   createdAt: Date | null;
   updatedAt: Date | null;
   customer: string;
-}
+};
 
 export type IBookingOrderData = {
   id: number | string;
@@ -101,7 +123,9 @@ export type IBookingOrderData = {
   email: string;
   phonenumber: string;
   fullname: string;
-}
+  emp_email: string;
+  emp_fullname: string;
+};
 
 export type IBookingOrderDetail = {
   checkinDate: Date | string | any;
@@ -112,8 +136,7 @@ export type IBookingOrderDetail = {
   total: string;
   room_name: string;
   room_id: string;
-}
-
+};
 
 export type IOrderBookingTableFilterValue = string | string[] | Date | null;
 
@@ -123,4 +146,28 @@ export type IOrderBookingTableFilters = {
   status: number | string;
   createdDate: Date | null;
   endDate: Date | null;
+};
+
+export type IUser = {
+  id: string;
+  fullname: string;
+  phonenumber: string;
+  code: string;
+  passwordHash: string;
+  address: string;
+  birthday: Date;
+  avatar: string;
+  status: string;
+  email: string;
+  role_id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  formatted_birthday: string;
+};
+
+
+export type IUserTableFilters = {
+  name: string;
+  role_id: string[];
+  status: string;
 };

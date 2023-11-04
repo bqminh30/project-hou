@@ -37,10 +37,9 @@ export default function InvoiceNewEditStatusDate() {
         fullWidth
         select
         name="status"
-        value={values.status}
         label="Trạng thái đơn"
-      // InputLabelProps={{ shrink: true }}
-      // PaperPropsSx={{ textTransform: 'capitalize' }}
+        InputLabelProps={{ shrink: true }}
+        PaperPropsSx={{ textTransform: 'capitalize' }}
       >
         {ORDER_BOOKING_STATUS_OPTIONS.map((option) => (
           <MenuItem key={option.value} value={option.value} >
@@ -73,27 +72,6 @@ export default function InvoiceNewEditStatusDate() {
         value={fDateTime(values.createdDate)}
       />
 
-      {/* <Controller
-        name="createdDate"
-
-        control={control}
-        render={({ field, fieldState: { error } }) => (
-          <DatePicker
-            label={field.value ? field.value : '1'}
-            value={field.value}
-            onChange={(newValue) => {
-              field.onChange(newValue);
-            }}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                error: !!error,
-                helperText: error?.message,
-              },
-            }}
-          />
-        )}
-      /> */}
 
 
     </Stack>

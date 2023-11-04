@@ -106,6 +106,7 @@ export const paths = {
       banking: `${ROOTS.DASHBOARD}/banking`,
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
+      ficilities: `${ROOTS.DASHBOARD}/ficilities`,
     },
     typeRoom: {
       root: `${ROOTS.DASHBOARD}/type-room`,
@@ -150,6 +151,14 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/order-booking/${MOCK_ID}/edit`,
       },
     },
+    accountEmployee: {
+      root: `${ROOTS.DASHBOARD}/account-employee`,
+    },
+    createEmployee: {
+      root: `${ROOTS.DASHBOARD}/create-employee`,
+      list: `${ROOTS.DASHBOARD}/create-employee/list`,
+    }
+    ,
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,

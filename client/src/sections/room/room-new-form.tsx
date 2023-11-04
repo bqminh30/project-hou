@@ -58,8 +58,6 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
 
   const { typerooms, typeroomsLoading, typeroomsEmpty } = useGetTypeRooms();
   const { services, servicesLoading } = useGetServices();
-  const [idRoom, setIdRoom] = useState();
-
   const mdUp = useResponsive('up', 'md');
 
   const { enqueueSnackbar } = useSnackbar();
@@ -169,7 +167,6 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
       } else {
         const response = await axios.post('http://localhost:6969/api/rooms/create', formData, config);
         if (response.status === 200) {
-          setIdRoom(response.data.data.id);
           const id = response.data.data.id;
           if (id) {
             const formData2 = new FormData();
@@ -290,7 +287,7 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
             Properties
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Additional functions and attributes...
+            Thông tin phòng...
           </Typography>
         </Grid>
       )}

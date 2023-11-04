@@ -1,12 +1,13 @@
 // import AppLoading from 'expo-app-loading';
 
 import "react-native-gesture-handler";
-import "./ignoreWarning";
-
 import React, { useCallback, useEffect, useState } from "react";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { store } from "./src/redux/store";
 
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import "./ignoreWarning";
 import AppNav from "./src/navigation/AppNav";
-import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 
 require("moment/locale/vi");
@@ -28,10 +29,10 @@ export default function App() {
   }
 
   return (
-    // <View onLayout={onLayoutRootView}>
-    <NavigationContainer>
-      <AppNav />
-    </NavigationContainer>
-    // </View>
+    <Provider store={store}>
+        <NavigationContainer>
+          <AppNav />
+        </NavigationContainer>
+      </Provider>
   );
 }

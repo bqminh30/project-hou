@@ -6,7 +6,7 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
-import RoomNewEditForm from '../room-new-edit-form';
+import RoomNewEditForm from '../room-new-form';
 
 // ----------------------------------------------------------------------
 

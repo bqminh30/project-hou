@@ -170,7 +170,7 @@ export default function JobNewEditForm({ currentJob }: Props) {
             Properties
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Additional functions and attributes...
+            Thông tin phòng...
           </Typography>
         </Grid>
       )}

@@ -1,4 +1,4 @@
-import { IRoom, IRoomReview, IService, ITypeRoom } from 'src/types/room';
+import { IRoom, IRoomReview, IService, ITypeRoom, IVoucher, IUser, IFacilities } from 'src/types/room';
 import axios, { AxiosRequestConfig } from 'axios';
 // utils
 import { endpoints, fetcher } from 'src/utils/axios';
@@ -29,6 +29,25 @@ export function useGetProducts() {
   return memoizedValue;
 }
 
+export function useGetFacilities() {
+  const URL = 'http://localhost:6969/api/facilities'
+  const fetCher = (url: string) => fetch(url).then((res) => res.json());
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetCher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      facilities: (data as IFacilities) || [],
+      facilitiesLoading: isLoading,
+      facilitiesError: error,
+      facilitiesValidating: isValidating,
+      facilitiesEmpty: !isLoading && !data.length,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
 export function useGetTypeRooms() {
   const URL = 'http://localhost:6969/api/typerooms'
   const fetCher = (url: string) => fetch(url).then((res) => res.json());
@@ -41,6 +60,25 @@ export function useGetTypeRooms() {
       typeroomsError: error,
       typeroomsValidating: isValidating,
       typeroomsEmpty: !isLoading && !data.length,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+export function useGetVouchers() {
+  const URL = 'http://localhost:6969/api/voucher/'
+  const fetCher = (url: string) => fetch(url).then((res) => res.json());
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetCher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      vouchers: (data as IVoucher[]) || [],
+      vouchersLoading: isLoading,
+      vouchersError: error,
+      vouchersValidating: isValidating,
+      vouchersEmpty: !isLoading && !data.length,
     }),
     [data, error, isLoading, isValidating]
   );
@@ -102,6 +140,29 @@ export function useGetTypeService(id: string) {
 
   return memoizedValue;
 }
+
+// ----------------------------------------------------------------------
+
+export function useGetEmployees() {
+  const URL = 'http://localhost:6969/api/employee/list'
+  const fetCher = (url: string) => fetch(url).then((res) => res.json());
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetCher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      employees: (data as IUser[]) || [],
+      employeesLoading: isLoading,
+      employeesError: error,
+      employeesValidating: isValidating,
+      employeesEmpty: !isLoading && !data.length,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
 
 export function useGetServices() {
   const URL = 'http://localhost:6969/api/services'
@@ -196,7 +257,6 @@ export function useGetRoom(id: string) {
     }),
     [data, error, isLoading, isValidating]
   );
-
 
   return memoizedValue;
 }

@@ -18,18 +18,12 @@ const Employee = function (employee) {
 };
 
 Employee.regiser = (newEmployee, result) => {
-  // if (newEmployee.role_id !== 2) {
-  //   return result({
-  //     status: 403,
-  //     message: "Only admin users can create employees with the 'staff' role.",
-  //   }, null);
-  // }
-
   sql.query(
     "SELECT COUNT(*) AS cnt FROM employee WHERE email = ? ",
     newEmployee.email,
     function (err, data) {
       if (err) {
+        console.log('errr1', err)
         result(err, null);
         return;
       } else {
@@ -41,10 +35,17 @@ Employee.regiser = (newEmployee, result) => {
           return;
         } else {
           sql.query(
-            "INSERT INTO employee (fullname, email, passwordHash, role_id) VALUES (?,?,?, 1)",
-            [newEmployee.fullname, newEmployee.email, newEmployee.password],
+            `
+            INSERT INTO employee (fullname,phonenumber,code, email, passwordHash,address, birthday, avatar,status, role_id, createdAt, updatedAt) 
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+            `,
+            [newEmployee.fullname, newEmployee.phonenumber, newEmployee.code,
+              newEmployee.email, newEmployee.password, newEmployee.address,
+              newEmployee.birthday, newEmployee.dataImage, newEmployee.status,
+              newEmployee.role_id, new Date(), new Date()],
             (err, res) => {
               if (err) {
+                console.log('errr2', err)
                 result({
                   status: 400,
                   message: `Lỗi ${err}`,
@@ -95,7 +96,7 @@ Employee.checkEmailCodeExist = (email, code, userId) => {
 Employee.updateProfile = (data, userId) => {
   return new Promise((resolve, reject) => {
     sql.query(
-      "UPDATE employee SET fullname = ?,phonenumber = ?, status = ?, email = ?, code = ?, address = ?, birthday = ?, avatar = ?, role_id = ?, createdAt =? WHERE id = ?",
+      "UPDATE employee SET fullname = ?,phonenumber = ?, status = ?, email = ?, code = ?, address = ?, birthday = ?, avatar = ?, role_id = ?, updatedAt =? WHERE id = ?",
       [
         data.fullname,
         data.phonenumber,
@@ -106,7 +107,7 @@ Employee.updateProfile = (data, userId) => {
         data.birthday,
         data.avatar,
         data.role_id,
-        data.createAt,
+        new Date(),
         userId,
       ],
       (error, res) => {
@@ -120,6 +121,40 @@ Employee.updateProfile = (data, userId) => {
   });
 };
 
+Employee.updateProfileQuick = (data, userId, result) => {
+
+    sql.query(
+      "UPDATE employee SET fullname = ?,phonenumber = ?, status = ?, email = ?, code = ?, address = ?, birthday = ?, role_id = ?, updatedAt =? WHERE id = ?",
+      [
+        data.fullname,
+        data.phonenumber,
+        data.status,
+        data.email,
+        data.code,
+        data.address,
+        data.formattedDate,
+        data.role_id,
+        new Date(),
+        userId,
+      ],
+      (error, res) => {
+        if (error) {
+          return result(null, err);
+        }
+        return result(null, res);
+      }
+    );
+};
+
+Employee.getAll = (result) => {
+  sql.query("SELECT *, DATE_FORMAT(birthday, '%d/%m/%Y') AS formatted_birthday FROM employee", (err, res) => {
+    if (err) {
+      result(null, err);
+      return;
+    }
+    result(null, res);
+  });
+}
 module.exports = Employee;
 
 
