@@ -63,10 +63,9 @@ export default function RoomItem({ room, onView, onEdit, onDelete }: Props) {
   // const imagedata = window.URL.createObjectURL(image);
   // console.log('imagedata', imagedata)
   const [arrImages, setArrImages] = useState<IRoomImage[]>([]);
+
   useEffect(() => {
-    if (typeof roomImages === 'string') {
-      setArrImages(JSON.parse(roomImages));
-    }
+    setArrImages(roomImages);
   }, [roomImages]);
 
   const renderRating = (
@@ -147,7 +146,7 @@ export default function RoomItem({ room, onView, onEdit, onDelete }: Props) {
         p: (theme) => theme.spacing(1, 1, 0, 1),
       }}
     >
-      {image && roomImages && (
+      {arrImages && (
         <>
           <Stack flexGrow={1} sx={{ position: 'relative' }}>
             {renderPrice}

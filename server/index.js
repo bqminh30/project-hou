@@ -8,9 +8,9 @@ const cors = require("cors");
 var cron = require('node-cron');
 const app = express();
 const cloudinary = require("cloudinary").v2;
-const facilitiesRoutes = require("./app/routes/facilities.routes");
-const {updateVoucherCronJob_2} = require('./app/models/room.model')
-const {cronJobUpdateShow} = require('./app/models/voucher.model')
+const facilitiesRoutes = require("./app/routes/facilities.routes.js");
+const {updateVoucherCronJob_2} = require('./app/models/room.model.js')
+const {cronJobUpdateShow} = require('./app/models/voucher.model.js')
 
 
 var corsOptions = {

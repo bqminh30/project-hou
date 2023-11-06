@@ -94,14 +94,14 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
     try {
       if (currentProduct !== undefined) {
         axios
-          .put(`http://localhost:6969/api/typeservices/${currentProduct.id}`, data)
+          .put(`https://be-nodejs-project.vercel.app/api/typeservices/${currentProduct.id}`, data)
           .then((res) => {
             reset();
             enqueueSnackbar('Update success!');
             router.push(paths.dashboard.typeService.root);
           });
       } else {
-        axios.post(`http://localhost:6969/api/typeservices`, data).then((res) => {
+        axios.post(`https://be-nodejs-project.vercel.app/api/typeservices`, data).then((res) => {
           reset();
           enqueueSnackbar('Create success!');
           router.push(paths.dashboard.typeService.root);

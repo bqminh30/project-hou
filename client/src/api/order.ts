@@ -11,7 +11,7 @@ import useSWR from 'swr';
 // ----------------------------------------------------------------------
 
 export function useGetOrderBookings() {
-  const URL = 'http://localhost:6969/api/orders'
+  const URL = 'https://be-nodejs-project.vercel.app/api/orders'
   const fetCher = (url: string) => fetch(url).then((res) => res.json());
   const { data, isLoading, error, isValidating } = useSWR(URL, fetCher);
 
@@ -30,7 +30,7 @@ export function useGetOrderBookings() {
 }
 
 export function useGetOrderDetail(id: string) {
-  const URL = id ? [`http://localhost:6969/api/orders/${id}` ] : null;
+  const URL = id ? [`https://be-nodejs-project.vercel.app/api/orders/${id}` ] : null;
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
   const memoizedValue = useMemo(
     () => ({

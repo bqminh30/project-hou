@@ -1,1 +1,1 @@
-export const BASE_URL="http://localhost:6969/api/"
+export const BASE_URL="https://be-nodejs-project.vercel.app/api/"

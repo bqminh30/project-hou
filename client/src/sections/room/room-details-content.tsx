@@ -57,16 +57,24 @@ export default function RoomDetailsContent({ data, services, images }: Props) {
     priceSale,
   } = data;
 
-  const [slides, setSlides] = useState<IRoomImage[] | any>([])
+  // Initialize slides with an empty array
+  const [slides, setSlides] = useState<IRoomImage[] | any>([]);
+
+  const [arrImages, setArrImages] = useState<IRoomImage[]>([]);
+
+
 
   useEffect(() => {
-    const slidess = images?.map((slide: IRoomImage | any) => ({
-      src: slide?.name,
-    }));
-    setSlides(slidess)
-  }, [images])
+    if (roomImages) {
+      const slidess = roomImages?.map((slide: IRoomImage | any) => ({
+        src: slide?.name,
+      }));
+      setSlides(slidess);
+    }
+  }, [roomImages]);
 
-  console.log('slides', images)
+
+  console.log('slides', images, roomImages)
 
   const {
     selected: selectedImage,
@@ -106,7 +114,7 @@ export default function RoomDetailsContent({ data, services, images }: Props) {
         </m.div>
 
         <Box gap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)">
-          {slides.length > 0 && slides.slice(0, 4).map((item: any) => (
+          {slides && slides?.slice(0, 4).map((item: any) => (
             <m.div
               key={`${item.src}`}
               whileHover="hover"
@@ -126,7 +134,7 @@ export default function RoomDetailsContent({ data, services, images }: Props) {
         </Box>
       </Box>
 
-      {slides.length > 0 &&
+      {slides &&
         <Lightbox
           index={selectedImage}
           slides={slides}
@@ -283,7 +291,7 @@ export default function RoomDetailsContent({ data, services, images }: Props) {
 
   return (
     <>
-      {slides.length > 0 && renderGallery}
+      {slides && renderGallery}
 
       <Stack sx={{ maxWidth: 720, mx: 'auto' }}>
         {renderHead}

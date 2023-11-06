@@ -114,7 +114,7 @@ export default function OrderBookingEditForm({ order, order_detail }: Props) {
     try {
 
       await axios.put(
-        `http://localhost:6969/api/orders/status`,
+        `https://be-nodejs-project.vercel.app/api/orders/status`,
         {
           user, data
         }

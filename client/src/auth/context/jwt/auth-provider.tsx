@@ -89,7 +89,7 @@ export function AuthProvider({ children }: Props) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const res = await axios.get('http://localhost:6969/api/employee/check-auth');
+        const res = await axios.get('https://be-nodejs-project.vercel.app/api/employee/check-auth');
 
         const { user } = res.data;
 
@@ -132,7 +132,7 @@ export function AuthProvider({ children }: Props) {
       passwordHash,
     };
 
-    const urlHttp = 'http://localhost:6969/api/employee/login'
+    const urlHttp = 'https://be-nodejs-project.vercel.app/api/employee/login'
     const res = await axios.post(urlHttp, data);
 
     const { token, user } = res.data;

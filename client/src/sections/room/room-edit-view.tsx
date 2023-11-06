@@ -169,9 +169,9 @@ export default function RoomNewEditForm({ currentRoom }: PropRoom) {
     try {
       if (currentRoom) {
         formData.append('id', currentRoom?.id);
-        const res1 = await axios.put(`http://localhost:6969/api/rooms/update/${currentRoom.id}`, formData, config);
-        const res2 = await axios.put('http://localhost:6969/api/room-image/update', formData, config);
-        const res3 = await axios.post(`http://localhost:6969/api/room_service/update/${currentRoom?.id}`, data.service);
+        const res1 = await axios.put(`https://be-nodejs-project.vercel.app/api/rooms/update/${currentRoom.id}`, formData, config);
+        const res2 = await axios.put('https://be-nodejs-project.vercel.app/api/room-image/update', formData, config);
+        const res3 = await axios.post(`https://be-nodejs-project.vercel.app/api/room_service/update/${currentRoom?.id}`, data.service);
         if (res1.status === 200 && res2.status === 200 && res3.status === 200) {
           enqueueSnackbar('Cập nhật phòng thành công!');
           reset();

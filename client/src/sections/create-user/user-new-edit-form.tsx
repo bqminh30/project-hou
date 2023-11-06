@@ -110,7 +110,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       },
     };
     try {
-      const response = await axios.post('http://localhost:6969/api/employee/register', formData, config);
+      const response = await axios.post('https://be-nodejs-project.vercel.app/api/employee/register', formData, config);
       if (response.status === 200) {
         enqueueSnackbar('Create success!');
         reset();

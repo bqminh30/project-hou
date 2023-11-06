@@ -7,7 +7,7 @@ export const initialize = () => {
   return async (dispatch) => {
     let token = await AsyncStorage.getItem("tokenUser");
     if (token !== null) {
-      const response = await axios.get("http://localhost:6969/api/employee/check-auth", {
+      const response = await axios.get("https://be-nodejs-project.vercel.app/api/employee/check-auth", {
         headers: {
           Accept: "application/json",
           Authorization: "Bearer " + token,
@@ -36,7 +36,7 @@ export const loginAction = (userName, password) => {
   return async (dispatch) => {
     try {
       const response = await axios.post(
-        "https://59j3bk0m-6969.asse.devtunnels.ms/api/customer/login",
+        "https://be-nodejs-project.vercel.app/api/customer/login",
         {
           email: userName,
           password,

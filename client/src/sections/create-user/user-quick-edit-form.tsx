@@ -90,7 +90,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose }: Props)
   const onSubmit = handleSubmit(async (data) => {
     try {
       const response = await axios.put(
-        `http://localhost:6969/api/employee/update-quick/${defaultValues.id}`,
+        `https://be-nodejs-project.vercel.app/api/employee/update-quick/${defaultValues.id}`,
         data
       );
       if (response.status === 200) {

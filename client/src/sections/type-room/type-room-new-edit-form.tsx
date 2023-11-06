@@ -94,14 +94,14 @@ export default function ProductNewEditForm({ currentProduct }: Props) {
     try {
       if (currentProduct !== undefined) {
         axios
-          .put(`http://localhost:6969/api/typerooms/${currentProduct.id}`, data)
+          .put(`https://be-nodejs-project.vercel.app/api/typerooms/${currentProduct.id}`, data)
           .then((res) => {
             reset();
             enqueueSnackbar('Update success!');
             router.push(paths.dashboard.typeRoom.root);
           });
       } else {
-        axios.post(`http://localhost:6969/api/typerooms`, data).then((res) => {
+        axios.post(`https://be-nodejs-project.vercel.app/api/typerooms`, data).then((res) => {
           reset();
           enqueueSnackbar('Create success!');
           router.push(paths.dashboard.typeRoom.root);
