@@ -37,8 +37,8 @@ const VerticalOrder = ({item}) => {
     </View>
     <View style={styles.componentDate}>
         <View style={styles.left}>
-            <Text>Royal Lancaster</Text>
-            <Text>Royal Lancaster</Text>
+            <Text style={{color:'white'}}>Royal Lancaster</Text>
+            <Text style={{color:'white'}}>Royal Lancaster</Text>
         </View>
         <View style={styles.right}>
             <Text style={{color:'white'}}>11 Review</Text>

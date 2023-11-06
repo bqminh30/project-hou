@@ -28,23 +28,17 @@ import { Ionicons } from "@expo/vector-icons";
 import Spacer from "../components/Spacer";
 import VerticalRecommend from "../components/VerticalRecommend";
 
-const array = {
-  "2012-03-08": {
-    color: "lightgreen",
-    startingDay: true,
-  },
-  "2012-03-0": { color: "lightgreen" },
-  "2012-03-04": {
-    color: "lightgreen",
-    endingDay: true,
-  },
-};
+
 const SearchScreen = () => {
   const [searchText, setSearchText] = React.useState("");
   const [keyboardStatus, setKeyboardStatus] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalMemberVisible, setModalMemberVisible] = useState(false);
   const [selectedDates, setSelectedDates] = useState([]);
   const [dateObject, setDateObject] = useState({});
+  const [memberCount, setMemberCount] = useState(1);
+
+  console.log('selectedDates', selectedDates)
 
   const handleDayPress = (day) => {
     if (selectedDates.length === 2) {
@@ -93,6 +87,10 @@ const SearchScreen = () => {
       setDateObject({ ...dateObject, ...newSelectedDates });
     }
   };
+
+  const handleMemberPress = (data) => {
+
+  }
   
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -114,7 +112,6 @@ const SearchScreen = () => {
       style={styles.container}
     >
       <StatusBar backgroundColor="#009387" barStyle="dark-content" />
-      {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}> */}
       <View style={{ flex: 1 }}>
         <SafeAreaView
           style={{
@@ -176,8 +173,10 @@ const SearchScreen = () => {
                     </TouchableOpacity>
                   </View>
                   <View style={styles.option}>
+                  <TouchableOpacity onPress={() => setModalMemberVisible(true)}>
                     <Text style={styles.title}>Member of Room</Text>
                     <Text>3 Adults</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
                 <Spacer height={4} />
@@ -215,7 +214,6 @@ const SearchScreen = () => {
           </View>
         </SafeAreaView>
       </View>
-      {/* </TouchableWithoutFeedback> */}
 
       <Modal
         animationType="slide"
@@ -244,6 +242,29 @@ const SearchScreen = () => {
             hideArrows={false}
             markedDates={dateObject}
           />
+
+          <Pressable
+            style={[styles.button, styles.buttonClose]}
+            onPress={() => setModalVisible(!modalVisible)}
+          >
+            <Text style={styles.textStyle}>Hide Modal</Text>
+          </Pressable>
+          <Spacer height={10} />
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalMemberVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalMemberVisible(!modalMemberVisible);
+        }}
+      >
+        modalMemberVisible, setModalMemberVisible
+        <View style={styles.modalView}>
+          
 
           <Pressable
             style={[styles.button, styles.buttonClose]}
