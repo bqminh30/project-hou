@@ -1,12 +1,13 @@
 import React from "react";
-import { View, Image } from "react-native";
+import { View, Image, TouchableOpacity } from "react-native";
 import { SIZES } from "../config/theme";
 
-const VerticalImage = ({ item }) => {
+const VerticalImage = ({ item, handleShowImage }) => {
   return (
     <View style={{ marginRight: SIZES.margin }}>
+      <TouchableOpacity onPress={()=>handleShowImage(item?.name)}>
       <Image
-        source={{ uri: item?.image }}
+        source={{ uri: item?.name }}
         style={{
           height: 60,
           width: 60,
@@ -14,6 +15,7 @@ const VerticalImage = ({ item }) => {
           resizeMode: "cover",
         }}
       />
+      </TouchableOpacity>
     </View>
   );
 };

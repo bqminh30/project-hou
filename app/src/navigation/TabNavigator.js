@@ -1,5 +1,5 @@
 import { COLORS, SIZES } from "../config/theme";
-import {Home, OrderScreen, RoomList, SearchScreen} from '../screens'
+import {Home, OrderScreen, RoomList, SearchScreen, RoomDetail} from '../screens'
 
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
@@ -10,13 +10,21 @@ import { ProfileScreen } from "../screens/Profile";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+const HomeStack = () => {
+  return (
+    <Stack.Navigator initialRouteName="Trang chủ">
+      <Stack.Screen name="Trang chủ" component={Home}  options={{ unmountOnBlur: true, headerShown: false }}/>
+      <Stack.Screen name="Chi tiết phòng" component={RoomDetail}  options={{ unmountOnBlur: true, headerShown: false }}/>
+    </Stack.Navigator>
+  )
+}
 
 const TabNavigation = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen
         name="Trang chủ"
-        component={Home}
+        component={HomeStack}
         lazy={true}
         options={({ route }) => ({
           headerShown: false,

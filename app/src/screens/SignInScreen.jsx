@@ -28,8 +28,8 @@ import { loginAction } from "../redux/actions/authAction";
 
 const SignInScreen = ({ navigation }) => {
   const [data, setData] = React.useState({
-    username: "",
-    password: "",
+    username: "bqminh30@gmail.com",
+    password: "123123",
     check_textInputChange: false,
     secureTextEntry: true,
     isValidUser: true,
@@ -98,10 +98,6 @@ const SignInScreen = ({ navigation }) => {
   };
 
   const loginHandle = async (userName, password) => {
-    // const foundUser = Users.filter( item => {
-    //     return userName == item.username && password == item.password;
-    // } );
-
     if (data.username.length == 0 || data.password.length == 0) {
       Alert.alert(
         "Wrong Input!",
@@ -110,13 +106,6 @@ const SignInScreen = ({ navigation }) => {
       );
       return;
     }
-
-    // if (foundUser.length == 0) {
-    //   Alert.alert("Invalid User!", "Username or password is incorrect.", [
-    //     { text: "Okay" },
-    //   ]);
-    //   return;
-    // }
     dispatch(loginAction(userName, password));
   };
 

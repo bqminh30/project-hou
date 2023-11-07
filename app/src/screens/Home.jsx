@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,10 @@ import {
   SafeAreaView,
   StyleSheet,
   StatusBar,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
+import { useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SIZES } from "../config/theme";
 import Avatar from "../components/Avatar";
@@ -20,82 +23,104 @@ import { hotel_type, hotels_data } from "../config/data";
 import VerticalHome from "../components/VerticalHome";
 import VerticalType from "../components/VerticalType";
 import VerticalRecommend from "../components/VerticalRecommend";
+import axios from "axios";
 const Home = () => {
   const [searchText, setSearchText] = React.useState("");
+  const [roomLimit, setRoomLimit] = React.useState([]);
+  const { user } = useSelector((state) => state.authReducer);
+  const { typerooms, rooms } = useSelector((state) => state.roomReducer);
+
+  const callApiLimit = async () => {
+    const res = await axios.get(
+      "https://be-nodejs-project.vercel.app/api/rooms/limit/5"
+    );
+    setRoomLimit(res.data);
+  };
+  useEffect(() => {
+    callApiLimit();
+  }, []);
+
   return (
     <>
       <StatusBar backgroundColor="#009387" barStyle="dark-content" />
+
       <SafeAreaView>
-        <View>
-          <View style={styles.header}>
-            <Menu />
-            <Avatar />
-          </View>
-          <Spacer height={20} />
-          <View style={styles.content}>
-            <Text style={styles.name}>Hello, MinhBui</Text>
-            <Text style={styles.title}>Best Hotel to Stay In</Text>
-          </View>
-          <Spacer height={10} />
-          <View style={styles.sectionStyle}>
-            <Ionicons
-              name="md-search-sharp"
-              size={24}
-              color={COLORS.black}
-              style={styles.imageStyle}
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          <View onStartShouldSetResponder={() => true}>
+            <View style={styles.header}>
+              <Menu />
+              <Avatar />
+            </View>
+            <Spacer height={20} />
+            <View style={styles.content}>
+              <Text style={styles.name}>Hello, {user.fullname}</Text>
+              <Text style={styles.title}>Best Hotel to Stay In</Text>
+            </View>
+            <Spacer height={10} />
+            <View style={styles.sectionStyle}>
+              <Ionicons
+                name="md-search-sharp"
+                size={24}
+                color={COLORS.black}
+                style={styles.imageStyle}
+              />
+              <TextInput
+                style={{ flex: 1 }}
+                placeholder="Searchs for hotels"
+                underlineColorAndroid="transparent"
+                value={searchText}
+                onChangeText={(text) => setSearchText(text)}
+              />
+              {searchText !== "" && (
+                <TouchableOpacity onPress={() => setSearchText("")}>
+                  <Ionicons
+                    name="close"
+                    size={24}
+                    color={COLORS.greenMain}
+                    style={styles.imageStyle}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+            <Spacer height={20} />
+            <FlatList
+              onStartShouldSetResponder={() => true}
+              data={roomLimit}
+              scrollEventThrottle={20}
+              horizontal={true}
+              keyExtractor={({ item, index }) => index}
+              renderItem={({ item, index }) => (
+                <VerticalHome item={item} key={item.id} />
+              )}
+              style={{ marginLeft: SIZES.padding }}
             />
-            <TextInput
-              style={{ flex: 1 }}
-              placeholder="Searchs for hotels"
-              underlineColorAndroid="transparent"
-              value={searchText}
-              onChangeText={(text) => setSearchText(text)}
+            <Spacer height={20} />
+            <FlatList
+              data={typerooms}
+              onStartShouldSetResponder={() => true}
+              scrollEventThrottle={10}
+              horizontal={true}
+              keyExtractor={({ item, index }) => index}
+              renderItem={({ item, index }) => (
+                <VerticalType item={item} key={item.id} />
+              )}
+              style={{ marginLeft: SIZES.padding }}
             />
-            {searchText !== "" && (
-              <TouchableOpacity onPress={() => setSearchText("")}>
-                <Ionicons
-                  name="close"
-                  size={24}
-                  color={COLORS.greenMain}
-                  style={styles.imageStyle}
-                />
-              </TouchableOpacity>
-            )}
+            <Spacer height={20} />
+            <View onStartShouldSetResponder={() => true}>
+              <FlatList
+                data={rooms}
+                scrollEventThrottle={10}
+                horizontal={true}
+                keyExtractor={({ item, index }) => index}
+                renderItem={({ item, index }) => (
+                  <VerticalRecommend item={item} key={item.id} />
+                )}
+                style={{ marginLeft: SIZES.padding }}
+              />
+            </View>
           </View>
-          <Spacer height={20} />
-          <FlatList
-            data={hotels_data}
-            scrollEventThrottle={20}
-            horizontal={true}
-            keyExtractor={({ item, index }) => index}
-            renderItem={({ item, index }) => (
-              <VerticalHome item={item} key={item.id} />
-            )}
-            style={{ marginLeft: SIZES.padding }}
-          />
-          <Spacer height={20} />
-          <FlatList
-            data={hotel_type}
-            scrollEventThrottle={10}
-            horizontal={true}
-            keyExtractor={({ item, index }) => index}
-            renderItem={({ item, index }) => (
-              <VerticalType item={item} key={item.id} />
-            )}
-            style={{ marginLeft: SIZES.padding }}
-          />
-          <Spacer height={20} />
-          <FlatList
-            data={hotels_data}
-            scrollEventThrottle={10}
-            horizontal={true}
-            keyExtractor={({ item, index }) => index}
-            renderItem={({ item, index }) => (
-              <VerticalRecommend item={item} key={item.id} />
-            )}
-            style={{ marginLeft: SIZES.padding}}
-          />
-        </View>
+        </TouchableWithoutFeedback>
       </SafeAreaView>
     </>
   );
