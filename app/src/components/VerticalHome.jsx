@@ -1,38 +1,56 @@
+import React from "react";
 import { COLORS, SIZES } from "../config/theme";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
+import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
-import React from "react";
+
 
 const stars = 5;
 const VerticalHome = ({ item }) => {
+  const navigation = useNavigation();
+
   var starPush = [];
   for (var i = 1; i <= stars; i++) {
     starPush.push(
       <FontAwesome
         key={i}
-        name={i <= item.star ? "star" : "star-o"}
+        name={i <= item.rating ? "star" : "star-o"}
         size={8}
-        color={i <= item.star ? "orange" : "black"}
+        color={i <= item.rating ? "orange" : "black"}
         style={{ paddingRight: 4 }}
       />
     );
   }
   return (
-    <View style={styles.component}>
+    <TouchableOpacity activeOpacity={1} style={styles.component} onPress={()=> navigation.navigate("Chi tiết phòng", {
+      room_id: item.id
+    })}>
       <Image source={{ uri: item?.image }} style={styles.image} />
+      <View style={[styles.flex, styles.card]}>
+          <Text style={styles.typeroom}> {
+        (item.type_room_id === 1 && 'Vip') ||
+        (item.type_room_id === 2 && 'Normal') ||
+        (item.type_room_id === 3 && 'New')
+      }</Text>
+        </View>
       <View style={styles.content}>
         <Text style={styles.name}>{item?.name}</Text>
         <View style={styles.rating}>
           <View style={styles.rate}>{starPush}</View>
-          <Text style={styles.text}>{item.rate}</Text>
+          <Text style={styles.text}>{item.rating}</Text>
         </View>
       </View>
       <View style={[styles.content, { paddingTop: 2 }]}>
-        <Text style={styles.text}>{item?.location}</Text>
-        <Text style={styles.text}>{item?.reviews.length} reviews</Text>
+        <Text style={styles.text}>
+        {
+        (item.label === 1 && 'Excellent') ||
+        (item.label === 2 && 'Very good') ||
+        (item.label === 3 && 'Exceptional') 
+      }
+        </Text>
+        <Text style={styles.text}>{item?.totalReview} reviews</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -59,7 +77,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontFamily: "Poppins-Bold",
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 600,
   },
   rating: {
@@ -73,7 +91,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    color: COLORS.gray,
+    color: COLORS.gray_main,
     fontSize: 12,
+  },
+
+  flex: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  card: {
+    backgroundColor: COLORS.black,
+    padding: 4,
+    borderRadius: SIZES.margin,
+    // width: 40,
+    position:'absolute',
+    top:10,
+    left: 10
+  },
+  typeroom: {
+    color: COLORS.white,
+    fontSize: 12,
+    fontWeight: 600,
+    paddingRight: 4
   },
 });

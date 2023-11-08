@@ -114,3 +114,10 @@ export const hotel_type = [
     }
     
 ]
+
+export const services= [
+    'wifi-check',
+    'bed-king',
+    'glass-wine',
+    'shower'
+]

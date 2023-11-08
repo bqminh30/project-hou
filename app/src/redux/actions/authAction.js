@@ -7,24 +7,26 @@ export const initialize = () => {
   return async (dispatch) => {
     let token = await AsyncStorage.getItem("tokenUser");
     if (token !== null) {
-      const response = await axios.get("https://be-nodejs-project.vercel.app/api/employee/check-auth", {
-        headers: {
-          Accept: "application/json",
-          Authorization: "Bearer " + token,
+      const response = await axios.get(
+        "https://be-nodejs-project.vercel.app/api/customer/check-auth",
+        {
+          headers: {
+            Accept: "application/json",
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+      const { user } = response.data;
+      dispatch({
+        type: type.SET_INITIAL_STATE,
+        payload: {
+          user: user,
+          authToken: token,
+          isLoggedIn: true,
+          error: false,
+          isLoading: false,
         },
       });
-      const data = response.data;
-      console.log('data', dáta)
-      // dispatch({
-      //   type: type.SET_INITIAL_STATE,
-      //   payload: {
-      //     user: user,
-      //     authToken: token,
-      //     isLoggedIn: true,
-      //     error: false,
-      //     isLoading: false,
-      //   },
-      // });
     } else {
       console.error("initialized error");
     }
@@ -32,14 +34,13 @@ export const initialize = () => {
 };
 
 export const loginAction = (userName, password) => {
-  console.log('aaaaaa')
   return async (dispatch) => {
     try {
       const response = await axios.post(
         "https://be-nodejs-project.vercel.app/api/customer/login",
         {
           email: userName,
-          password,
+          passwordHash: password,
         },
         {
           headers: {
@@ -50,17 +51,15 @@ export const loginAction = (userName, password) => {
           },
         }
       );
-      console.log('res', response)
+
       if (response.status == 200) {
-        // const { access_token, user } = response.data;
-       
-        await AsyncStorage.setItem("tokenUser", access_token);
+        const { token, data } = response.data;
+        await AsyncStorage.setItem("tokenUser", token);
         dispatch({
           type: type.SET_LOGIN_SUCCESS,
           payload: {
-            user: user,
-            classes: user.classes,
-            authToken: access_token,
+            user: data,
+            authToken: token,
             isLoggedIn: true,
             error: false,
             isLoading: false,
@@ -68,7 +67,7 @@ export const loginAction = (userName, password) => {
         });
       }
     } catch (e) {
-      console.log('err',e )
+      console.log("err", e);
       dispatch({
         type: type.SET_LOGIN_FAIL_STATE,
         payload: {

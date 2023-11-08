@@ -1,10 +1,11 @@
 import React from 'react'
-import { Text, View, Image, TouchableOpacity, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const Back = () => {
+  const navigation = useNavigation()
   return (
-    <Ionicons name="chevron-back" size={24} color="black" />
+    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate('Trang chủ')}/>
   )
 }
 

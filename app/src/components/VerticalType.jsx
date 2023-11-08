@@ -4,9 +4,9 @@ import { COLORS, SIZES } from '../config/theme'
 
 const VerticalType = ({item}) => {
   return (
-    <View style={styles.component}>
+    <TouchableOpacity activeOpacity={1} style={styles.component}>
         <Text style={[styles.type]}>{item.name}</Text>
-    </View>
+    </TouchableOpacity>
   )
 }
 
