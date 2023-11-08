@@ -4,7 +4,7 @@ import { SIZES } from "../config/theme";
 
 const VerticalImage = ({ item, handleShowImage }) => {
   return (
-    <View style={{ marginRight: SIZES.margin }}>
+    <View key={item?.id} style={{ marginRight: SIZES.margin }}>
       <TouchableOpacity onPress={()=>handleShowImage(item?.name)}>
       <Image
         source={{ uri: item?.name }}

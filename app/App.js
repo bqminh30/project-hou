@@ -9,7 +9,7 @@ import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import "./ignoreWarning";
 import AppNav from "./src/navigation/AppNav";
 import { useFonts } from "expo-font";
-
+import { YellowBox } from 'react-native';
 require("moment/locale/vi");
 
 
@@ -27,7 +27,9 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
-
+//   useEffect(() => {
+//     YellowBox.ignoreWarnings(['Animated: `useNativeDriver`']);
+// }, [])
   return (
     <Provider store={store}>
         <NavigationContainer>

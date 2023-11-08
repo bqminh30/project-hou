@@ -1,6 +1,7 @@
 import * as type from "../types";
 const initialState = {
   rooms: [],
+  reviews:[],
   room: null,
   typerooms: [],
   room_services: [],
@@ -60,6 +61,21 @@ export const roomReducer = (state = initialState, action) => {
           ...state,
           typerooms: [],
         };
+        case type.SET_REVIEW_ROOM_STATE:
+          return {
+            ...state,
+            reviews: [],
+          };
+        case type.SET_REVIEW_ROOM_SUCCESS: 
+         return {
+            ...state,
+            reviews: action.payload.reviews,
+         }
+        case type.SET_REVIEW_ROOM_FAILD:
+          return {
+            ...state,
+            reviews: [],
+          };
     default:
       return state;
   }

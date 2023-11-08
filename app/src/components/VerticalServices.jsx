@@ -5,7 +5,7 @@ import { COLORS, SIZES } from '../config/theme';
 
 const VerticalServices = ({item}) => {
   return (
-    <View style={styles.card}>
+    <View key={item?.id} style={styles.card}>
         <MaterialCommunityIcons name={`${item}`} size={24} color={`${COLORS.main}`}/>
     </View>
   )

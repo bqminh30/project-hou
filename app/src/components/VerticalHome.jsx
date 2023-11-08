@@ -22,7 +22,7 @@ const VerticalHome = ({ item }) => {
     );
   }
   return (
-    <TouchableOpacity activeOpacity={1} style={styles.component} onPress={()=> navigation.navigate("Chi tiết phòng", {
+    <TouchableOpacity key={item.id} activeOpacity={1} style={styles.component} onPress={()=> navigation.navigate("Chi tiết phòng", {
       room_id: item.id
     })}>
       <Image source={{ uri: item?.image }} style={styles.image} />

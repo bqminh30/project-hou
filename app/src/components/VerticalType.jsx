@@ -4,7 +4,7 @@ import { COLORS, SIZES } from '../config/theme'
 
 const VerticalType = ({item}) => {
   return (
-    <TouchableOpacity activeOpacity={1} style={styles.component}>
+    <TouchableOpacity key={item?.id} activeOpacity={1} style={styles.component}>
         <Text style={[styles.type]}>{item.name}</Text>
     </TouchableOpacity>
   )

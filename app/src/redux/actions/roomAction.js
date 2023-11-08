@@ -110,3 +110,37 @@ export const getRoom = (id) => {
       }
     };
   };
+  export const getReviews = (id) => {
+    return async (dispatch) => {
+      try {
+        const response = await axios.get(
+          `https://be-nodejs-project.vercel.app/api/reviews/${id}`,
+          {
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Credentials": "true",
+              "Access-Control-Allow-Headers": "content-type",
+              "Content-Type": "application/json;charset=utf-8",
+            },
+          }
+        );
+  
+        if (response.status == 200) {
+          const data = response.data;
+          dispatch({
+            type: type.SET_REVIEW_ROOM_SUCCESS,
+            payload: {
+                reviews: data,
+            },
+          });
+        }
+      } catch (e) {
+        dispatch({
+          type: type.SET_REVIEW_ROOM_FAILD,
+          payload: {
+            reviews: [],
+          },
+        });
+      }
+    };
+  };

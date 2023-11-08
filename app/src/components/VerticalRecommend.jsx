@@ -13,7 +13,7 @@ import Spacer from "./Spacer";
 
 const VerticalRecommend = ({ item }) => {
   return (
-    <TouchableOpacity activeOpacity={1}>
+    <TouchableOpacity key={item?.id} activeOpacity={1}>
       <ImageBackground
       source={{
         uri: item?.image,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -14,11 +14,14 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Easing,
+  Dimensions,
+  Button,
 } from "react-native";
 import { useWindowDimensions } from "react-native";
+import HTML from "react-native-render-html";
 import RenderHtml from "react-native-render-html";
 import { FontAwesome } from "@expo/vector-icons";
-// import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 // icons
 import { Feather } from "@expo/vector-icons";
@@ -31,9 +34,10 @@ import { COLORS, SIZES } from "../config/theme";
 import Spacer from "../components/Spacer";
 import VerticalImage from "../components/VerticalImage";
 import VerticalServices from "../components/VerticalServices";
+import VerticalReviews from "../components/VerticalReviews";
 import ButtonBook from "../components/ButtonBook";
 //api
-import { getRoom } from "../redux/actions/roomAction";
+import { getRoom , getReviews } from "../redux/actions/roomAction";
 //
 import { services } from "../config/data";
 
@@ -42,22 +46,16 @@ import { services } from "../config/data";
 const RoomDetail = ({ route, navigation }) => {
   const { room_id } = route?.params;
   const { width } = useWindowDimensions();
-  const { room, room_services, room_images } = useSelector(
+  const { room, room_services, room_images, reviews } = useSelector(
     (state) => state.roomReducer
   );
   const [showImage, setShowImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const layout = useWindowDimensions();
-
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    { key: "first", title: "Description" },
-    { key: "second", title: "Reviews" },
-  ]);
 
   const dispath = useDispatch();
   const init = async () => {
     await dispath(getRoom(room_id));
+    await dispath(getReviews(room_id));
   };
 
   useEffect(() => {
@@ -72,103 +70,36 @@ const RoomDetail = ({ route, navigation }) => {
     setShowImage(image);
   };
 
-  // view tab view
-  // const _renderTabBar = (props) => {
-  //   return (
-  //     <View style={[styles.headerTabView]}>
-  //       <View style={styles.tabBar}>
-  //         {routes?.map((route, i) => {
-  //           return (
-  //             <TouchableOpacity
-  //               style={styles.tabItem}
-  //               key={i}
-  //               onPress={() => {
-  //                 setIndex(i);
-  //               }}
-  //             >
-  //               <Feather
-  //                 name={route?.icon}
-  //                 size={20}
-  //                 color={i == index ? COLORS.black : COLORS.gray}
-  //               />
-  //               <Animated.Text
-  //                 style={{
-  //                   fontSize: 15,
-  //                   fontWeight: "600",
-  //                   color: i == index ? COLORS.black : COLORS.gray,
-  //                 }}
-  //               >
-  //                 {route?.title}
-  //               </Animated.Text>
+  const [collapsed, setCollapsed] = useState(true);
+  const [maxLines, setMaxLines] = useState(2);
+  const animationHeight = useRef(new Animated.Value(0)).current;
 
-  //               {i == index && (
-  //                 <Animated.View
-  //                   style={[
-  //                     {
-  //                       height: 2,
-  //                       width: 36,
-  //                       backgroundColor: COLORS.black,
-  //                       position: "absolute",
-  //                       top: Platform.OS == "ios" ? 36 : 36,
-  //                     },
-  //                   ]}
-  //                 ></Animated.View>
-  //               )}
-  //             </TouchableOpacity>
-  //           );
-  //         })}
-  //       </View>
-  //     </View>
-  //   );
-  // };
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+  };
 
-  // const FirstRoute = () => {
-  //   <View style={{ height: 200 }}>
-  //     <RenderHtml contentWidth={width} source={{ html: room?.description }} />
-  //   </View>;
-  // };
-  const SecondRoute = () => (
-    <TouchableWithoutFeedback>
-      <View style={{ backgroundColor: "#673ab7" }}>
-        <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-    >
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123122</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>12312</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>1232</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-          <Text>123123213</Text>
-        </ScrollView>
-        
-      </View>
-      </TouchableWithoutFeedback>
-  );
+  const collapseView = () => {
+    Animated.timing(animationHeight, {
+      duration: 1000,
+      toValue: 80,
+    }).start();
+  };
 
-  // const renderScene = SceneMap({
-  //   first: FirstRoute,
-  //   second: SecondRoute,
-  // });
+  const expandView = () => {
+    setMaxLines(null);
+    Animated.timing(animationHeight, {
+      duration: 1000,
+      toValue: 1000,
+    }).start();
+  };
+
+  useEffect(() => {
+    if (collapsed) {
+      collapseView();
+    } else {
+      expandView();
+    }
+  }, [collapsed]);
 
   var starPush = [];
   for (var i = 1; i <= 5; i++) {
@@ -193,7 +124,11 @@ const RoomDetail = ({ route, navigation }) => {
 
   return (
     <>
-      <ScrollView style={{ flex: 1 }} nestedScrollEnabled={true} keyboardShouldPersistTaps='always'>
+      <ScrollView
+        style={{ flex: 1 }}
+        nestedScrollEnabled={true}
+        keyboardShouldPersistTaps="always"
+      >
         <GestureHandlerRootView style={styles.safeview}>
           <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -204,7 +139,7 @@ const RoomDetail = ({ route, navigation }) => {
               <View style={{ flex: 1, backgroundColor: COLORS.white }}>
                 <StatusBar barStyle="dark-content" />
                 <SafeAreaView>
-                  <View style={{ margin: SIZES.margin , paddingBottom: 50}}>
+                  <View style={{ margin: SIZES.margin, paddingBottom: 50 }}>
                     <View style={styles.header}>
                       <Back />
                       <Avatar />
@@ -243,12 +178,34 @@ const RoomDetail = ({ route, navigation }) => {
                       </View>
                     </View>
                     <Text style={styles.title}>{room?.title}</Text>
-                    <View style={styles.rating}>
-                      <View style={styles.flex}>{starPush}</View>
-                      <Text style={styles.text}>
-                        ({room?.totalReview} reviews)
+                    <Spacer height={5} />
+                    <View
+                      style={[
+                        styles.rating,
+                        { justifyContent: "flex-start", gap: 10 },
+                      ]}
+                    >
+                      <View style={styles.flex}>
+                        <View style={styles.flex}>{starPush}</View>
+                        <Text style={styles.text}>({room?.rating})</Text>
+                      </View>
+
+                      <Text>
+                        {room?.totalRating}
+                        <Text style={{ color: COLORS.gray_main }}>
+                          {" "}
+                          ratings
+                        </Text>
+                      </Text>
+                      <Text>
+                        {room?.totalReview}
+                        <Text style={{ color: COLORS.gray_main }}>
+                          {" "}
+                          reviews
+                        </Text>
                       </Text>
                     </View>
+                    <View style={styles.rating}></View>
                     <Spacer height={5} />
                     <View>
                       <Text style={styles.key}>Amenties</Text>
@@ -261,24 +218,38 @@ const RoomDetail = ({ route, navigation }) => {
                         )}
                       />
                     </View>
-                    
-
-                    {/* <ScrollView nestedScrollEnabled={true} contentContainerStyle={{flexGrow: 1}}>
-                      <TouchableWithoutFeedback>
-                        <TabView
-                          navigationState={{ index, routes }}
-                          renderScene={renderScene}
-                          onIndexChange={setIndex}
-                          initialLayout={{
-                            width: width,
-                            height: SIZES.height / 3,
-                          }}
-                          renderTabBar={_renderTabBar}
-                          style={{ height: SIZES.height / 3 }}
+                    <View>
+                      <Text style={styles.key}>Description</Text>
+                      <View style={{ overflow: "hidden" }}>
+                        <Animated.View style={{ maxHeight: animationHeight }}>
+                          <Text
+                            style={styles.paragraph}
+                            numberOfLines={maxLines}
+                          >
+                            <RenderHtml
+                              contentWidth={width}
+                              source={{ html: room?.description }}
+                            />
+                          </Text>
+                        </Animated.View>
+                        <Button
+                        style={{}}
+                          title="Toggle Collapsed"
+                          onPress={toggleCollapsed}
                         />
-                      </TouchableWithoutFeedback>
-                    </ScrollView> */}
-                    <SecondRoute/>
+                      </View>
+                    </View>
+                    <View>
+                      <Text style={styles.key}>Reviews</Text>
+                      <FlatList
+                        data={reviews}
+                        horizontal={true}
+                        keyExtractor={({ item, index }) => index}
+                        renderItem={({ item, index }) => (
+                          <VerticalReviews item={item} key={item.id} />
+                        )}
+                      />
+                    </View>
                   </View>
                 </SafeAreaView>
               </View>
@@ -384,5 +355,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 24,
+  },
+
+  viewPort: {
+    // flex: 1,
+    overflow: "hidden",
+    top: 20,
+    marginBottom: 20,
+  },
+  textBox: {
+    flex: 1,
+    position: "absolute",
   },
 });
