@@ -127,43 +127,43 @@ const RoomDetail = ({ route, navigation }) => {
   //     <RenderHtml contentWidth={width} source={{ html: room?.description }} />
   //   </View>;
   // };
-  // const SecondRoute = () => (
-  //   <TouchableWithoutFeedback>
-  //     <View style={{ backgroundColor: "#673ab7" }}>
-  //       <ScrollView
-  //     contentContainerStyle={{ flexGrow: 1 }}
-  //   >
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123122</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>12312</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>1232</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //         <Text>123123213</Text>
-  //       </ScrollView>
+  const SecondRoute = () => (
+    <TouchableWithoutFeedback>
+      <View style={{ backgroundColor: "#673ab7" }}>
+        <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123122</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>12312</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>1232</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+          <Text>123123213</Text>
+        </ScrollView>
         
-  //     </View>
-  //     </TouchableWithoutFeedback>
-  // );
+      </View>
+      </TouchableWithoutFeedback>
+  );
 
   // const renderScene = SceneMap({
   //   first: FirstRoute,
@@ -278,6 +278,7 @@ const RoomDetail = ({ route, navigation }) => {
                         />
                       </TouchableWithoutFeedback>
                     </ScrollView> */}
+                    <SecondRoute/>
                   </View>
                 </SafeAreaView>
               </View>
