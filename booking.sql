@@ -676,3 +676,30 @@ WHERE room.voucher_id IS NOT NULL
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+SELECT r.*,
+        CONCAT('[', IFNULL(GROUP_CONCAT(DISTINCT s.id ORDER BY s.id SEPARATOR ','), ''), ']') AS service,
+        IFNULL(room_image.roomImages, '[]') AS roomImages,
+        IFNULL(service_data.service_data, '[]') AS service_data
+    FROM room r
+    LEFT JOIN room_service rs ON r.id = rs.room_id
+    LEFT JOIN service s ON rs.service_id = s.id
+    LEFT JOIN (
+        SELECT room_id, CONCAT('[', GROUP_CONCAT('{"id":', id, ',"name":"', data, '" }' SEPARATOR ','), ']') AS roomImages
+        FROM room_image
+        GROUP BY room_id
+    ) room_image ON room_image.room_id = r.id
+    LEFT JOIN (
+        SELECT r.id AS room_id, CONCAT('[', GROUP_CONCAT('{"id":', s.id, ',"name":"', s.name, '" }' SEPARATOR ','), ']') AS service_data
+        FROM room r
+        LEFT JOIN room_service rs ON r.id = rs.room_id
+        LEFT JOIN service s ON rs.service_id = s.id
+        WHERE r.id = ${id}
+        GROUP BY r.id
+    ) service_data ON service_data.room_id = r.id
+    WHERE r.id = ${id}
+    GROUP BY r.id;
+
+
+/*Widget chart data*/
+SELECT CONCAT('[', IFNULL(GR) ,']')
