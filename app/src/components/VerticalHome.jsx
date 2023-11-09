@@ -28,9 +28,9 @@ const VerticalHome = ({ item }) => {
       <Image source={{ uri: item?.image }} style={styles.image} />
       <View style={[styles.flex, styles.card]}>
           <Text style={styles.typeroom}> {
-        (item.type_room_id === 1 && 'Vip') ||
-        (item.type_room_id === 2 && 'Normal') ||
-        (item.type_room_id === 3 && 'New')
+        (item.type_room_id === 1 && 'VIP') ||
+        (item.type_room_id === 2 && 'NORMAL') ||
+        (item.type_room_id === 3 && 'NEW')
       }</Text>
         </View>
       <View style={styles.content}>
@@ -112,7 +112,8 @@ const styles = StyleSheet.create({
   typeroom: {
     color: COLORS.white,
     fontSize: 12,
-    fontWeight: 600,
-    paddingRight: 4
+    fontFamily: "Poppins-Medium",
+    paddingRight: 4,
+    textTransform: 'uppercase'
   },
 });

@@ -2,12 +2,14 @@ import React from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { COLORS, SIZES } from "../config/theme";
 
-const ButtonBook = () => {
+const ButtonSearch = ({float, label, color}) => {
+   
   return (
-    <TouchableOpacity style={styles.button}>
+    <View style={{alignItems: 'flex-end'}}>
+        <TouchableOpacity style={styles.button}>
       <Text
         style={{
-          color: COLORS.white,
+          color: color,
           fontSize: 12,
           fontFamily: "Poppins-Medium",
           paddingRight: 4,
@@ -15,16 +17,17 @@ const ButtonBook = () => {
           textTransform: "uppercase",
         }}
       >
-        BOOK NOW
+        {label}
       </Text>
     </TouchableOpacity>
+    </View>
   );
 };
 
-export default ButtonBook;
+export default ButtonSearch;
 const styles = StyleSheet.create({
   button: {
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
     borderRadius: SIZES.radius,
     elevation: 4,

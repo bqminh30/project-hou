@@ -1,4 +1,5 @@
-import { COLORS, SIZES } from "../config/theme";
+import React, { useEffect, useState } from "react";
+
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import {
   FlatList,
@@ -18,27 +19,46 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { hotel_type, hotels_data } from "../config/data";
+import moment from "moment";
+import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
+// config
+import { COLORS, SIZES } from "../config/theme";
+//components
+import Spacer from "../components/Spacer";
 import Avatar from "../components/Avatar";
 import Back from "../components/Back";
-import ButtonBook from "../components/Button";
-import { Ionicons } from "@expo/vector-icons";
-import Spacer from "../components/Spacer";
-import VerticalRecommend from "../components/VerticalRecommend";
+import ButtonSearch from "../components/ButtonSearch";
 
+import VerticalRecommend from "../components/VerticalRecommend";
 
 const SearchScreen = () => {
   const [searchText, setSearchText] = React.useState("");
   const [keyboardStatus, setKeyboardStatus] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMemberVisible, setModalMemberVisible] = useState(false);
+  const [modalTimeVisibile, setModalTimeVisibile] = useState(false);
   const [selectedDates, setSelectedDates] = useState([]);
+  const [selectedTimes, setSelectedTimes] = useState();
   const [dateObject, setDateObject] = useState({});
   const [memberCount, setMemberCount] = useState(1);
 
-  console.log('selectedDates', selectedDates)
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date) => {
+    console.warn("A date has been picked: ", date);
+    hideDatePicker();
+  };
 
   const handleDayPress = (day) => {
     if (selectedDates.length === 2) {
@@ -52,17 +72,17 @@ const SearchScreen = () => {
     } else {
       let startDate = new Date(selectedDates[0]);
       let endDate = new Date(day.dateString);
-  
+
       if (startDate > endDate) {
         //swap start end
         const temp = startDate;
         startDate = endDate;
         endDate = temp;
       }
-  
+
       const newSelectedDates = {};
       let currentDate = new Date(startDate);
-  
+
       while (currentDate <= endDate) {
         const dateString = currentDate.toISOString().split("T")[0];
         if (dateString === startDate.toISOString().split("T")[0]) {
@@ -82,16 +102,25 @@ const SearchScreen = () => {
         }
         currentDate.setDate(currentDate.getDate() + 1);
       }
-  
-      setSelectedDates([startDate.toISOString().split("T")[0], endDate.toISOString().split("T")[0]]);
+
+      setSelectedDates([
+        startDate.toISOString().split("T")[0],
+        endDate.toISOString().split("T")[0],
+      ]);
       setDateObject({ ...dateObject, ...newSelectedDates });
     }
   };
 
-  const handleMemberPress = (data) => {
+  const handleMemberPress = (data) => {};
 
-  }
-  
+  const handleTimePress = (focus, selectedDate) => {
+    // setSelectedTimes()
+    let templateDate = new Date(selectedDate);
+    let fTime = templateDate.getHours() + " : " + templateDate.getMinutes();
+
+    setSelectedTimes(fTime);
+  };
+
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
       setKeyboardStatus("Keyboard Shown");
@@ -106,6 +135,9 @@ const SearchScreen = () => {
     };
   }, []);
 
+  let startDate = moment(selectedDates[0]).format("DD/MM/YYYY");
+  let endDate = moment(selectedDates[1]).format("DD/MM/YYYY");
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -116,7 +148,7 @@ const SearchScreen = () => {
         <SafeAreaView
           style={{
             height: SIZES.height * 0.95,
-            opacity: modalVisible ? 0.2 : 1,
+            opacity: modalVisible || modalMemberVisible ? 0.2 : 1,
           }}
         >
           <View style={{ flex: 1, marginHorizontal: SIZES.padding }}>
@@ -125,11 +157,11 @@ const SearchScreen = () => {
               <Back />
               <Avatar />
             </View>
-            <Spacer height={10} />
-            {/* search  */}
+
             <View style={[styles.search]}>
               <View style={{ padding: 12 }}>
-                <Text style={styles.headerTitlte}>Tìm phòng</Text>
+                <Text style={styles.headerTitlte}>Search Room</Text>
+                {/* Input search  */}
                 <View style={styles.sectionStyle}>
                   <Ionicons
                     name="md-search-sharp"
@@ -139,7 +171,7 @@ const SearchScreen = () => {
                   />
                   <TextInput
                     style={{ flex: 1 }}
-                    placeholder="Searchs for hotels"
+                    placeholder="Searchs for rooms"
                     underlineColorAndroid="transparent"
                     value={searchText}
                     onChangeText={(text) => setSearchText(text)}
@@ -157,6 +189,7 @@ const SearchScreen = () => {
                   )}
                 </View>
 
+                {/* Date and member  */}
                 <View
                   style={[
                     styles.search,
@@ -168,27 +201,63 @@ const SearchScreen = () => {
                 >
                   <View style={styles.option}>
                     <TouchableOpacity onPress={() => setModalVisible(true)}>
-                      <Text style={styles.title}>Choose Date</Text>
-                      <Text>16-Oct To 20-Oct</Text>
+                      <Text style={styles.title}>Date</Text>
+                      {setSelectedDates && (
+                        <Text>
+                          {startDate} - {endDate}
+                        </Text>
+                      )}
                     </TouchableOpacity>
                   </View>
                   <View style={styles.option}>
-                  <TouchableOpacity onPress={() => setModalMemberVisible(true)}>
-                    <Text style={styles.title}>Member of Room</Text>
-                    <Text>3 Adults</Text>
+                    <TouchableOpacity
+                      onPress={() => setModalMemberVisible(true)}
+                    >
+                      <Text style={styles.title}>Member of Room</Text>
+                      <Text>3 Person</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
-                <Spacer height={4} />
-                <ButtonBook
-                  label={"Search Hotel"}
+                {/* Time Checkin and checkout   */}
+                <View
+                  style={[
+                    styles.search,
+                    {
+                      flexDirection: "row",
+                      justifyContent: "space-around",
+                    },
+                  ]}
+                >
+                  <View style={styles.option}>
+                    <TouchableOpacity onPress={showDatePicker}>
+                      <Text style={styles.title}>Time Check-in</Text>
+                      <DateTimePickerModal
+                        isVisible={isDatePickerVisible}
+                        mode="time"
+                        onConfirm={handleConfirm}
+                        onCancel={hideDatePicker}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.option}>
+                    <TouchableOpacity
+                      onPress={() => setModalMemberVisible(true)}
+                    >
+                      <Text style={styles.title}>Time Check-out</Text>
+                      <Text>3 Person</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <Spacer height={10} />
+                <ButtonSearch
+                  float={"right"}
+                  label={"Search Room"}
                   color={COLORS.white}
-                  background={COLORS.black}
                 />
               </View>
             </View>
           </View>
-          <Spacer height={10} />
+          <Spacer height={12} />
           <View style={{ flex: 1.5, marginHorizontal: SIZES.padding }}>
             <Text style={styles.headerTitlte}>Danh sách tìm kiếm</Text>
             <ScrollView
@@ -197,7 +266,7 @@ const SearchScreen = () => {
               directionalLockEnabled={true}
               alwaysBounceVertical={false}
             >
-              <FlatList
+              {/* <FlatList
                 data={hotels_data}
                 scrollEventThrottle={10}
                 contentContainerStyle={{ alignSelf: "flex-start" }}
@@ -209,7 +278,7 @@ const SearchScreen = () => {
                   <VerticalRecommend item={item} key={item.id} />
                 )}
                 style={{ marginBottom: 24 }}
-              />
+              /> */}
             </ScrollView>
           </View>
         </SafeAreaView>
@@ -262,13 +331,11 @@ const SearchScreen = () => {
           setModalMemberVisible(!modalMemberVisible);
         }}
       >
-        modalMemberVisible, setModalMemberVisible
+        <Text>modalMemberVisible, setModalMemberVisible</Text>
         <View style={styles.modalView}>
-          
-
           <Pressable
             style={[styles.button, styles.buttonClose]}
-            onPress={() => setModalVisible(!modalVisible)}
+            onPress={() => setModalMemberVisible(!modalMemberVisible)}
           >
             <Text style={styles.textStyle}>Hide Modal</Text>
           </Pressable>
@@ -305,7 +372,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     backgroundColor: "white",
-    marginVertical: 10,
+    marginTop: 10,
   },
   imageStyle: {
     padding: 8,
@@ -320,14 +387,15 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radius,
   },
   title: {
-    paddingVertical: 4,
+    paddingVertical: 2,
     fontWeight: 600,
     fontSize: 16,
+    fontFamily: "Poppins-Medium",
   },
   option: {
     flexDirection: "column",
     alignItems: "center",
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
 
   modalView: {

@@ -1,4 +1,5 @@
-import { COLORS, SIZES } from "../config/theme";
+
+import React from "react";
 import {
   ImageBackground,
   StyleSheet,
@@ -6,14 +7,17 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
+import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
-import React from "react";
+import { COLORS, SIZES } from "../config/theme";
 import Spacer from "./Spacer";
 
 const VerticalRecommend = ({ item }) => {
+  const navigation = useNavigation();
   return (
-    <TouchableOpacity key={item?.id} activeOpacity={1}>
+    <TouchableOpacity key={item?.id} activeOpacity={1} onPress={()=> navigation.navigate("Chi tiết phòng", {
+      room_id: item.id
+    })}>
       <ImageBackground
       source={{
         uri: item?.image,
