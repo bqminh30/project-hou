@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { ApexOptions } from 'apexcharts';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
@@ -6,6 +8,8 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 // hooks
 import { useAuthContext } from 'src/auth/hooks';
+// api
+import axios from 'axios';
 // _mock
 import { _appFeatured, _appAuthors, _appInstalled, _appRelated, _appInvoices } from 'src/_mock';
 // components
@@ -24,13 +28,38 @@ import AppWidgetSummary from '../app-widget-summary';
 import AppCurrentDownload from '../app-current-download';
 import AppTopInstalledCountries from '../app-top-installed-countries';
 
-// ----------------------------------------------------------------------
 
+
+// ----------------------------------------------------------------------
+type widgetData = {
+  percent: number;
+  chart: number[] | any;
+  chart_month: string[];
+  total: number;
+}
 export default function OverviewAppView() {
   const { user, logout } = useAuthContext();
   const theme = useTheme();
 
   const settings = useSettingsContext();
+
+  const [dataTotalUser, setDataTotalUser] = useState<widgetData>();
+
+
+
+  useEffect(() => {
+    const resTotal = async () => {
+      try {
+        const res = await axios.post('https://be-nodejs-project.vercel.app/api/orders/widget-order')
+        if (res.status === 200) {
+          setDataTotalUser(res.data)
+        }
+      } catch (err) {
+        console.log("error", err);
+      }
+    };
+    resTotal()
+  }, [])
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -55,10 +84,10 @@ export default function OverviewAppView() {
         <Grid xs={12} md={4}>
           <AppWidgetSummary
             title="Total Active Users"
-            percent={2.6}
-            total={18765}
+            percent={Number(dataTotalUser?.percent)}
+            total={Number(dataTotalUser?.total)}
             chart={{
-              series: [5, 18, 12, 51, 68, 11, 39, 37, 27, 20, 20, 70],
+              series: dataTotalUser?.chart,
             }}
           />
         </Grid>

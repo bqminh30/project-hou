@@ -10,6 +10,8 @@ module.exports = (app) => {
 
     // get a order by id
     router.get('/:id',orders.getOrderById)
+
+    router.post('/widget-order', orders.totalWidgetData)
   
     // get orders status
     router.get('/status/:id',orders.getOrderStatusById)

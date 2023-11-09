@@ -702,4 +702,85 @@ SELECT r.*,
 
 
 /*Widget chart data*/
-SELECT CONCAT('[', IFNULL(GR) ,']')
+SELECT
+    o.id,
+    o.createdDate,
+    o.status,
+    o.total,
+    o.note,
+    o.customer_id,
+    o.employee_id,
+    o.createdAt,
+    o.updatedAt,
+    (
+        SELECT
+            SUM(oc.count)
+        FROM orders oc
+        WHERE
+            DATE_FORMAT(oc.createdDate, '%Y-%m') = DATE_FORMAT(o.createdDate - INTERVAL 1 MONTH, '%Y-%m')
+    ) AS 'user.percent',
+    (
+        SELECT
+            SUM(oc.count)
+        FROM orders oc
+        WHERE
+            oc.createdDate <= o.createdDate
+            AND oc.customer_id = o.customer_id
+    ) AS 'user.total',
+    (
+        SELECT
+            JSON_ARRAYAGG(oc.count)
+        FROM orders oc
+        WHERE
+            DATE_FORMAT(oc.createdDate, '%Y-%m') = DATE_FORMAT(o.createdDate, '%Y-%m')
+            AND oc.customer_id = o.customer_id
+    ) AS 'user.chart'
+FROM orders o
+
+
+SELECT
+    (
+        SELECT SUM(count)
+        FROM orders
+        WHERE DATE_FORMAT(createdDate, '%Y-%m') = DATE_FORMAT(CURRENT_DATE - INTERVAL 1 MONTH, '%Y-%m')
+    ) AS percent,
+    (
+        SELECT SUM(count)
+        FROM orders
+        WHERE createdDate <= CURRENT_DATE - INTERVAL 1 MONTH
+    ) AS total,
+    JSON_ARRAYAGG(SUM_count) AS chart
+FROM (
+    SELECT
+        DATE_FORMAT(createdDate, '%Y-%m') AS month,
+        SUM(count) AS SUM_count
+    FROM orders
+    WHERE createdDate >= CURRENT_DATE - INTERVAL 12 MONTH
+    GROUP BY DATE_FORMAT(createdDate, '%Y-%m')
+) subquery
+
+
+SELECT
+    (
+        SELECT SUM(count)
+        FROM orders
+        WHERE DATE_FORMAT(createdDate, '%Y-%m') = DATE_FORMAT(CURRENT_DATE - INTERVAL 1 MONTH, '%Y-%m')
+    ) AS percent,
+    (
+        SELECT SUM(count)
+        FROM orders
+        WHERE createdDate <= CURRENT_DATE - INTERVAL 1 MONTH
+    ) AS total,
+    JSON_ARRAYAGG(SUM_count) AS chart,
+    JSON_ARRAYAGG(month) AS chart_month
+FROM (
+    SELECT
+        DATE_FORMAT(createdDate, '%b') AS month,
+        SUM(count) AS SUM_count
+    FROM orders
+    WHERE createdDate >= DATE_SUB(LAST_DAY(CURRENT_DATE), INTERVAL 12 MONTH) 
+          AND createdDate <= LAST_DAY(CURRENT_DATE)
+    GROUP BY DATE_FORMAT(createdDate, '%b')
+) subquery
+
+
