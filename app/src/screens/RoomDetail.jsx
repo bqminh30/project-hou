@@ -19,7 +19,6 @@ import {
   Button,
 } from "react-native";
 import { useWindowDimensions } from "react-native";
-import HTML from "react-native-render-html";
 import RenderHtml from "react-native-render-html";
 import { FontAwesome } from "@expo/vector-icons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -233,8 +232,8 @@ const RoomDetail = ({ route, navigation }) => {
                           </Text>
                         </Animated.View>
                         <Button
-                        style={{}}
-                          title="Toggle Collapsed"
+                        style={{fontSize: 12}}
+                          title="see more"
                           onPress={toggleCollapsed}
                         />
                       </View>
@@ -243,7 +242,7 @@ const RoomDetail = ({ route, navigation }) => {
                       <Text style={styles.key}>Reviews</Text>
                       <FlatList
                         data={reviews}
-                        horizontal={true}
+                        horizontal={false}
                         keyExtractor={({ item, index }) => index}
                         renderItem={({ item, index }) => (
                           <VerticalReviews item={item} key={item.id} />
