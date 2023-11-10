@@ -82,8 +82,6 @@ Rooms.createRoom = (newRoom, result) => {
   });
 };
 
-Rooms.createRoomDeatil = (data, result) => {};
-
 Rooms.updateRoomById = (id, value, result) => {
   sql.query(
     "UPDATE room SET " +
@@ -240,7 +238,7 @@ Rooms.getAll = (title, result) => {
       GROUP BY room_id
         ) room_image ON room_image.room_id = r.id
       GROUP BY r.id;
-`;
+  `;
 
   sql.query(query, (err, res) => {
     if (err) {
@@ -249,8 +247,23 @@ Rooms.getAll = (title, result) => {
       return;
     }
 
-    // console.log("rooms: ", res);
-    result(null, res);
+    console.log("rooms: ", res);
+    if (res.length) {
+      const roomsData = res.map((room) => {
+        const resultImages = JSON.parse(room.roomImages);
+        const resultServices = JSON.parse(room.service);
+
+        return {
+          ...room,
+          roomImages: resultImages,
+          service: resultServices,
+        };
+      });
+
+      result(null, roomsData);
+      return;
+    }
+    result({ kind: "not_found" }, null);
   });
 };
 
