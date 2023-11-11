@@ -12,18 +12,20 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
+import axios from "axios";
 import { useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SIZES } from "../config/theme";
+//component
 import Avatar from "../components/Avatar";
 import Menu from "../components/Menu";
 import Spacer from "../components/Spacer";
 
-import { hotel_type, hotels_data } from "../config/data";
 import VerticalHome from "../components/VerticalHome";
 import VerticalType from "../components/VerticalType";
 import VerticalRecommend from "../components/VerticalRecommend";
-import axios from "axios";
+
+
 const Home = () => {
   const [searchText, setSearchText] = React.useState("");
   const [roomLimit, setRoomLimit] = React.useState([]);

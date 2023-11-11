@@ -2,7 +2,7 @@ import React from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { COLORS, SIZES } from "../config/theme";
 
-const ButtonSearch = ({float, label, color}) => {
+const ButtonSearch = ({float, label, color, background}) => {
    
   return (
     <View style={{alignItems: 'flex-end'}}>
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    backgroundColor: COLORS.main,
+    backgroundColor: COLORS.black,
     width: 120,
   },
 });
