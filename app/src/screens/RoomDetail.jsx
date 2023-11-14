@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   View,
   Text,
@@ -14,22 +20,25 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
-  Easing,
-  Dimensions,
-  Button,
+  Modal,
+  Pressable,
+  TextInput
 } from "react-native";
 import { useWindowDimensions } from "react-native";
 import RenderHtml from "react-native-render-html";
 import { FontAwesome } from "@expo/vector-icons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Calendar, LocaleConfig } from "react-native-calendars";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import moment from "moment";
 // icons
 import { AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 //redux
 import { Provider, useDispatch, useSelector } from "react-redux";
 //component
 import Back from "../components/Back";
 import Avatar from "../components/Avatar";
-import { COLORS, SIZES } from "../config/theme";
 import Spacer from "../components/Spacer";
 import VerticalImage from "../components/VerticalImage";
 import VerticalServices from "../components/VerticalServices";
@@ -39,6 +48,7 @@ import ButtonBook from "../components/ButtonBook";
 import { getRoom, getReviews } from "../redux/actions/roomAction";
 //
 import { services } from "../config/data";
+import { COLORS, SIZES } from "../config/theme";
 
 //============================================================
 
@@ -50,6 +60,13 @@ const RoomDetail = ({ route, navigation }) => {
   );
   const [showImage, setShowImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [active, setAcive] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [dateObject, setDateObject] = useState({});
+  const [selectedDates, setSelectedDates] = useState([]);
+  const [memberCount, setMemberCount] = useState(1);
+  const [roomCount, setRoomCount] = useState(1);
+  const [childrenCount, setChildrenCount] = useState(0);
 
   const dispath = useDispatch();
   const init = async () => {
@@ -58,15 +75,19 @@ const RoomDetail = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    // setLoading(true)
+    setLoading(true);
     init();
-    // setTimeout(()=> {
-    //   setLoading(false)
-    // }, 500)
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
   }, []);
 
   const handleShowImage = (image) => {
     setShowImage(image);
+  };
+
+  const handleActive = (data) => {
+    setAcive(data);
   };
 
   const [collapsed, setCollapsed] = useState(true);
@@ -81,6 +102,7 @@ const RoomDetail = ({ route, navigation }) => {
     Animated.timing(animationHeight, {
       duration: 1000,
       toValue: 150,
+      useNativeDriver: false,
     }).start();
   };
 
@@ -89,6 +111,7 @@ const RoomDetail = ({ route, navigation }) => {
     Animated.timing(animationHeight, {
       duration: 1000,
       toValue: 2000,
+      useNativeDriver: false,
     }).start();
   };
 
@@ -99,6 +122,107 @@ const RoomDetail = ({ route, navigation }) => {
       expandView();
     }
   }, [collapsed]);
+
+  const roomMaxValue = 3;
+  const memberChildrenMaxValue = 8;
+
+  const handleDecrement = (count, setCount, minValue) => {
+    if (count > minValue) {
+      setCount(count - 1);
+    }
+  };
+
+  const handleIncrement = (count, setCount, maxValue) => {
+    if (count < maxValue) {
+      setCount(count + 1);
+    }
+  };
+
+  const handleDayPress = (day) => {
+    if (selectedDates.length === 2) {
+      // Reset mảng nếu đã chọn đủ 2 ngày
+      setSelectedDates([]);
+      setDateObject({});
+      setSelectedDates([day.dateString]);
+    } else if (selectedDates.length === 0) {
+      // Chọn ngày đầu tiên
+      setSelectedDates([day.dateString]);
+    } else {
+      let startDate = new Date(selectedDates[0]);
+      let endDate = new Date(day.dateString);
+
+      if (startDate > endDate) {
+        //swap start end
+        const temp = startDate;
+        startDate = endDate;
+        endDate = temp;
+      }
+
+      const newSelectedDates = {};
+      let currentDate = new Date(startDate);
+
+      while (currentDate <= endDate) {
+        const dateString = currentDate.toISOString().split("T")[0];
+        if (dateString === startDate.toISOString().split("T")[0]) {
+          newSelectedDates[dateString] = {
+            color: "lightgreen",
+            startingDay: true,
+          };
+        } else if (dateString === endDate.toISOString().split("T")[0]) {
+          newSelectedDates[dateString] = {
+            color: "lightgreen",
+            endingDay: true,
+          };
+        } else {
+          newSelectedDates[dateString] = {
+            color: "lightgreen",
+          };
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      setSelectedDates([
+        startDate.toISOString().split("T")[0],
+        endDate.toISOString().split("T")[0],
+      ]);
+      setDateObject({ ...dateObject, ...newSelectedDates });
+    }
+  };
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardStatus("Keyboard Shown");
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardStatus("Keyboard Hidden");
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  let startDate = moment(selectedDates[0]).format("DD/MM/YYYY 15:00");
+  let endDate = moment(selectedDates[1]).format("DD/MM/YYYY 12:00");
+
+  const bottomSheetModalRef = useRef(null);
+  const [isModal, setIsModal] = useState(false);
+  const snapPoints = useMemo(() => [1, "25%", "40%", "60%"], []);
+
+  const [opacity, setOpacity] = useState(1);
+  const handleSheetChange = useCallback((index) => {
+    if (index === -1 || index === 0) {
+      setOpacity(1);
+    }
+  }, []);
+
+  const handlePress = () => {
+    // Mở bottom sheet khi bạn nhấp vào một thành phần trong danh sách
+    setOpacity(0.6);
+    bottomSheetModalRef.current?.expand();
+    setIsModal(true);
+  };
 
   var starPush = [];
   for (var i = 1; i <= 5; i++) {
@@ -135,6 +259,10 @@ const RoomDetail = ({ route, navigation }) => {
       );
     }
   }
+
+  const handleBook = () => {
+    setModalVisible(!modalVisible);
+  };
 
   if (loading) {
     return (
@@ -183,6 +311,8 @@ const RoomDetail = ({ route, navigation }) => {
                             item={item}
                             key={item.id}
                             handleShowImage={handleShowImage}
+                            handleActive={handleActive}
+                            active={active}
                           />
                         )}
                       />
@@ -245,7 +375,26 @@ const RoomDetail = ({ route, navigation }) => {
                       </Text>
                     </View>
 
-                    <View style={styles.rating}></View>
+                    <View style={[styles.flex, { gap: 10 }]}>
+                      <View style={[styles.flex, { gap: 4 }]}>
+                        <Ionicons name="bed" size={18} color={COLORS.main} />
+                        <Text style={{ color: COLORS.gray_main }}>
+                          {room?.numberBed} Beds
+                        </Text>
+                      </View>
+                      <View style={[styles.flex, { gap: 4 }]}>
+                        <Ionicons name="people" size={18} color={COLORS.main} />
+                        <Text style={{ color: COLORS.gray_main }}>
+                          {room?.numberPeople} Adults
+                        </Text>
+                      </View>
+                      <View style={[styles.flex, { gap: 4 }]}>
+                        <Ionicons name="person" size={18} color={COLORS.main} />
+                        <Text style={{ color: COLORS.gray_main }}>
+                          {room?.numberChildren} Childrens
+                        </Text>
+                      </View>
+                    </View>
                     <Spacer height={5} />
                     <View>
                       <Text style={styles.key}>Amenties</Text>
@@ -281,7 +430,10 @@ const RoomDetail = ({ route, navigation }) => {
                         </TouchableOpacity>
                       </View>
                       <View style={{ overflow: "hidden" }}>
-                        <Animated.View style={{ maxHeight: animationHeight }}>
+                        <Animated.View
+                          scrollEventThrottle={1}
+                          style={{ maxHeight: animationHeight }}
+                        >
                           <Text
                             style={styles.paragraph}
                             numberOfLines={maxLines}
@@ -324,7 +476,195 @@ const RoomDetail = ({ route, navigation }) => {
                 </SafeAreaView>
               </View>
             </TouchableWithoutFeedback>
+
+            <BottomSheet
+              ref={bottomSheetModalRef}
+              index={-1}
+              snapPoints={snapPoints}
+              onChange={handleSheetChange}
+              enablePanDownToClose
+              enableOverDrag
+              pressBehavior={"close"}
+              backgroundStyle={{
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+
+                elevation: 5,
+              }}
+            >
+              {isModal == true && (
+                <BottomSheetView>
+                  <Text
+                    style={{
+                      fontWeight: 600,
+                      fontSize: 16,
+                      fontFamily: "Poppins-Medium",
+                      textAlign: "center",
+                      paddingBottom: 10,
+                    }}
+                  >
+                    Number of people renting a room
+                  </Text>
+                  {/* Rooms  */}
+                  <View
+                    style={[
+                      styles.flex,
+                      { flexDirection: "column", marginBottom: 12 },
+                    ]}
+                  >
+                    <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
+                      Numbers of Beds
+                    </Text>
+
+                    <View style={styles.flex}>
+                      {/* Member Count */}
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleDecrement(roomCount, setRoomCount, 1)
+                        }
+                        style={styles.buttonStyle}
+                      >
+                        <Text style={{ color: "white" }}>-</Text>
+                      </TouchableOpacity>
+                      <TextInput
+                        style={styles.inputStyle}
+                        value={`${roomCount}`}
+                        onChangeText={() => {}}
+                      />
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleIncrement(roomCount, setRoomCount, roomMaxValue)
+                        }
+                        style={styles.buttonStyle}
+                      >
+                        <Text style={{ color: "white" }}>+</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {/* Adults  */}
+                  <View
+                    style={[
+                      styles.flex,
+                      { flexDirection: "column", marginBottom: 12 },
+                    ]}
+                  >
+                    <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
+                      Adults (Maximum: 10 total guest/room)
+                    </Text>
+                    <View style={styles.flex}>
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleDecrement(memberCount, setMemberCount, 1)
+                        }
+                        style={styles.buttonStyle}
+                      >
+                        <Text style={{ color: "white" }}>-</Text>
+                      </TouchableOpacity>
+                      <TextInput
+                        style={styles.inputStyle}
+                        value={`${memberCount}`}
+                        onChangeText={() => {}}
+                      />
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleIncrement(
+                            memberCount,
+                            setMemberCount,
+                            memberChildrenMaxValue
+                          )
+                        }
+                        style={styles.buttonStyle}
+                      >
+                        <Text style={{ color: "white" }}>+</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {/* Children   */}
+                  <View
+                    style={[
+                      styles.flex,
+                      { flexDirection: "column", marginBottom: 12 },
+                    ]}
+                  >
+                    <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
+                      Childrens (Maximum: 10 total guest/room)
+                    </Text>
+                    <View style={styles.flex}>
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleDecrement(childrenCount, setChildrenCount, 0)
+                        }
+                        style={styles.buttonStyle}
+                      >
+                        <Text style={{ color: "white" }}>-</Text>
+                      </TouchableOpacity>
+                      <TextInput
+                        style={styles.inputStyle}
+                        value={`${childrenCount}`}
+                        onChangeText={() => {}}
+                      />
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleIncrement(
+                            childrenCount,
+                            setChildrenCount,
+                            memberChildrenMaxValue
+                          )
+                        }
+                        style={styles.buttonStyle}
+                      >
+                        <Text style={{ color: "white" }}>+</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </BottomSheetView>
+              )}
+            </BottomSheet>
           </KeyboardAvoidingView>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              setModalVisible(!modalVisible);
+            }}
+          >
+            <View style={styles.modalView}>
+              <Calendar
+                // Customize the appearance of the calendar
+
+                // Specify the current date
+                // current={new Date()}
+                minDate={new Date()}
+                // Callback that gets called when the user selects a day
+                onDayPress={(day) => {
+                  handleDayPress(day);
+                }}
+                // Mark specific dates as marked
+                markingType="period"
+                // hideExtraDays={true}
+                hideArrows={false}
+                markedDates={dateObject}
+              />
+
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Hide Modal</Text>
+              </Pressable>
+              <Spacer height={10} />
+            </View>
+          </Modal>
         </GestureHandlerRootView>
       </ScrollView>
       <View style={styles.bottom}>
@@ -344,7 +684,7 @@ const RoomDetail = ({ route, navigation }) => {
               {room?.priceSale ? room?.price : ""}
             </Text>
           </Text>
-          <ButtonBook />
+          <ButtonBook onPress={() => handlePress()} />
         </View>
       </View>
     </>
@@ -455,5 +795,47 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: COLORS.main,
     paddingRight: 2,
+  },
+
+  modalView: {
+    justifyContent: "center",
+    alignContent: "center",
+    marginHorizontal: 20,
+    marginTop: SIZES.height / 4,
+    backgroundColor: "white",
+    borderRadius: SIZES.radius,
+    // padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  buttonClose: {
+    backgroundColor: COLORS.black,
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  textStyle: {
+    color: COLORS.white,
+  },
+  buttonStyle: {
+    height: 40,
+    backgroundColor: COLORS.black,
+    width: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inputStyle: {
+    borderWidth: 1,
+    borderColor: "black",
+    height: 40,
+    width: "50%",
+    textAlign: "center",
   },
 });

@@ -2,10 +2,13 @@ import React from "react";
 import { View, Image, TouchableOpacity } from "react-native";
 import { SIZES } from "../config/theme";
 
-const VerticalImage = ({ item, handleShowImage }) => {
+const VerticalImage = ({ item, handleShowImage, active, handleActive }) => {
   return (
-    <View key={item?.id} style={{ marginRight: SIZES.margin }}>
-      <TouchableOpacity onPress={()=>handleShowImage(item?.name)}>
+    <View key={item?.id} style={{ marginRight: SIZES.margin, opacity: active !== item.id ? 0.4 : 1  }}>
+      <TouchableOpacity onPress={()=>{
+        handleShowImage(item?.name)
+        handleActive(item?.id)
+      }}>
       <Image
         source={{ uri: item?.name }}
         style={{

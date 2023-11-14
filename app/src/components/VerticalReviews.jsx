@@ -6,7 +6,6 @@ import { COLORS } from "../config/theme";
 import Avatar from "./Avatar";
 
 const VerticalReviews = ({ item }) => {
-  console.log("item", item);
   var starPush = [];
 for (var i = 1; i <= 5; i++) {
   if (i <= item?.rating) {

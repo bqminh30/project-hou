@@ -23,11 +23,11 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ActivityIndicator,
   // GestureHandlerRootView,
   View,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import moment from "moment";
 import { Ionicons } from "@expo/vector-icons";
@@ -42,58 +42,35 @@ import Back from "../components/Back";
 import ButtonSearch from "../components/ButtonSearch";
 
 import VerticalRecommend from "../components/VerticalRecommend";
+import axios from "axios";
 
 const SearchScreen = () => {
   const [searchText, setSearchText] = React.useState("");
-  const [keyboardStatus, setKeyboardStatus] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalMemberVisible, setModalMemberVisible] = useState(false);
   const [selectedDates, setSelectedDates] = useState([]);
-  const [selectedFirstTime, setSelectedFirstTime] = useState();
-  const [selectedSecondTime, setSelectedSecondTime] = useState();
   const [dateObject, setDateObject] = useState({});
   const [memberCount, setMemberCount] = useState(1);
+  const [roomCount, setRoomCount] = useState(1);
+  const [childrenCount, setChildrenCount] = useState(0);
+  const [dataSearch, setDataSearch] = useState([]);
+  const [dataSearchUpdate, setDataSearchUpdate] = useState([]);
+  const [loadingDataSearch, setLoadinDataSearch] = useState(false);
 
-  const [isDatePickerVisibleCheckIn, setDatePickerVisibleCheckIn] =
-    useState(false);
-  const [isDatePickerVisibleCheckOut, setDatePickerVisibleCheckOut] =
-    useState(false);
+  const roomMaxValue = 3;
+  const memberChildrenMaxValue = 8;
 
-  const [additionalData, setAdditionalData] = useState(null);
-
-  const showDatePicker = (code) => {
-    if (code === 1) {
-      setDatePickerVisibleCheckIn(true);
-    } else if (code === 2) {
-      setDatePickerVisibleCheckOut(true);
+  const handleDecrement = (count, setCount, minValue) => {
+    if (count > minValue) {
+      setCount(count - 1);
     }
-    // Set additional data based on code
-    setAdditionalData(code);
   };
 
-  const hideDatePicker = () => {
-    setDatePickerVisibleCheckIn(false);
-    setDatePickerVisibleCheckOut(false);
-  };
-
-  const handleConfirm = (date) => {
-    const dateTime = new Date(date);
-
-    const hours = dateTime.getHours();
-    const minutes = dateTime.getMinutes();
-
-    const formatMinutes = (min) => (min < 10 ? `0${min}` : `${min}`);
-    if (additionalData === 1) {
-      setSelectedFirstTime(`${hours}:${formatMinutes(minutes)}`);
-    } else {
-      setSelectedSecondTime(`${hours}:${formatMinutes(minutes)}`);
+  const handleIncrement = (count, setCount, maxValue) => {
+    if (count < maxValue) {
+      setCount(count + 1);
     }
-
-    // Use the additional data here as needed
-
-    hideDatePicker();
   };
-
+  // select date
   const handleDayPress = (day) => {
     if (selectedDates.length === 2) {
       // Reset mảng nếu đã chọn đủ 2 ngày
@@ -145,26 +122,14 @@ const SearchScreen = () => {
     }
   };
 
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-      setKeyboardStatus("Keyboard Shown");
-    });
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-      setKeyboardStatus("Keyboard Hidden");
-    });
+ 
 
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
-
-  let startDate = moment(selectedDates[0]).format("DD/MM/YYYY");
-  let endDate = moment(selectedDates[1]).format("DD/MM/YYYY");
+  let startDate = moment(selectedDates[0]).format("DD/MM/YYYY 15:00");
+  let endDate = moment(selectedDates[1]).format("DD/MM/YYYY 12:00");
 
   const bottomSheetModalRef = useRef(null);
   const [isModal, setIsModal] = useState(false);
-  const snapPoints = useMemo(() => [1, "25%"], []);
+  const snapPoints = useMemo(() => [1, "25%", "35%", "50%"], []);
 
   const [opacity, setOpacity] = useState(1);
   const handleSheetChange = useCallback((index) => {
@@ -179,6 +144,30 @@ const SearchScreen = () => {
     bottomSheetModalRef.current?.expand();
     setIsModal(true);
   };
+
+  const handleSearchRooms = async () => {
+    setLoadinDataSearch(true);
+    setDataSearch([]);
+    await axios
+      .post("https://be-nodejs-project.vercel.app/api/rooms/search", {
+        name: searchText,
+        startDate: startDate,
+        endDate: endDate,
+        numberBed: roomCount,
+        numberPeople: memberCount,
+        numberChildren: childrenCount,
+      })
+      .then((res) => {
+        setDataSearch(res.data.data);
+      })
+      .catch((err) => console.log("err"));
+
+    setLoadinDataSearch(false);
+  };
+
+  useEffect(() => {
+    setDataSearchUpdate(dataSearch);
+  }, [loadingDataSearch]);
 
   return (
     <>
@@ -195,7 +184,7 @@ const SearchScreen = () => {
             style={{
               height: SIZES.height * 0.95,
               opacity: opacity,
-              opacity: modalVisible || modalMemberVisible ? 0.2 : 1,
+              opacity: modalVisible  ? 0.2 : 1,
             }}
           >
             <View style={{ flex: 1, marginHorizontal: SIZES.padding }}>
@@ -219,6 +208,7 @@ const SearchScreen = () => {
                     <TextInput
                       style={{ flex: 1 }}
                       placeholder="Searchs for rooms"
+                      placeholderTextColor={COLORS.gray_main}
                       underlineColorAndroid="transparent"
                       value={searchText}
                       onChangeText={(text) => setSearchText(text)}
@@ -248,7 +238,7 @@ const SearchScreen = () => {
                   >
                     <View style={styles.option}>
                       <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Text style={styles.title}>Date</Text>
+                        <Text style={styles.title}>Stay Dates</Text>
                         {setSelectedDates && (
                           <Text>
                             {startDate} - {endDate}
@@ -258,82 +248,83 @@ const SearchScreen = () => {
                     </View>
                     <View style={styles.option}>
                       <TouchableOpacity onPress={() => handlePress()}>
-                        <Text style={styles.title}>Member of Room</Text>
-                        <Text>{memberCount} person</Text>
+                        <Text style={styles.title}>Rooms & Guests</Text>
+                        <Text>
+                          {roomCount} Rooms: {memberCount} Adults{" "}
+                          {childrenCount > 0 && `, ${childrenCount} Childrens`}
+                        </Text>
                       </TouchableOpacity>
                     </View>
                   </View>
-                  {/* Time Checkin and checkout   */}
-                  <View
-                    style={[
-                      styles.search,
-                      {
-                        flexDirection: "row",
-                        justifyContent: "space-around",
-                      },
-                    ]}
-                  >
-                    <View style={styles.option}>
-                      <TouchableOpacity onPress={() => showDatePicker(1)}>
-                        <Text style={styles.title}>Time Check-in</Text>
-                        <Text>{selectedFirstTime}</Text>
-                        <DateTimePickerModal
-                          isVisible={isDatePickerVisibleCheckIn}
-                          mode="time"
-                          minuteInterval={30}
-                          onConfirm={handleConfirm}
-                          onCancel={hideDatePicker}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                    <View style={styles.option}>
-                      <TouchableOpacity onPress={() => showDatePicker(2)}>
-                        <Text style={styles.title}>Time Check-out</Text>
-                        <Text>{selectedSecondTime}</Text>
-                        <DateTimePickerModal
-                          isVisible={isDatePickerVisibleCheckOut}
-                          mode="time"
-                          minuteInterval={30}
-                          onConfirm={handleConfirm}
-                          onCancel={hideDatePicker}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
+
                   <Spacer height={10} />
                   <ButtonSearch
                     background={COLORS.black}
                     float={"right"}
                     label={"Search Room"}
                     color={COLORS.white}
+                    onPress={handleSearchRooms}
                   />
                 </View>
               </View>
             </View>
             <Spacer height={12} />
-            <View style={{ flex: 1.5, marginHorizontal: SIZES.padding }}>
-              <Text style={styles.headerTitlte}>Danh sách tìm kiếm</Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                directionalLockEnabled={true}
-                alwaysBounceVertical={false}
+            {loadingDataSearch === true && dataSearch.length === 0 && (
+              <View
+                style={{
+                  flex: 2,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "100%",
+                }}
               >
-                {/* <FlatList
-                data={hotels_data}
-                scrollEventThrottle={10}
-                contentContainerStyle={{ alignSelf: "flex-start" }}
-                numColumns={Math.ceil(hotels_data.length / 2)}
-                showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={({ item, index }) => index}
-                renderItem={({ item, index }) => (
-                  <VerticalRecommend item={item} key={item.id} />
-                )}
-                style={{ marginBottom: 24 }}
-              /> */}
-              </ScrollView>
-            </View>
+                <View style={styles.flex}>
+                  <ActivityIndicator size="small" />
+                  <Text> Loading ...</Text>
+                </View>
+              </View>
+            )}
+
+            {loadingDataSearch === false && dataSearch.length === 0 && (
+              <View
+                style={{
+                  flex: 2,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                <Text>Not search rooms</Text>
+              </View>
+            )}
+
+            {loadingDataSearch === false && dataSearch.length > 0 && (
+              <View style={{ flex: 2, marginHorizontal: SIZES.padding }}>
+                <Text style={styles.headerTitlte}>
+                  {dataSearchUpdate?.length} Availabel Rooms
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  directionalLockEnabled={true}
+                  alwaysBounceVertical={false}
+                >
+                  <FlatList
+                    data={dataSearchUpdate}
+                    scrollEventThrottle={10}
+                    contentContainerStyle={{ alignSelf: "flex-start" }}
+                    numColumns={2}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={({ item, index }) => `${index}`}
+                    renderItem={({ item, index }) => (
+                      <VerticalRecommend item={item} key={item.id} />
+                    )}
+                    style={{ marginBottom: 24 }}
+                  />
+                </ScrollView>
+              </View>
+            )}
           </SafeAreaView>
           {/* </View> */}
           <Modal
@@ -358,8 +349,7 @@ const SearchScreen = () => {
                 }}
                 // Mark specific dates as marked
                 markingType="period"
-                hideExtraDays={true}
-                //   minDate={new Date()}
+                // hideExtraDays={true}
                 hideArrows={false}
                 markedDates={dateObject}
               />
@@ -373,6 +363,7 @@ const SearchScreen = () => {
               <Spacer height={10} />
             </View>
           </Modal>
+          {/* Bottom Sheet View Input  */}
           <BottomSheet
             ref={bottomSheetModalRef}
             index={-1}
@@ -395,49 +386,130 @@ const SearchScreen = () => {
           >
             {isModal == true && (
               <BottomSheetView>
-                <Text style={{
-                 fontWeight: 600,
-                 fontSize: 16,
-                 fontFamily: "Poppins-Medium",
-                 textAlign: 'center',
-                 paddingBottom: 10
-                }}>Number of people renting a room</Text>
-                <View style={styles.flex}>
-                  <TouchableOpacity
-                    onPress={() => setMemberCount(memberCount - 1)}
-                    style={{
-                      height: 40,
-                      backgroundColor: COLORS.black,
-                      width: 40,
-                      alignItems: "center",
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <Text style={{ color: "white" }}>-</Text>
-                  </TouchableOpacity>
-                  <TextInput
-                    style={{
-                      borderWidth: 1,
-                      borderColor: "black",
-                      height: 40,
-                      width: "60%",
-                      textAlign:'center'
-                    }}
-                    value={`${memberCount}`}
-                    onChangeText={() => {}}
-                  />
-                  <TouchableOpacity
-                    onPress={() => setMemberCount(memberCount + 1)}
-                    style={{
-                      height: 40,
-                      backgroundColor: COLORS.black,
-                      width: 40,
-                      alignItems: "center",
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <Text style={{ color: "white" }}>+</Text>
-                  </TouchableOpacity>
+                <Text
+                  style={{
+                    fontWeight: 600,
+                    fontSize: 16,
+                    fontFamily: "Poppins-Medium",
+                    textAlign: "center",
+                    paddingBottom: 10,
+                  }}
+                >
+                  Number of people renting a room
+                </Text>
+                {/* Rooms  */}
+                <View
+                  style={[
+                    styles.flex,
+                    { flexDirection: "column", marginBottom: 12 },
+                  ]}
+                >
+                  <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
+                    Rooms
+                  </Text>
+
+                  <View style={styles.flex}>
+                    {/* Member Count */}
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleDecrement(roomCount, setRoomCount, 1)
+                      }
+                      style={styles.buttonStyle}
+                    >
+                      <Text style={{ color: "white" }}>-</Text>
+                    </TouchableOpacity>
+                    <TextInput
+                      style={styles.inputStyle}
+                      value={`${roomCount}`}
+                      onChangeText={() => {}}
+                    />
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleIncrement(roomCount, setRoomCount, roomMaxValue)
+                      }
+                      style={styles.buttonStyle}
+                    >
+                      <Text style={{ color: "white" }}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Adults  */}
+                <View
+                  style={[
+                    styles.flex,
+                    { flexDirection: "column", marginBottom: 12 },
+                  ]}
+                >
+                  <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
+                    Adults (Maximum: 10 total guest/room)
+                  </Text>
+                  <View style={styles.flex}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleDecrement(memberCount, setMemberCount, 1)
+                      }
+                      style={styles.buttonStyle}
+                    >
+                      <Text style={{ color: "white" }}>-</Text>
+                    </TouchableOpacity>
+                    <TextInput
+                      style={styles.inputStyle}
+                      value={`${memberCount}`}
+                      onChangeText={() => {}}
+                    />
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleIncrement(
+                          memberCount,
+                          setMemberCount,
+                          memberChildrenMaxValue
+                        )
+                      }
+                      style={styles.buttonStyle}
+                    >
+                      <Text style={{ color: "white" }}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Children   */}
+                <View
+                  style={[
+                    styles.flex,
+                    { flexDirection: "column", marginBottom: 12 },
+                  ]}
+                >
+                  <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
+                    Childrens (Maximum: 10 total guest/room)
+                  </Text>
+                  <View style={styles.flex}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleDecrement(childrenCount, setChildrenCount, 0)
+                      }
+                      style={styles.buttonStyle}
+                    >
+                      <Text style={{ color: "white" }}>-</Text>
+                    </TouchableOpacity>
+                    <TextInput
+                      style={styles.inputStyle}
+                      value={`${childrenCount}`}
+                      onChangeText={() => {}}
+                    />
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleIncrement(
+                          childrenCount,
+                          setChildrenCount,
+                          memberChildrenMaxValue
+                        )
+                      }
+                      style={styles.buttonStyle}
+                    >
+                      <Text style={{ color: "white" }}>+</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </BottomSheetView>
             )}
@@ -498,6 +570,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     paddingVertical: 6,
+    width: "50%",
   },
 
   modalView: {
@@ -535,5 +608,19 @@ const styles = StyleSheet.create({
     // justifyContent: "space-between",
     justifyContent: "center",
     alignItems: "center",
+  },
+  buttonStyle: {
+    height: 40,
+    backgroundColor: COLORS.black,
+    width: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inputStyle: {
+    borderWidth: 1,
+    borderColor: "black",
+    height: 40,
+    width: "50%",
+    textAlign: "center",
   },
 });

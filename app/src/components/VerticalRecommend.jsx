@@ -15,8 +15,11 @@ import Spacer from "./Spacer";
 const VerticalRecommend = ({ item }) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity key={item?.id} activeOpacity={1} onPress={()=> navigation.navigate("Chi tiết phòng", {
-      room_id: item.id
+    <TouchableOpacity key={item?.id} activeOpacity={1} onPress={()=> navigation.navigate("Trang chủ",{
+      screen: 'Chi tiết phòng',
+      params: {
+        room_id: item.id
+      }
     })}>
       <ImageBackground
       source={{

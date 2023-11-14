@@ -1,26 +1,24 @@
 const sql = require("../config/db.js");
-const Service = require("./service.model");
-const Room_Image = require("./room_image.model");
 
 const currentDate = new Date();
 // constructor
-const Rooms = function (value) {
-  this.name = value.name;
-  this.title = value.title;
-  this.description = value.description;
-  this.price = value.price;
-  this.priceSale = value.priceSale;
-  this.rating = value.rating;
-  this.totalRating = value.totalRating;
-  this.totalReview = value.totalReview;
-  this.numberBed = value.numberBed;
-  this.numberPeople = value.numberPeople;
-  this.status = value.status;
-  this.label = value.label;
-  this.isLiked = value.isLiked;
-  this.image = value.image;
-  this.voucher_id = value.voucher_id;
-  this.type_room_id = value.type_room_id;
+const Rooms = function (data) {
+  this.name = data.name;
+  this.title = data.title;
+  this.description = data.description;
+  this.price = data.price;
+  this.priceSale = data.priceSale;
+  this.rating = data.rating;
+  this.totalRating = data.totalRating;
+  this.totalReview = data.totalReview;
+  this.numberBed = data.numberBed;
+  this.numberPeople = data.numberPeople;
+  this.numberChildren = data.numberChildren;
+  this.status = data.status;
+  this.label = data.label;
+  this.isLiked = data.isLiked;
+  this.image = data.image;
+  this.type_room_id = data.type_room_id;
   this.createdAt = new Date();
   this.updatedAt = new Date();
 };
@@ -83,10 +81,11 @@ Rooms.createRoom = (newRoom, result) => {
 };
 
 Rooms.updateRoomById = (id, value, result) => {
+  console.log('value', value)
   sql.query(
     "UPDATE room SET " +
       "name=?, title=?, description=?, price=?,priceSale=?, numberBed =?, numberPeople =?, " +
-      "status= ?,label=?, isLiked=?, image=?,voucher_id=?,type_room_id=?, updatedAt=? WHERE id = ?",
+      "status= ?,label=?, isLiked=?, image=?,numberChildren=?,type_room_id=?, updatedAt=? WHERE id = ?",
     [
       value.name,
       value.title,
@@ -99,9 +98,9 @@ Rooms.updateRoomById = (id, value, result) => {
       value.label,
       value.isLiked,
       value.image,
-      value.voucher_id,
+      value.numberChildren,
       value.type_room_id,
-      value.updatedAt,
+      new Date(),
       id,
     ],
     (err, res) => {
@@ -321,5 +320,81 @@ Rooms.getRoomsByRoomTypeId = (id, result) => {
 };
 
 
+Rooms.searchRooms = (value, result) => {
+  const {
+    name,
+    startDate,
+    endDate,
+    numberRooms,
+    numberPeople,
+    numberChildren,
+  } = req.query;
+
+  const conditions = [];
+  const values = [];
+
+  if (name) {
+    // Check if the name is a number
+    const isNumber = !isNaN(name);
+    
+    if (isNumber) {
+      conditions.push('numberRooms >= ?');
+      values.push(parseInt(name, 10));
+    } else {
+      conditions.push('name LIKE ?');
+      values.push(`%${name}%`);
+    }
+  }
+
+  if (startDate && endDate) {
+    conditions.push(`
+      id NOT IN (
+        SELECT room_id
+        FROM order_detail
+        WHERE (
+          ? >= checkinDate
+          AND ? <= checkoutDate
+        ) OR (
+          ? >= checkinDate
+          AND ? <= checkoutDate
+        ) OR (
+          ? >= checkinDate
+          AND ? <= checkoutDate
+        )
+      )
+    `);
+    values.push(startDate, endDate, startDate, startDate, endDate, endDate);
+  }
+
+  if (numberRooms) {
+    conditions.push('numberRooms >= ?');
+    values.push(numberRooms);
+  }
+
+  if (numberPeople) {
+    conditions.push('numberPeople >= ?');
+    values.push(numberPeople);
+  }
+
+  if (numberChildren) {
+    conditions.push('numberChildren >= ?');
+    values.push(numberChildren);
+  }
+
+  const queryString = `
+    SELECT *
+    FROM room
+    WHERE ${conditions.join(' AND ')}
+  `;
+
+  db.query(queryString, values, (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).json({ success: false, error: 'Internal Server Error' });
+    } else {
+      res.json({ success: true, data: results });
+    }
+  });
+}
 
 module.exports = Rooms;

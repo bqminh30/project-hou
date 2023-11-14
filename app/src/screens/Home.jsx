@@ -29,6 +29,7 @@ import VerticalRecommend from "../components/VerticalRecommend";
 const Home = () => {
   const [searchText, setSearchText] = React.useState("");
   const [roomLimit, setRoomLimit] = React.useState([]);
+  const [roomData, setRoomData] = React.useState([])
   const { user } = useSelector((state) => state.authReducer);
   const { typerooms, rooms } = useSelector((state) => state.roomReducer);
 
@@ -38,6 +39,11 @@ const Home = () => {
     );
     setRoomLimit(res.data);
   };
+  
+  useEffect(() => {
+    setRoomData(rooms)
+  },[rooms])
+
   useEffect(() => {
     callApiLimit();
   }, []);
@@ -111,7 +117,7 @@ const Home = () => {
             <Spacer height={20} />
             <View onStartShouldSetResponder={() => true}>
               <FlatList
-                data={rooms}
+                data={roomData}
                 scrollEventThrottle={10}
                 horizontal={true}
                 keyExtractor={({ item, index }) => index}

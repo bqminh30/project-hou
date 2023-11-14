@@ -4,7 +4,6 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 
-
 const stars = 5;
 const VerticalHome = ({ item }) => {
   const navigation = useNavigation();
@@ -22,17 +21,28 @@ const VerticalHome = ({ item }) => {
     );
   }
   return (
-    <TouchableOpacity key={item.id} activeOpacity={1} style={styles.component} onPress={()=> navigation.navigate("Chi tiết phòng", {
-      room_id: item.id
-    })}>
+    <TouchableOpacity
+      key={item.id}
+      activeOpacity={1}
+      style={styles.component}
+      onPress={() =>
+        navigation.navigate("Trang chủ", {
+          screen: "Chi tiết phòng",
+          params: {
+            room_id: item.id,
+          },
+        })
+      }
+    >
       <Image source={{ uri: item?.image }} style={styles.image} />
       <View style={[styles.flex, styles.card]}>
-          <Text style={styles.typeroom}> {
-        (item.type_room_id === 1 && 'VIP') ||
-        (item.type_room_id === 2 && 'NORMAL') ||
-        (item.type_room_id === 3 && 'NEW')
-      }</Text>
-        </View>
+        <Text style={styles.typeroom}>
+          {" "}
+          {(item.type_room_id === 1 && "VIP") ||
+            (item.type_room_id === 2 && "NORMAL") ||
+            (item.type_room_id === 3 && "NEW")}
+        </Text>
+      </View>
       <View style={styles.content}>
         <Text style={styles.name}>{item?.name}</Text>
         <View style={styles.rating}>
@@ -42,11 +52,9 @@ const VerticalHome = ({ item }) => {
       </View>
       <View style={[styles.content, { paddingTop: 2 }]}>
         <Text style={styles.text}>
-        {
-        (item.label === 1 && 'Excellent') ||
-        (item.label === 2 && 'Very good') ||
-        (item.label === 3 && 'Exceptional') 
-      }
+          {(item.label === 1 && "Excellent") ||
+            (item.label === 2 && "Very good") ||
+            (item.label === 3 && "Exceptional")}
         </Text>
         <Text style={styles.text}>{item?.totalReview} reviews</Text>
       </View>
@@ -105,15 +113,15 @@ const styles = StyleSheet.create({
     padding: 4,
     borderRadius: SIZES.margin,
     // width: 40,
-    position:'absolute',
-    top:10,
-    left: 10
+    position: "absolute",
+    top: 10,
+    left: 10,
   },
   typeroom: {
     color: COLORS.white,
     fontSize: 12,
     fontFamily: "Poppins-Medium",
     paddingRight: 4,
-    textTransform: 'uppercase'
+    textTransform: "uppercase",
   },
 });

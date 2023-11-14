@@ -18,8 +18,11 @@ export const getRooms = () => {
         }
       );
 
+      console.log('response', response.status)
+
       if (response.status == 200) {
         const data = response.data;
+        console.log('data',data)
         dispatch({
           type: type.SET_ROOMS_SUCCESS,
           payload: {

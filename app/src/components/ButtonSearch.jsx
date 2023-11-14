@@ -2,11 +2,11 @@ import React from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { COLORS, SIZES } from "../config/theme";
 
-const ButtonSearch = ({float, label, color, background}) => {
+const ButtonSearch = ({float, label, color, background, onPress}) => {
    
   return (
     <View style={{alignItems: 'flex-end'}}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={onPress}>
       <Text
         style={{
           color: color,

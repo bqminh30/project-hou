@@ -2,9 +2,9 @@ import React from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { COLORS, SIZES } from "../config/theme";
 
-const ButtonBook = () => {
+const ButtonBook = ({onPress}) => {
   return (
-    <TouchableOpacity style={styles.button}>
+    <TouchableOpacity style={styles.button} onPress={()=> onPress()}>
       <Text
         style={{
           color: COLORS.white,

@@ -2,6 +2,7 @@ const Room = require("../models/room.model.js");
 var imageMiddleware = require("../middleware/image-middleware");
 var multer = require("multer");
 var cloudinary = require("cloudinary").v2;
+const db = require("../config/db.js");
 
 // Create and Save a new Room
 exports.createFormRoom = (req, res) => {
@@ -68,7 +69,7 @@ exports.createRoom = (req, res) => {
         label: req.body.label ? req.body.label: 0,
         isLiked: req.body.isLiked ? req.body.isLiked : 0,
         image: dataImage,
-        voucher_id: req.body.voucher_id ? req.body.voucher_id : null,
+        numberChildren: req.body.numberChildren ? req.body.numberChildren : 0,
         type_room_id: req.body.type_room_id ? req.body.type_room_id : null,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -120,6 +121,8 @@ exports.updateRoom = (req, res) => {
           .catch((err) => console.log("err", err));
         }
 
+        console.log('req.body.numberChildren', req.body.numberChildren, typeof req.body.numberChildren)
+
         const room = new Room({
           name: req.body.name,
           title: req.body.title,
@@ -128,11 +131,11 @@ exports.updateRoom = (req, res) => {
           priceSale: req.body.priceSale,
           numberBed: req.body.numberBed,
           numberPeople: req.body.numberPeople,
+          numberChildren: req.body.numberChildren,
           status: req.body.status,
           label: req.body.label,
           isLiked: req.body.isLiked,
           image: dataImage,
-          voucher_id: req.body.voucher_id,
           type_room_id: req.body.type_room_id,
           updatedAt: new Date(),
         });
@@ -249,3 +252,76 @@ exports.delete = (req, res) => {
   });
 };
 
+
+
+exports.searchRoom = (req, res) => {
+  const {
+    name,
+    startDate,
+    endDate,
+    numberBed,
+    numberPeople,
+    numberChildren,
+  } = req.body;
+
+  const conditions = [];
+  const values = [];
+
+  if (name) {
+    conditions.push('name LIKE ?'); // Điều kiện tìm kiếm chuỗi với LIKE
+    values.push(`%${name}%`); // Đặt '%' trước và sau giá trị bạn muốn tìm kiếm
+  }
+  
+  
+
+  if (startDate && endDate) {
+    conditions.push(`
+      id NOT IN (
+        SELECT room_id
+        FROM order_detail
+        WHERE (
+          ? >= checkinDate
+          AND ? <= checkoutDate
+        ) OR (
+          ? >= checkinDate
+          AND ? <= checkoutDate
+        ) OR (
+          ? >= checkinDate
+          AND ? <= checkoutDate
+        )
+      )
+    `);
+    values.push(startDate, endDate, startDate, startDate, endDate, endDate);
+  }
+
+  if (numberBed) {
+    conditions.push('numberBed >= ?');
+    values.push(numberBed);
+  }
+
+  if (numberPeople) {
+    conditions.push('numberPeople >= ?');
+    values.push(numberPeople);
+  }
+
+  if (numberChildren) {
+    conditions.push('numberChildren >= ?');
+    values.push(numberChildren);
+  }
+
+  const queryString = `
+    SELECT *
+    FROM room
+    WHERE ${conditions.join(' AND ')}
+  `;
+
+  db.query(queryString, values, (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).json({ success: false, error: 'Internal Server Error' });
+    } else {
+      console.log('results.data', results)
+      res.status(200).json({ data: results });
+    }
+  });
+}
