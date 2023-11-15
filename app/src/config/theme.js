@@ -6,7 +6,7 @@ export const COLORS ={
     black: "#1c1c1c",
     gray : "#bcbcbc",
     gray_main: "#919090",
-    main: "#009387"
+    main: "#000000"
 }
 
 export const SIZES = {

@@ -5,8 +5,8 @@ import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 
 const stars = 5;
-const VerticalHome = ({ item }) => {
-  const navigation = useNavigation();
+const VerticalHome = ({ item, title }) => {
+  const navigation = useNavigation()
 
   var starPush = [];
   for (var i = 1; i <= stars; i++) {
@@ -25,14 +25,18 @@ const VerticalHome = ({ item }) => {
       key={item.id}
       activeOpacity={1}
       style={styles.component}
-      onPress={() =>
-        navigation.navigate("Trang chủ", {
-          screen: "Chi tiết phòng",
-          params: {
-            room_id: item.id,
-          },
-        })
-      }
+      onPress={() => {
+        title === "HOME"
+          ? navigation.navigate("Chi tiết phòng", {
+              room_id: item.id,
+            })
+          : navigation.navigate("Trang chủ", {
+              screen: "Chi tiết phòng",
+              params: {
+                room_id: item.id,
+              },
+            });
+      }}
     >
       <Image source={{ uri: item?.image }} style={styles.image} />
       <View style={[styles.flex, styles.card]}>

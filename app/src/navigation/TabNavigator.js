@@ -7,6 +7,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ProfileScreen } from "../screens/Profile";
 
+//Redux
+import { useBooking } from "../redux/context/BookingContext"; //
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -20,6 +23,7 @@ const HomeStack = () => {
 }
 
 const TabNavigation = () => {
+  const { booking } = useBooking();
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -79,6 +83,7 @@ const TabNavigation = () => {
         options={({ route }) => ({
           headerShown: false,
           unmountOnBlur: true,
+          tabBarBadge: booking?.bookings?.length ? booking?.bookings?.length : 0,
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
@@ -94,6 +99,7 @@ const TabNavigation = () => {
           tabBarActiveTintColor: COLORS.green,
           tabBarInactiveTintColor: COLORS.gray,
           tabBarLabelStyle: {color: 'black'}
+          
         })}
       />
       <Tab.Screen

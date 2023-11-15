@@ -2,7 +2,7 @@ import React from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { COLORS, SIZES } from "../config/theme";
 
-const ButtonBook = ({onPress}) => {
+const ButtonBook = ({title, onPress}) => {
   return (
     <TouchableOpacity style={styles.button} onPress={()=> onPress()}>
       <Text
@@ -15,7 +15,7 @@ const ButtonBook = ({onPress}) => {
           textTransform: "uppercase",
         }}
       >
-        BOOK NOW
+        {title}
       </Text>
     </TouchableOpacity>
   );

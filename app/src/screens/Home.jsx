@@ -11,8 +11,10 @@ import {
   StatusBar,
   TouchableWithoutFeedback,
   Keyboard,
+  KeyboardAvoidingView
 } from "react-native";
 import axios from "axios";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SIZES } from "../config/theme";
@@ -32,6 +34,7 @@ const Home = () => {
   const [roomData, setRoomData] = React.useState([])
   const { user } = useSelector((state) => state.authReducer);
   const { typerooms, rooms } = useSelector((state) => state.roomReducer);
+  const title = 'HOME'
 
   const callApiLimit = async () => {
     const res = await axios.get(
@@ -50,9 +53,16 @@ const Home = () => {
 
   return (
     <>
+     <GestureHandlerRootView
+        style={{ flex: 1, backgroundColor: COLORS.white }}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.container}
+        >
       <StatusBar backgroundColor="#009387" barStyle="dark-content" />
 
-      <SafeAreaView>
+      <SafeAreaView >
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View onStartShouldSetResponder={() => true}>
             <View style={styles.header}>
@@ -98,7 +108,7 @@ const Home = () => {
               horizontal={true}
               keyExtractor={({ item, index }) => index}
               renderItem={({ item, index }) => (
-                <VerticalHome item={item} key={item.id} />
+                <VerticalHome item={item} key={item.id} title={title}/>
               )}
               style={{ marginLeft: SIZES.padding }}
             />
@@ -122,7 +132,7 @@ const Home = () => {
                 horizontal={true}
                 keyExtractor={({ item, index }) => index}
                 renderItem={({ item, index }) => (
-                  <VerticalRecommend item={item} key={item.id} />
+                  <VerticalRecommend item={item} key={item.id} title={title}/>
                 )}
                 style={{ marginLeft: SIZES.padding }}
               />
@@ -130,6 +140,8 @@ const Home = () => {
           </View>
         </TouchableWithoutFeedback>
       </SafeAreaView>
+      </KeyboardAvoidingView>
+      </GestureHandlerRootView>
     </>
   );
 };

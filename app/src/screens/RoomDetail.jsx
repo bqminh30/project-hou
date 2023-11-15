@@ -22,7 +22,8 @@ import {
   Keyboard,
   Modal,
   Pressable,
-  TextInput
+  TextInput,
+  Alert,
 } from "react-native";
 import { useWindowDimensions } from "react-native";
 import RenderHtml from "react-native-render-html";
@@ -34,8 +35,10 @@ import moment from "moment";
 // icons
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from '@expo/vector-icons';
 //redux
 import { Provider, useDispatch, useSelector } from "react-redux";
+import { useBooking } from "../redux/context/BookingContext"; //
 //component
 import Back from "../components/Back";
 import Avatar from "../components/Avatar";
@@ -55,7 +58,7 @@ import { COLORS, SIZES } from "../config/theme";
 const RoomDetail = ({ route, navigation }) => {
   const { room_id } = route?.params;
   const { width } = useWindowDimensions();
-  const { room, room_services, room_images, reviews } = useSelector(
+  const { room, room_images, reviews } = useSelector(
     (state) => state.roomReducer
   );
   const [showImage, setShowImage] = useState(null);
@@ -65,8 +68,15 @@ const RoomDetail = ({ route, navigation }) => {
   const [dateObject, setDateObject] = useState({});
   const [selectedDates, setSelectedDates] = useState([]);
   const [memberCount, setMemberCount] = useState(1);
-  const [roomCount, setRoomCount] = useState(1);
   const [childrenCount, setChildrenCount] = useState(0);
+  const [collapsed, setCollapsed] = useState(true);
+  const [maxLines, setMaxLines] = useState(4);
+  const animationHeight = useRef(new Animated.Value(0)).current;
+  const bottomSheetModalRef = useRef(null);
+  const [isModal, setIsModal] = useState(false);
+  const snapPoints = useMemo(() => [1, "25%", "40%", "60%"], []);
+
+  const { booking, saveBooking } = useBooking();
 
   const dispath = useDispatch();
   const init = async () => {
@@ -89,10 +99,6 @@ const RoomDetail = ({ route, navigation }) => {
   const handleActive = (data) => {
     setAcive(data);
   };
-
-  const [collapsed, setCollapsed] = useState(true);
-  const [maxLines, setMaxLines] = useState(4);
-  const animationHeight = useRef(new Animated.Value(0)).current;
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
@@ -122,9 +128,6 @@ const RoomDetail = ({ route, navigation }) => {
       expandView();
     }
   }, [collapsed]);
-
-  const roomMaxValue = 3;
-  const memberChildrenMaxValue = 8;
 
   const handleDecrement = (count, setCount, minValue) => {
     if (count > minValue) {
@@ -202,27 +205,100 @@ const RoomDetail = ({ route, navigation }) => {
       hideSubscription.remove();
     };
   }, []);
-
   let startDate = moment(selectedDates[0]).format("DD/MM/YYYY 15:00");
   let endDate = moment(selectedDates[1]).format("DD/MM/YYYY 12:00");
+  
 
-  const bottomSheetModalRef = useRef(null);
-  const [isModal, setIsModal] = useState(false);
-  const snapPoints = useMemo(() => [1, "25%", "40%", "60%"], []);
+  // useEffect(() => {
 
-  const [opacity, setOpacity] = useState(1);
+  //     const formattedStartDate = moment(selectedDates[0]).format("DD/MM/YYYY 15:00");
+  //     const formattedEndDate = moment(selectedDates[1]).format("DD/MM/YYYY 12:00");
+
+  //     const updatedEndDate = moment(formattedEndDate, "DD/MM/YYYY HH:mm").add(1, 'days').format("DD/MM/YYYY HH:mm");
+
+  //     setSelectedDates([
+  //       formattedStartDate,
+  //       updatedEndDate,
+  //     ]);
+    
+  // }, [selectedDates]);
+
   const handleSheetChange = useCallback((index) => {
+  
     if (index === -1 || index === 0) {
-      setOpacity(1);
+      setIsModal(false);
     }
   }, []);
 
   const handlePress = () => {
     // Mở bottom sheet khi bạn nhấp vào một thành phần trong danh sách
-    setOpacity(0.6);
     bottomSheetModalRef.current?.expand();
     setIsModal(true);
   };
+
+  const handleSaveBooking = () => {
+    if (selectedDates.length <= 0) {
+      Alert.alert("Marriott", "Select dates.", [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
+    } else {
+      const startDate = moment(selectedDates[0]);
+      const endDate = moment(selectedDates[1]);
+  
+      if (startDate.isValid() && endDate.isValid()) {
+        const dateCount = endDate.diff(startDate, "days");
+  
+        const _startDate = startDate.format("DD/MM/YYYY 15:00");
+        const _endDate = endDate.format("DD/MM/YYYY 12:00");
+  
+        const newBookingItem = {
+          checkinDate: _startDate,
+          checkoutDate: _endDate,
+          room: room,
+          room_id: room_id,
+          price: room?.priceSale ? room?.priceSale : room?.price,
+          total: room?.priceSale ? room?.priceSale * dateCount : room?.price * dateCount,
+          memberCount: memberCount,
+          childrenCount: childrenCount,
+          dateCount: dateCount,
+        };
+  
+        // Check if there's an existing booking with the same room_id
+        if (booking && Array.isArray(booking.bookings)) {
+          const existingBooking = booking.bookings.find(
+            (bookingItem) => bookingItem.room_id === room_id
+          );
+  
+          if (existingBooking) {
+            // Handle scenario where booking for this room already exists
+            Alert.alert("Marriott", "A booking for this room already exists.", [
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
+              },
+              { text: "OK", onPress: () => console.log("OK Pressed") },
+            ]);
+          } else {
+            // If no existing booking for this room, add the new booking
+            const updatedBookings = [...booking.bookings, newBookingItem];
+            saveBooking({ ...booking, bookings: updatedBookings });
+          }
+        } else {
+          // If there's no existing booking, create a new booking object with an array containing the new booking
+          saveBooking({ bookings: [newBookingItem] });
+        }
+      } else {
+        console.log("Invalid dates");
+      }
+    }
+  };
+  
 
   var starPush = [];
   for (var i = 1; i <= 5; i++) {
@@ -374,6 +450,7 @@ const RoomDetail = ({ route, navigation }) => {
                         </Text>
                       </Text>
                     </View>
+                    <Spacer height={4} />
 
                     <View style={[styles.flex, { gap: 10 }]}>
                       <View style={[styles.flex, { gap: 4 }]}>
@@ -508,44 +585,8 @@ const RoomDetail = ({ route, navigation }) => {
                       paddingBottom: 10,
                     }}
                   >
-                    Number of people renting a room
+                    Numbers of people renting a room
                   </Text>
-                  {/* Rooms  */}
-                  <View
-                    style={[
-                      styles.flex,
-                      { flexDirection: "column", marginBottom: 12 },
-                    ]}
-                  >
-                    <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
-                      Numbers of Beds
-                    </Text>
-
-                    <View style={styles.flex}>
-                      {/* Member Count */}
-                      <TouchableOpacity
-                        onPress={() =>
-                          handleDecrement(roomCount, setRoomCount, 1)
-                        }
-                        style={styles.buttonStyle}
-                      >
-                        <Text style={{ color: "white" }}>-</Text>
-                      </TouchableOpacity>
-                      <TextInput
-                        style={styles.inputStyle}
-                        value={`${roomCount}`}
-                        onChangeText={() => {}}
-                      />
-                      <TouchableOpacity
-                        onPress={() =>
-                          handleIncrement(roomCount, setRoomCount, roomMaxValue)
-                        }
-                        style={styles.buttonStyle}
-                      >
-                        <Text style={{ color: "white" }}>+</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
 
                   {/* Adults  */}
                   <View
@@ -555,7 +596,7 @@ const RoomDetail = ({ route, navigation }) => {
                     ]}
                   >
                     <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
-                      Adults (Maximum: 10 total guest/room)
+                      Adults (Maximum: {room?.numberPeople} total guest/ room)
                     </Text>
                     <View style={styles.flex}>
                       <TouchableOpacity
@@ -564,7 +605,7 @@ const RoomDetail = ({ route, navigation }) => {
                         }
                         style={styles.buttonStyle}
                       >
-                        <Text style={{ color: "white" }}>-</Text>
+                        <Text style={{ color: "white", fontSize: 18 }}>-</Text>
                       </TouchableOpacity>
                       <TextInput
                         style={styles.inputStyle}
@@ -576,12 +617,12 @@ const RoomDetail = ({ route, navigation }) => {
                           handleIncrement(
                             memberCount,
                             setMemberCount,
-                            memberChildrenMaxValue
+                            room?.numberPeople
                           )
                         }
                         style={styles.buttonStyle}
                       >
-                        <Text style={{ color: "white" }}>+</Text>
+                        <Text style={{ color: "white", fontSize: 18 }}>+</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -594,7 +635,8 @@ const RoomDetail = ({ route, navigation }) => {
                     ]}
                   >
                     <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
-                      Childrens (Maximum: 10 total guest/room)
+                      Childrens (Maximum: {room.numberChildren} total guest/
+                      room)
                     </Text>
                     <View style={styles.flex}>
                       <TouchableOpacity
@@ -603,7 +645,7 @@ const RoomDetail = ({ route, navigation }) => {
                         }
                         style={styles.buttonStyle}
                       >
-                        <Text style={{ color: "white" }}>-</Text>
+                        <Text style={{ color: "white", fontSize: 18 }}>-</Text>
                       </TouchableOpacity>
                       <TextInput
                         style={styles.inputStyle}
@@ -615,14 +657,46 @@ const RoomDetail = ({ route, navigation }) => {
                           handleIncrement(
                             childrenCount,
                             setChildrenCount,
-                            memberChildrenMaxValue
+                            room.numberChildren
                           )
                         }
                         style={styles.buttonStyle}
                       >
-                        <Text style={{ color: "white" }}>+</Text>
+                        <Text style={{ color: "white", fontSize: 18 }}>+</Text>
                       </TouchableOpacity>
                     </View>
+                  </View>
+
+                  {/* Select Dates   */}
+                  <View
+                    style={[
+                      styles.flex,
+                      { flexDirection: "column", marginBottom: 12 },
+                    ]}
+                  >
+                    <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
+                      Dates Stay
+                    </Text>
+                    <TouchableOpacity
+                      style={[styles.inputStyle, { width: "70%" }]}
+                      value={`${childrenCount}`}
+                      onPressIn={handleBook}
+                    >
+                      <View
+                        style={[
+                          styles.flex,
+                          {
+                            height: 40,
+                            justifyContent: "center",
+                          },
+                        ]}
+                      >
+                        <MaterialIcons name="date-range" size={24} color="black" />
+                        <Text>{selectedDates[0]}</Text>
+                        <Text> - </Text>
+                        <Text>{selectedDates[1]}</Text>
+                      </View>
+                    </TouchableOpacity>
                   </View>
                 </BottomSheetView>
               )}
@@ -684,7 +758,14 @@ const RoomDetail = ({ route, navigation }) => {
               {room?.priceSale ? room?.price : ""}
             </Text>
           </Text>
-          <ButtonBook onPress={() => handlePress()} />
+          {!isModal ? (
+            <ButtonBook title={"BOOKING"} onPress={() => handlePress()} />
+          ) : (
+            <ButtonBook
+              title={"BOOK NOW"}
+              onPress={() => handleSaveBooking()}
+            />
+          )}
         </View>
       </View>
     </>
@@ -802,7 +883,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     marginHorizontal: 20,
     marginTop: SIZES.height / 4,
-    backgroundColor: "white",
+    backgroundColor: "white", fontSize: 18,
     borderRadius: SIZES.radius,
     // padding: 35,
     alignItems: "center",
@@ -827,9 +908,10 @@ const styles = StyleSheet.create({
   buttonStyle: {
     height: 40,
     backgroundColor: COLORS.black,
-    width: 40,
+    width: "10%",
     alignItems: "center",
     justifyContent: "center",
+    borderRadius: 50,
   },
   inputStyle: {
     borderWidth: 1,
@@ -837,5 +919,8 @@ const styles = StyleSheet.create({
     height: 40,
     width: "50%",
     textAlign: "center",
+    borderRadius: 10,
+    marginVertical: 2,
+    marginHorizontal: 4
   },
 });
