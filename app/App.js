@@ -26,9 +26,7 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
-  //   useEffect(() => {
-  //     YellowBox.ignoreWarnings(['Animated: `useNativeDriver`']);
-  // }, [])
+
   return (
     <Provider store={store}>
       <BookingProvider>

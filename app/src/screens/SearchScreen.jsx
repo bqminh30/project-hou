@@ -30,9 +30,8 @@ import {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import moment from "moment";
+import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-
 // config
 import { COLORS, SIZES } from "../config/theme";
 //components
@@ -40,9 +39,8 @@ import Spacer from "../components/Spacer";
 import Avatar from "../components/Avatar";
 import Back from "../components/Back";
 import ButtonSearch from "../components/ButtonSearch";
-
 import VerticalRecommend from "../components/VerticalRecommend";
-import axios from "axios";
+
 
 const SearchScreen = () => {
   const [searchText, setSearchText] = React.useState("");
@@ -98,17 +96,20 @@ const SearchScreen = () => {
         const dateString = currentDate.toISOString().split("T")[0];
         if (dateString === startDate.toISOString().split("T")[0]) {
           newSelectedDates[dateString] = {
-            color: "lightgreen",
+            color: "black",
             startingDay: true,
+            selectedDayTextColor: '#ffffff',
           };
         } else if (dateString === endDate.toISOString().split("T")[0]) {
           newSelectedDates[dateString] = {
-            color: "lightgreen",
+            color: "black",
             endingDay: true,
+            selectedDayTextColor: '#ffffff',
           };
         } else {
           newSelectedDates[dateString] = {
-            color: "lightgreen",
+            color: "black",
+            selectedDayTextColor: '#ffffff',
           };
         }
         currentDate.setDate(currentDate.getDate() + 1);
@@ -349,6 +350,7 @@ const SearchScreen = () => {
                 }}
                 // Mark specific dates as marked
                 markingType="period"
+                todayTextColor= '#00adf5'
                 // hideExtraDays={true}
                 hideArrows={false}
                 markedDates={dateObject}

@@ -10,9 +10,7 @@ const ButtonBook = ({title, onPress}) => {
           color: COLORS.white,
           fontSize: 12,
           fontFamily: "Poppins-Medium",
-          paddingRight: 4,
           padding: 8,
-          textTransform: "uppercase",
         }}
       >
         {title}

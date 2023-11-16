@@ -35,7 +35,7 @@ import moment from "moment";
 // icons
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from "@expo/vector-icons";
 //redux
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { useBooking } from "../redux/context/BookingContext"; //
@@ -74,7 +74,7 @@ const RoomDetail = ({ route, navigation }) => {
   const animationHeight = useRef(new Animated.Value(0)).current;
   const bottomSheetModalRef = useRef(null);
   const [isModal, setIsModal] = useState(false);
-  const snapPoints = useMemo(() => [1, "25%", "40%", "60%"], []);
+  const snapPoints = useMemo(() => [1, "25%", "40%", "85%"], []);
 
   const { booking, saveBooking } = useBooking();
 
@@ -86,10 +86,15 @@ const RoomDetail = ({ route, navigation }) => {
 
   useEffect(() => {
     setLoading(true);
-    init();
-    setTimeout(() => {
+    const timer = setTimeout(() => {
+      init();
       setLoading(false);
     }, 500);
+
+    return () => {
+      // Clear the timer when the component unmounts
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleShowImage = (image) => {
@@ -129,18 +134,6 @@ const RoomDetail = ({ route, navigation }) => {
     }
   }, [collapsed]);
 
-  const handleDecrement = (count, setCount, minValue) => {
-    if (count > minValue) {
-      setCount(count - 1);
-    }
-  };
-
-  const handleIncrement = (count, setCount, maxValue) => {
-    if (count < maxValue) {
-      setCount(count + 1);
-    }
-  };
-
   const handleDayPress = (day) => {
     if (selectedDates.length === 2) {
       // Reset mảng nếu đã chọn đủ 2 ngày
@@ -168,17 +161,20 @@ const RoomDetail = ({ route, navigation }) => {
         const dateString = currentDate.toISOString().split("T")[0];
         if (dateString === startDate.toISOString().split("T")[0]) {
           newSelectedDates[dateString] = {
-            color: "lightgreen",
+            color: COLORS.gray_main,
             startingDay: true,
+            selected: true,
           };
         } else if (dateString === endDate.toISOString().split("T")[0]) {
           newSelectedDates[dateString] = {
-            color: "lightgreen",
+            color: COLORS.gray_main,
             endingDay: true,
+            selected: true,
           };
         } else {
           newSelectedDates[dateString] = {
-            color: "lightgreen",
+            color: COLORS.gray_main,
+            selected: true,
           };
         }
         currentDate.setDate(currentDate.getDate() + 1);
@@ -192,22 +188,8 @@ const RoomDetail = ({ route, navigation }) => {
     }
   };
 
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-      setKeyboardStatus("Keyboard Shown");
-    });
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-      setKeyboardStatus("Keyboard Hidden");
-    });
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
   let startDate = moment(selectedDates[0]).format("DD/MM/YYYY 15:00");
   let endDate = moment(selectedDates[1]).format("DD/MM/YYYY 12:00");
-  
 
   // useEffect(() => {
 
@@ -220,11 +202,10 @@ const RoomDetail = ({ route, navigation }) => {
   //       formattedStartDate,
   //       updatedEndDate,
   //     ]);
-    
+
   // }, [selectedDates]);
 
   const handleSheetChange = useCallback((index) => {
-  
     if (index === -1 || index === 0) {
       setIsModal(false);
     }
@@ -235,6 +216,7 @@ const RoomDetail = ({ route, navigation }) => {
     bottomSheetModalRef.current?.expand();
     setIsModal(true);
   };
+
 
   const handleSaveBooking = () => {
     if (selectedDates.length <= 0) {
@@ -249,31 +231,33 @@ const RoomDetail = ({ route, navigation }) => {
     } else {
       const startDate = moment(selectedDates[0]);
       const endDate = moment(selectedDates[1]);
-  
+
       if (startDate.isValid() && endDate.isValid()) {
         const dateCount = endDate.diff(startDate, "days");
-  
+
         const _startDate = startDate.format("DD/MM/YYYY 15:00");
         const _endDate = endDate.format("DD/MM/YYYY 12:00");
-  
+
         const newBookingItem = {
           checkinDate: _startDate,
           checkoutDate: _endDate,
           room: room,
           room_id: room_id,
           price: room?.priceSale ? room?.priceSale : room?.price,
-          total: room?.priceSale ? room?.priceSale * dateCount : room?.price * dateCount,
+          total: room?.priceSale
+            ? room?.priceSale * dateCount
+            : room?.price * dateCount,
           memberCount: memberCount,
           childrenCount: childrenCount,
           dateCount: dateCount,
         };
-  
+
         // Check if there's an existing booking with the same room_id
         if (booking && Array.isArray(booking.bookings)) {
           const existingBooking = booking.bookings.find(
             (bookingItem) => bookingItem.room_id === room_id
           );
-  
+          navigation.navigate('Information Detail')
           if (existingBooking) {
             // Handle scenario where booking for this room already exists
             Alert.alert("Marriott", "A booking for this room already exists.", [
@@ -292,13 +276,13 @@ const RoomDetail = ({ route, navigation }) => {
         } else {
           // If there's no existing booking, create a new booking object with an array containing the new booking
           saveBooking({ bookings: [newBookingItem] });
+         
         }
       } else {
         console.log("Invalid dates");
       }
     }
   };
-  
 
   var starPush = [];
   for (var i = 1; i <= 5; i++) {
@@ -336,10 +320,6 @@ const RoomDetail = ({ route, navigation }) => {
     }
   }
 
-  const handleBook = () => {
-    setModalVisible(!modalVisible);
-  };
-
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center" }}>
@@ -350,26 +330,23 @@ const RoomDetail = ({ route, navigation }) => {
 
   return (
     <>
-      <ScrollView
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
-        nestedScrollEnabled={true}
-        keyboardShouldPersistTaps="always"
-      >
-        <GestureHandlerRootView style={styles.safeview}>
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : null}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-          >
-            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-              <View style={{ flex: 1, backgroundColor: COLORS.white }}>
-                <StatusBar barStyle="dark-content" />
-                <SafeAreaView>
-                  <View style={{ margin: SIZES.margin, paddingBottom: 50 }}>
+        // keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+        >
+          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: COLORS.white }}>
+              <StatusBar barStyle="dark-content" />
+              <SafeAreaView style={{ flex: 1 }}>
+                <ScrollView style={{ flex: 1 }}>
+                  <View style={{ margin: SIZES.margin, paddingBottom: 80 }}>
                     <View style={styles.header}>
                       <Back />
                       <Avatar />
                     </View>
+
                     <Spacer height={10} />
                     {/* images  */}
                     <View style={styles.images}>
@@ -381,7 +358,9 @@ const RoomDetail = ({ route, navigation }) => {
                       <FlatList
                         data={room_images}
                         horizontal={true}
-                        keyExtractor={({ item, index }) => index}
+                        keyExtractor={(item, index) => index.toString()}
+                        removeClippedSubviews={true}
+                        initialNumToRender={10}
                         renderItem={({ item, index }) => (
                           <VerticalImage
                             item={item}
@@ -421,7 +400,7 @@ const RoomDetail = ({ route, navigation }) => {
                         </View>
                       </View>
                     </View>
-                    <Spacer height={5} />
+                    <Spacer height={4} />
                     <Text style={styles.title}>{room?.title}</Text>
                     <Spacer height={5} />
                     <View
@@ -472,13 +451,16 @@ const RoomDetail = ({ route, navigation }) => {
                         </Text>
                       </View>
                     </View>
-                    <Spacer height={5} />
+                    <Spacer height={4} />
                     <View>
                       <Text style={styles.key}>Amenties</Text>
                       <FlatList
+                        nestedScrollEnabled={true}
                         data={services}
                         horizontal={true}
-                        keyExtractor={({ item, index }) => index}
+                        keyExtractor={(item, index) => index.toString()}
+                        removeClippedSubviews={true}
+                        initialNumToRender={10}
                         renderItem={({ item, index }) => (
                           <VerticalServices item={item} key={item.id} />
                         )}
@@ -491,7 +473,7 @@ const RoomDetail = ({ route, navigation }) => {
                           { justifyContent: "space-between" },
                         ]}
                       >
-                        <Text style={styles.key}>Description</Text>
+                        <Text style={styles.key}>Overview</Text>
 
                         <TouchableOpacity onPress={toggleCollapsed}>
                           <View style={styles.flex}>
@@ -541,19 +523,21 @@ const RoomDetail = ({ route, navigation }) => {
                     <View>
                       <Text style={styles.key}>Reviews</Text>
                       <FlatList
+                        nestedScrollEnabled={true}
                         data={reviews}
                         horizontal={false}
-                        keyExtractor={({ item, index }) => index}
+                        keyExtractor={(item, index) => index.toString()}
+                        removeClippedSubviews={true}
+                        initialNumToRender={10}
                         renderItem={({ item, index }) => (
                           <VerticalReviews item={item} key={item.id} />
                         )}
                       />
                     </View>
                   </View>
-                </SafeAreaView>
-              </View>
-            </TouchableWithoutFeedback>
-
+                </ScrollView>
+              </SafeAreaView>
+            </View>
             <BottomSheet
               ref={bottomSheetModalRef}
               index={-1}
@@ -574,173 +558,100 @@ const RoomDetail = ({ route, navigation }) => {
                 elevation: 5,
               }}
             >
-              {isModal == true && (
-                <BottomSheetView>
-                  <Text
-                    style={{
-                      fontWeight: 600,
-                      fontSize: 16,
-                      fontFamily: "Poppins-Medium",
-                      textAlign: "center",
-                      paddingBottom: 10,
-                    }}
-                  >
-                    Numbers of people renting a room
-                  </Text>
-
-                  {/* Adults  */}
-                  <View
-                    style={[
-                      styles.flex,
-                      { flexDirection: "column", marginBottom: 12 },
-                    ]}
-                  >
-                    <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
-                      Adults (Maximum: {room?.numberPeople} total guest/ room)
-                    </Text>
-                    <View style={styles.flex}>
-                      <TouchableOpacity
-                        onPress={() =>
-                          handleDecrement(memberCount, setMemberCount, 1)
-                        }
-                        style={styles.buttonStyle}
-                      >
-                        <Text style={{ color: "white", fontSize: 18 }}>-</Text>
-                      </TouchableOpacity>
-                      <TextInput
-                        style={styles.inputStyle}
-                        value={`${memberCount}`}
-                        onChangeText={() => {}}
-                      />
-                      <TouchableOpacity
-                        onPress={() =>
-                          handleIncrement(
-                            memberCount,
-                            setMemberCount,
-                            room?.numberPeople
-                          )
-                        }
-                        style={styles.buttonStyle}
-                      >
-                        <Text style={{ color: "white", fontSize: 18 }}>+</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-
-                  {/* Children   */}
-                  <View
-                    style={[
-                      styles.flex,
-                      { flexDirection: "column", marginBottom: 12 },
-                    ]}
-                  >
-                    <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
-                      Childrens (Maximum: {room.numberChildren} total guest/
-                      room)
-                    </Text>
-                    <View style={styles.flex}>
-                      <TouchableOpacity
-                        onPress={() =>
-                          handleDecrement(childrenCount, setChildrenCount, 0)
-                        }
-                        style={styles.buttonStyle}
-                      >
-                        <Text style={{ color: "white", fontSize: 18 }}>-</Text>
-                      </TouchableOpacity>
-                      <TextInput
-                        style={styles.inputStyle}
-                        value={`${childrenCount}`}
-                        onChangeText={() => {}}
-                      />
-                      <TouchableOpacity
-                        onPress={() =>
-                          handleIncrement(
-                            childrenCount,
-                            setChildrenCount,
-                            room.numberChildren
-                          )
-                        }
-                        style={styles.buttonStyle}
-                      >
-                        <Text style={{ color: "white", fontSize: 18 }}>+</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-
-                  {/* Select Dates   */}
-                  <View
-                    style={[
-                      styles.flex,
-                      { flexDirection: "column", marginBottom: 12 },
-                    ]}
-                  >
-                    <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
-                      Dates Stay
-                    </Text>
-                    <TouchableOpacity
-                      style={[styles.inputStyle, { width: "70%" }]}
-                      value={`${childrenCount}`}
-                      onPressIn={handleBook}
-                    >
-                      <View
-                        style={[
-                          styles.flex,
-                          {
-                            height: 40,
-                            justifyContent: "center",
-                          },
-                        ]}
-                      >
-                        <MaterialIcons name="date-range" size={24} color="black" />
-                        <Text>{selectedDates[0]}</Text>
-                        <Text> - </Text>
-                        <Text>{selectedDates[1]}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                </BottomSheetView>
-              )}
-            </BottomSheet>
-          </KeyboardAvoidingView>
-
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
-              setModalVisible(!modalVisible);
-            }}
-          >
-            <View style={styles.modalView}>
-              <Calendar
-                // Customize the appearance of the calendar
-
-                // Specify the current date
-                // current={new Date()}
-                minDate={new Date()}
-                // Callback that gets called when the user selects a day
-                onDayPress={(day) => {
-                  handleDayPress(day);
-                }}
-                // Mark specific dates as marked
-                markingType="period"
-                // hideExtraDays={true}
-                hideArrows={false}
-                markedDates={dateObject}
-              />
-
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>
               <Spacer height={10} />
-            </View>
-          </Modal>
-        </GestureHandlerRootView>
-      </ScrollView>
+              <Text style={styles._title}>Select Date</Text>
+              <View style={styles.modalView}>
+                <Calendar
+                  // Customize the appearance of the calendar
+
+                  // Specify the current date
+                  // current={new Date()}
+                  minDate={new Date()}
+                  // Callback that gets called when the user selects a day
+                  onDayPress={(day) => {
+                    handleDayPress(day);
+                  }}
+                  // Mark specific dates as marked
+                  markingType="period"
+                  // hideExtraDays={true}
+                  hideArrows={false}
+                  markedDates={dateObject}
+                  style={{
+                    height: 320,
+                    borderRadius: SIZES.radius,
+                    width: SIZES.width - 30,
+                  }}
+                  theme={{
+                    backgroundColor: COLORS.gray,
+                    calendarBackground: COLORS.gray,
+                    textSectionTitleColor: "#b6c1cd",
+                    selectedDayBackgroundColor: "red",
+                    selectedDayTextColor: "#ffffff",
+                    todayTextColor: COLORS.black,
+                    dayTextColor: "#2d4150",
+                    textDisabledColor: "#d9efff",
+                  }}
+                />
+                <View
+                  style={[
+                    styles.flex,
+                    {
+                      margin: 20,
+                      gap: 10,
+                      justifyContent: "space-between",
+                    },
+                  ]}
+                >
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      
+                      placeholderTextColor={COLORS.gray_main}
+                      autoCorrect={false}
+                      
+                      value={selectedDates[0]}
+                      editable={false}
+                      selectTextOnFocus={false}
+                      placeholder="Check in"
+                    />
+                    <MaterialIcons
+                      name="date-range"
+                      size={18}
+                      color={COLORS.gray_main}
+                    />
+                  </View>
+
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      value={selectedDates[1]}
+                      placeholderTextColor={COLORS.gray_main}
+                      autoCorrect={false}
+                      editable={false}
+                      selectTextOnFocus={false}
+                      
+                      placeholder="Check out"
+                    />
+                    <MaterialIcons
+                      name="date-range"
+                      size={18}
+                      color={COLORS.gray_main}
+                    />
+                  </View>
+                </View>
+              </View>
+              <Text style={styles._title}>Note (optional)</Text>
+              <View style={{ marginHorizontal: 18 }}>
+                <TextInput
+                  style={styles._inputStyle}
+                  placeholderTextColor={COLORS.white}
+                  numberOfLines={4}
+                  multiline={true}
+                  placeholder="I hope that this place is good and comforatble during my vacation"
+                />
+              </View>
+            </BottomSheet>
+          </GestureHandlerRootView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
       <View style={styles.bottom}>
         <View
           style={[
@@ -756,16 +667,25 @@ const RoomDetail = ({ route, navigation }) => {
             ${room?.priceSale ? room?.priceSale : room?.price}{" "}
             <Text style={styles._price}>
               {room?.priceSale ? room?.price : ""}
+            </Text>{" "}
+            /
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "Poppins-MediumItalic",
+              }}
+            >
+              night
             </Text>
           </Text>
           {!isModal ? (
-            <ButtonBook title={"BOOKING"} onPress={() => handlePress()} />
-          ) : (
+          <ButtonBook title={"Booking Now"} onPress={() => handlePress()} />
+           ) : (
             <ButtonBook
-              title={"BOOK NOW"}
+              title={"Check"}
               onPress={() => handleSaveBooking()}
             />
-          )}
+          )} 
         </View>
       </View>
     </>
@@ -781,7 +701,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  images: {},
   see: {
     paddingVertical: SIZES.margin,
     fontWeight: 700,
@@ -808,14 +727,18 @@ const styles = StyleSheet.create({
   bottom: {
     position: "absolute",
     bottom: 0,
-    height: 46,
+    height: 80,
     width: "100%",
     backgroundColor: COLORS.white,
-    // opacity: 0.2
   },
   price: {
     fontFamily: "Poppins-MediumItalic",
     fontSize: 24,
+  },
+  _title: {
+    fontSize: 16,
+    fontWeight: 600,
+    paddingHorizontal: 22,
   },
   _price: {
     fontSize: 16,
@@ -863,7 +786,6 @@ const styles = StyleSheet.create({
   },
 
   viewPort: {
-    // flex: 1,
     overflow: "hidden",
     top: 20,
     marginBottom: 20,
@@ -881,24 +803,12 @@ const styles = StyleSheet.create({
   modalView: {
     justifyContent: "center",
     alignContent: "center",
-    marginHorizontal: 20,
-    marginTop: SIZES.height / 4,
-    backgroundColor: "white", fontSize: 18,
-    borderRadius: SIZES.radius,
-    // padding: 35,
+    fontSize: 18,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
   },
   buttonClose: {
     backgroundColor: COLORS.black,
-    borderRadius: 20,
+    borderRadius: SIZES.radius,
     padding: 10,
     elevation: 2,
   },
@@ -913,14 +823,27 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 50,
   },
-  inputStyle: {
+
+  passwordContainer: {
     borderWidth: 1,
-    borderColor: "black",
-    height: 40,
-    width: "50%",
-    textAlign: "center",
+    borderColor: COLORS.gray,
+    padding: 10,
+    paddingHorizontal: 20,
     borderRadius: 10,
-    marginVertical: 2,
-    marginHorizontal: 4
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "50%",
+  },
+  inputStyle: {
+    // width: "50%",
+    // color: "red",
+  },
+  _inputStyle: {
+    height: 80,
+    backgroundColor: COLORS.gray,
+    borderRadius: SIZES.radius,
+    marginTop:4,
+    padding: 8
   },
 });
