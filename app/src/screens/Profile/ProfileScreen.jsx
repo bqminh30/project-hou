@@ -9,151 +9,132 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-// import { Provider, useDispatch, useSelector } from "react-redux";
-import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { MaterialIcons, Ionicons, FontAwesome } from "@expo/vector-icons";
+//components
+import Back from "../../components/Back";
+import Avatar from "../../components/Avatar";
+import Spacer from "../../components/Spacer";
+// config
 import { COLORS, SIZES } from "../../config/theme";
-// import { logoutAction } from "../../redux/actions/authActions";
-//redux
-// import { userList } from "../../redux/actions/userActions";
-
-var pkg = require('../../../app.json')
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  // const dispatch = useDispatch();
-  // const { user } = useSelector((state) => state.authReducer);
-  // const { data } = useSelector((state) => state.userReducer);
-  let data, user;
-  
-  // useEffect(() => {
-  //   dispatch(userList(user.id));
-  // }, [dispatch]);
 
-  const logout = async () => {
-    // await dispatch(logoutAction());
-  };
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
-      <StatusBar barStyle="light-content" />
-      <SafeAreaView style={{ backgroundColor: COLORS.green }}></SafeAreaView>
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          {/* <Image
-            style={styles.avatar}
-            source={require("../../../assets/avatar_default.jpg")}
-          /> */}
-          <Text style={styles.name}>{user?.fullname}</Text>
-
-          <Text style={styles.verion}>Phiên bản: {pkg?.expo?.version}</Text>
-        </View>
-
-        <View style={styles.data}>
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.textInfo}>Email</Text>
-            <Text style={[styles.textInfo, { fontWeight: 600, fontSize: 18 }]}>
-              {data?.class}
-            </Text>
+    <>
+      <StatusBar barStyle="dark-content" />
+      <SafeAreaView style={{ backgroundColor: COLORS.white, flex: 1 }}>
+        <View style={{ margin: SIZES.margin }}>
+          <View style={styles.header}>
+            <Back />
+            <Avatar />
           </View>
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.textInfo}>Số điện thoại</Text>
-            <Text style={[styles.textInfo, { fontWeight: 600, fontSize: 18 }]}>
-              {data?.student}
-            </Text>
-          </View>
-          {/* <View style={{ alignItems: "center" }}>
-            <Text style={styles.textInfo}>Kỳ thi</Text>
-            <Text style={[styles.textInfo, { fontWeight: 600, fontSize: 18 }]}>
-              {data?.event}
-            </Text>
-          </View> */}
         </View>
-      </View>
-
-      <View style={styles.action}>
-        <View style={styles.content}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Lịch sử đặt phòng")}
-          >
-            <View style={styles.actionPush}>
-              {/* <Image
-                source={require("../../../assets/Icon-profile/Icon_parent.png")}
-                style={styles.bellIcon}
-              /> */}
-              <Text style={styles.textAction}>Lịch sử đặt phòng</Text>
-              <MaterialIcons
-                style={{ position: "absolute", right: 0 }}
-                name="navigate-next"
-                size={24}
-                color="black"
-              />
+        
+        <View style={styles.profile}>
+          <View style={styles.container}>
+            <View style={[styles.flex, { justifyContent: "space-between" }]}>
+              {/* Avatar  */}
+              <View style={styles.flex}>
+                <Image
+                  style={styles.avatar}
+                  source={{
+                    uri: "https://img.freepik.com/premium-vector/man-avatar-profile-round-icon_24640-14044.jpg?w=2000",
+                  }}
+                />
+                <View style={{ marginLeft: 10 }}>
+                  <Text style={styles.name}>Bui Quang Minh</Text>
+                  <Text style={styles.date}>bqminh30@gmail.com</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+        <Spacer height={15} />
+        <View style={styles.store}>
+          <TouchableOpacity>
+            <View style={[styles.flex, styles.button]}>
+              <FontAwesome name="history" size={20} color="white" />
+              <Text style={styles.textButton}>History</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Thông tin cá nhân")}
-          >
-            <View style={styles.actionPush}>
-              {/* <Image
+          <TouchableOpacity>
+            <View style={[styles.flex, styles.button]}>
+              <MaterialIcons name="favorite" size={20} color="white" />
+              <Text style={styles.textButton}>Favorite Room</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.action}>
+          <View style={styles.content}>
+           
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Thông tin cá nhân")}
+            >
+              <View style={styles.actionPush}>
+                {/* <Image
                 source={require("../../../assets/Icon-profile/Icon_student.png")}
                 style={styles.bellIcon}
               /> */}
-              <Text style={styles.textAction}>Thông tin cá nhân</Text>
-              <MaterialIcons
-                style={{ position: "absolute", right: 0 }}
-                name="navigate-next"
-                size={24}
-                color="black"
-              />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Đổi mật khẩu")}
-          >
-            <View style={styles.actionPush}>
-              {/* <Image
+                <Text style={styles.textAction}>Thông tin cá nhân</Text>
+                <MaterialIcons
+                  style={{ position: "absolute", right: 0 }}
+                  name="navigate-next"
+                  size={24}
+                  color="black"
+                />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Đổi mật khẩu")}
+            >
+              <View style={styles.actionPush}>
+                {/* <Image
                 source={require("../../../assets/Icon-profile/Icon_change.png")}
                 style={styles.bellIcon}
               /> */}
-              <Text style={styles.textAction}>Đổi mật khẩu</Text>
-              <MaterialIcons
-                style={{ position: "absolute", right: 0 }}
-                name="navigate-next"
-                size={24}
-                color="black"
-              />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity>
-            <View style={styles.actionPush}>
-              {/* <Image
+                <Text style={styles.textAction}>Đổi mật khẩu</Text>
+                <MaterialIcons
+                  style={{ position: "absolute", right: 0 }}
+                  name="navigate-next"
+                  size={24}
+                  color="black"
+                />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <View style={styles.actionPush}>
+                {/* <Image
                 source={require("../../../assets/Icon-profile/Icon_logout.png")}
                 style={styles.bellIcon}
               /> */}
-              <Text style={styles.textAction}>Đăng xuất</Text>
-              <MaterialIcons
-                style={{ position: "absolute", right: 0 }}
-                name="navigate-next"
-                size={24}
-                color="black"
-              />
-            </View>
-          </TouchableOpacity>
+                <Text style={styles.textAction}>Đăng xuất</Text>
+                <MaterialIcons
+                  style={{ position: "absolute", right: 0 }}
+                  name="navigate-next"
+                  size={24}
+                  color="black"
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </View>
-  )
+      </SafeAreaView>
+    </>
+  );
 };
 
 export default ProfileScreen;
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: 'black',
-    height: 200,
-  },
-  headerContent: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 40,
+  },
+  profile: {
+    marginHorizontal: SIZES.margin,
   },
   avatar: {
     height: 60,
@@ -180,11 +161,11 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontWeight: 600,
   },
-  action: {
-    flex: 1,
-  },
+  // action: {
+  //   flex: 1,
+  // },
   content: {
-    padding: SIZES.padding,
+    marginHorizontal: SIZES.margin,
   },
   actionPush: {
     flexDirection: "row",
@@ -196,9 +177,41 @@ const styles = StyleSheet.create({
     fontSize: SIZES.h14,
     paddingLeft: SIZES.spacing,
   },
-  verion: {
-    color: 'white',
-    fontSize: 13,
-    padding: 4
-  }
+  container: {
+    borderBottomWidth: 0.2,
+    borderBottomColor: COLORS.gray,
+    marginVertical: 10,
+  },
+  flex: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  content: {
+    paddingVertical: 10,
+  },
+  name: {
+    fontFamily: "Poppins-Medium",
+    fontSize: 18,
+    fontWeight: 600,
+    color: COLORS.black,
+  },
+  store: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginHorizontal: SIZES.margin,
+    gap: 10
+  },
+  button: {
+    padding: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: COLORS.black,
+    width: "100%",
+  },
+  textButton: {
+    color: COLORS.white,
+    paddingLeft: 4,
+    fontFamily: "Poppins-Medium",
+    fontSize: 16,
+  },
 });

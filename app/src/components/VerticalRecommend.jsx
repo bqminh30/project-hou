@@ -14,6 +14,10 @@ import Spacer from "./Spacer";
 
 const VerticalRecommend = ({ item, title }) => {
   const navigation = useNavigation();
+
+  const handleFavorite = (item) => {
+    console.log('item', item)
+  }
   return (
     <TouchableOpacity key={item?.id} activeOpacity={1} onPress={() => {
       title === "HOME"
@@ -41,7 +45,7 @@ const VerticalRecommend = ({ item, title }) => {
           <FontAwesome name="star" size={12} color="orange" />
         </View>
 
-        <TouchableOpacity style={styles.heart}>
+        <TouchableOpacity style={styles.heart} onPress={()=>handleFavorite(item)}>
           <FontAwesome name="heart-o" size={12} color="black" />
         </TouchableOpacity>
       </View>

@@ -28,38 +28,6 @@ import Spacer from "../../components/Spacer";
 import Back from "../../components/Back";
 
 const ProfileChange = () => {
-  const [show, setShow] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedId, setSelectedId] = useState();
-  const [selected, setSelected] = useState();
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-
-  const handleConfirm = (date) => {
-    console.warn("A date has been picked: ", date);
-    hideDatePicker();
-  };
-
-  const radioButtons = [
-    {
-      id: "1", // acts as primary key, should be unique and non-empty string
-      label: "Male",
-      value: "male",
-    },
-    {
-      id: "2",
-      label: "Female",
-      value: "female",
-    },
-  ];
 
   return (
     <>
@@ -74,17 +42,16 @@ const ProfileChange = () => {
               <ScrollView>
                 <View style={styles.header}>
                   <Back />
-                  {/* <Avatar /> */}
                 </View>
                 {/* Your information details */}
                 <View style={{ margin: 20 }}>
-                  <Text style={styles.title}>Your Information Details</Text>
+                  <Text style={styles.title}>Change Password Yourselft</Text>
                   <View>
                     <Spacer height={10} />
                     <View style={styles.inputContainer}>
                       <TextInput
                         placeholderTextColor={COLORS.gray_main}
-                        placeholder="Full Name"
+                        placeholder="Current Password"
                         style={styles.textInput}
                       />
                     </View>
@@ -105,63 +72,22 @@ const ProfileChange = () => {
                     </View>
                     <Spacer height={15} />
 
-                    <PhoneInput
-                      phoneInputStyles={{
-                        container: {
-                          backgroundColor: COLORS.grayDefault,
-                          borderWidth: 0,
-                          height: 50,
-                        },
-                      }}
-                      value={inputValue}
-                      onChangePhoneNumber={(country) => setInputValue(country)}
-                      selectedCountry={selectedCountry}
-                      onChangeSelectedCountry={(selectedCountry) =>
-                        setSelectedCountry(selectedCountry)
-                      }
-                    />
-
-                    <Spacer height={15} />
-                    <RadioGroup
-                      containerStyle={{
-                        color: "red",
-                      }}
-                      layout="row"
-                      radioButtons={radioButtons}
-                      onPress={setSelectedId}
-                      selectedId={selectedId}
-                    />
-                    <Spacer height={15} />
                     <View style={styles.inputContainer}>
                       <TextInput
                         placeholderTextColor={COLORS.gray_main}
-                        // autoComplete="email"
-                        placeholder="Birthday"
+                        autoComplete="email"
+                        placeholder="Email Address"
                         style={styles.textInput}
-                        onPressIn={showDatePicker}
                       />
                       <MaterialIcons
-                        name="date-range"
+                        name="email"
                         size={20}
                         color={COLORS.gray_main}
                       />
                     </View>
-
-                    <DateTimePickerModal
-                      isVisible={isDatePickerVisible}
-                      mode="date"
-                      onConfirm={handleConfirm}
-                      onCancel={hideDatePicker}
-                      maximumDate={new Date()}
-                    />
                     <Spacer height={15} />
-                    <View style={styles.inputContainer}>
-                      <TextInput
-                        placeholderTextColor={COLORS.gray_main}
-                        placeholder="Code"
-                        style={styles.textInput}
-                      />
-                    </View>
+
+                    
                   </View>
                 </View>
               </ScrollView>

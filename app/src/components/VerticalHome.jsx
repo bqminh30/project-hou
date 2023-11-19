@@ -48,7 +48,7 @@ const VerticalHome = ({ item, title }) => {
         </Text>
       </View>
       <View style={styles.content}>
-        <Text style={styles.name}>{item?.name}</Text>
+        <Text style={styles.name} textBreakStrategy="1">{item?.name}</Text>
         <View style={styles.rating}>
           <View style={styles.rate}>{starPush}</View>
           <Text style={styles.text}>{item.rating}</Text>
@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Bold",
     fontSize: 14,
     fontWeight: 600,
+    width:'60%'
   },
   rating: {
     flexDirection: "row",
