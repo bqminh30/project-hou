@@ -43,6 +43,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "patch-package": "^8.0.0",
+    "paypal-rest-sdk": "^1.8.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.72.6",
