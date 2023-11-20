@@ -124,9 +124,8 @@ const SearchScreen = () => {
   };
 
  
-
   let startDate = moment(selectedDates[0]).format("DD/MM/YYYY 15:00");
-  let endDate = moment(selectedDates[1]).format("DD/MM/YYYY 12:00");
+  let endDate = moment(selectedDates[1]).add(1, 'days').format("DD/MM/YYYY 12:00");
 
   const bottomSheetModalRef = useRef(null);
   const [isModal, setIsModal] = useState(false);

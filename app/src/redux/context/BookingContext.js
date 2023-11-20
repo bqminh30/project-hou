@@ -3,14 +3,14 @@ export const BookingContext = createContext();
 
 export const BookingProvider = ({ children }) => {
   const [booking, setBooking] = useState(null);
+  const [step, setStep] = useState(0);
 
   const saveBooking = (newBooking) => {
     setBooking(newBooking);
   };
 
-  console.log('newBooking', booking)
   return (
-    <BookingContext.Provider value={{ booking, saveBooking }}>
+    <BookingContext.Provider value={{ booking, saveBooking, step, setStep }}>
       {children}
     </BookingContext.Provider>
   );

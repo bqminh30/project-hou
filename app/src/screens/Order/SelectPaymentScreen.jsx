@@ -32,7 +32,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useBooking } from "../../redux/context/BookingContext";
 import Button from "../../components/Button";
 
-const InformationScreen = () => {
+const SelectPaymentScreen = () => {
   const [value, setValue] = useState({
     fullname: "",
     email: "",
@@ -40,9 +40,9 @@ const InformationScreen = () => {
     code: "",
     phone: "",
   });
-  
-  const { booking, setStep, step } = useBooking();
+  const { booking } = useBooking();
 
+  const [inputValue, setInputValue] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedId, setSelectedId] = useState();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -87,18 +87,18 @@ const InformationScreen = () => {
     []
   );
 
-  // if (booking == null) {
-  //   return (
-  //     <>
-  //       <StatusBar barStyle="dark-content" />
-  //       <SafeAreaView
-  //         style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-  //       >
-  //         <Text>Not order booking</Text>
-  //       </SafeAreaView>
-  //     </>
-  //   );
-  // }
+  if (booking == null) {
+    return (
+      <>
+        <StatusBar barStyle="dark-content" />
+        <SafeAreaView
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text>Not order booking</Text>
+        </SafeAreaView>
+      </>
+    );
+  }
 
   return (
     <>
@@ -116,12 +116,10 @@ const InformationScreen = () => {
                 <ScrollView>
                   <View style={styles.header}>
                     <Back />
-                    {/* <Avatar /> */}
+                    <Avatar />
                   </View>
                   {/* Your information details */}
-                  {
-                    step == 1 &&
-                    <View style={{ margin: 20 }}>
+                  <View style={{ margin: 20 }}>
                     <Text style={styles.title}>Your Information Details</Text>
                     <View>
                       <Spacer height={10} />
@@ -222,14 +220,6 @@ const InformationScreen = () => {
                       />
                     </View>
                   </View>
-                  }
-                  {
-                    step == 2 && 
-                    <View>
-                      
-                    </View>
-                  }
-                 
                 </ScrollView>
               </SafeAreaView>
             </View>
@@ -260,7 +250,7 @@ const InformationScreen = () => {
   );
 };
 
-export default InformationScreen;
+export default SelectPaymentScreen;
 
 const styles = StyleSheet.create({
   header: {

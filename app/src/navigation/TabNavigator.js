@@ -1,7 +1,6 @@
 import { COLORS, SIZES } from "../config/theme";
 import {
   Home,
-  OrderScreen,
   RoomList,
   SearchScreen,
   RoomDetail,
@@ -12,11 +11,13 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ProfileChange, ProfilePassword, ProfileScreen } from "../screens/Profile";
+import { OrderScreen, InformationScreen, SelectPaymentScreen } from "../screens/Order";
+
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 
 //Redux
 import { useBooking } from "../redux/context/BookingContext"; //
-import InformationScreen from "../screens/Order/InformationScreen";
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -121,7 +122,7 @@ const HomeStack = () => {
   );
 };
 
-const ProfileStack = () => {
+const OrderStack = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -173,7 +174,7 @@ const ProfileStack = () => {
 };
 const TabNavigation = () => {
   return (
-    <Stack.Navigator initialRouteName="Trang chủ">
+    <Stack.Navigator initialRouteName="Information Detail">
       <Stack.Screen
         name="Trang chủ"
         component={HomeStack}
@@ -187,6 +188,11 @@ const TabNavigation = () => {
       <Stack.Screen
         name="Information Detail"
         component={InformationScreen}
+        options={{ unmountOnBlur: true, headerShown: false }}
+      />
+       <Stack.Screen
+        name="Select Payment"
+        component={SelectPaymentScreen}
         options={{ unmountOnBlur: true, headerShown: false }}
       />
       <Stack.Screen
