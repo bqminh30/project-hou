@@ -10,14 +10,18 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   ScrollView,
-  Image
+  Image,
+  TouchableOpacity,
+  Modal,
 } from "react-native";
 import { CheckBox } from "react-native-elements";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import RadioGroup from "react-native-radio-buttons-group";
 import PhoneInput from "react-native-international-phone-number";
-import moment from "moment";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { WebView } from "react-native-webview";
+import axios from "axios";
+import moment from "moment";
 
 import { COLORS, SIZES } from "../../config/theme";
 import Avatar from "../../components/Avatar";
@@ -29,7 +33,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useBooking } from "../../redux/context/BookingContext";
 import Button from "../../components/Button";
 
-const InformationScreen = () => {
+const InformationScreen = ({navigation}) => {
   const [value, setValue] = useState({
     fullname: "",
     email: "",
@@ -43,6 +47,9 @@ const InformationScreen = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedId, setSelectedId] = useState();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [showGateway, setShowGateway] = useState(false);
+  const [showTitle, setShowTitle] = useState(false);
+  const [status, setStatus] = useState("Pending");
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -67,6 +74,29 @@ const InformationScreen = () => {
       [fieldName]: text,
     });
   };
+
+  const handlePayPal = (data) => {
+    console.log("data", data);
+    if (
+      data.url.includes("https://38a4-42-118-135-44.ngrok-free.app/process")
+    ) {
+      setStatus("Complete");
+      setShowGateway(false);
+    } else if (data.title === "cancel") {
+      setStatus("Cancelled");
+    } else return;
+  };
+
+  const handleChangeMethodPayment = (title, status) => {
+    if(title == 'paypal') {
+      setShowGateway(status)
+      setShowTitle(title)
+    }
+  }
+
+  const handleReviewSumary = () => {
+    navigation.navigate("Review Summary")
+  }
 
   const radioButtons = useMemo(
     () => [
@@ -229,30 +259,69 @@ const InformationScreen = () => {
                       </Text>
                       <View>
                         <Spacer height={10} />
-                        <View style={styles.inputMethod}>
-                          <View style={{marginLeft: 20, flex: 1, flexDirection:'row', alignItems:'center'}}>
-                            <Image style={{height:30, width:30}} source={require('../../../assets/paypal.png')}/>
-                            <Text style={{fontWeight:600, fontSize: 18}}>PayPal</Text>
+                        {/* <View style={styles.inputMethod}>
+                          <View
+                            style={{
+                              marginLeft: 20,
+                              flex: 1,
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Image
+                              style={{ height: 30, width: 30 }}
+                              source={require("../../../assets/paypal.png")}
+                            />
+                            <Text style={{ fontWeight: 600, fontSize: 18 }}>
+                              PayPal
+                            </Text>
                           </View>
                           <CheckBox
                           // title='Click Here'
                           // checked={this.state.checked}
                           />
-                        </View>
+                        </View> */}
                         {/* <Spacer height={5}/> */}
                         <View style={styles.inputMethod}>
-                          <View style={{marginLeft: 20, flex: 1, flexDirection:'row', alignItems:'center'}}>
-                            <Image style={{height:30, width:30}} source={require('../../../assets/paypal.png')}/>
-                            <Text style={{fontWeight:600, fontSize: 18}}>Google Pay</Text>
-                          </View>
-                          <CheckBox
-                          // title='Click Here'
-                          // checked={this.state.checked}
-                          />
+                          <TouchableOpacity
+                            style={{
+                              flex: 1,
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                            onPress={() =>
+                              handleChangeMethodPayment('paypal',!showGateway)
+                            }
+                          >
+                            <Image
+                              style={{ height: 30, width: 30 }}
+                              source={require("../../../assets/paypal.png")}
+                            />
+                            <Text style={{ fontWeight: 600, fontSize: 18 }}>
+                              Paypal
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={styles.outter}
+                            onPress={() =>
+                              handleChangeMethodPayment('paypal',!showGateway)
+                            }
+                          >
+                            {showGateway === true && showTitle == 'paypal' && (
+                            <View style={styles.inner}></View>
+                            )} 
+                          </TouchableOpacity>
                         </View>
-                        <View style={[styles.inputMethod, {justifyContent:'center', paddingVertical: 14}]}>
-                          <Text style={{fontWeight:600, fontSize: 18}}>+ Add New Card</Text>
-                          </View>
+                        <View
+                          style={[
+                            styles.inputMethod,
+                            { justifyContent: "center", paddingVertical: 14 },
+                          ]}
+                        >
+                          <Text style={{ fontWeight: 600, fontSize: 18 }}>
+                            + Add New Card
+                          </Text>
+                        </View>
                       </View>
                     </View>
                   )}
@@ -275,13 +344,21 @@ const InformationScreen = () => {
         >
           <Button
             label="Continue"
-            onPress=""
+            onPress={() => handleReviewSumary()}
             color={COLORS.white}
             background={COLORS.black}
             loading={false}
           />
         </View>
       </View>
+
+      {/* <Modal visible={showGateway} onRequestClose={() => setShowGateway(false)}>
+        <WebView
+          source={{ uri: "https://38a4-42-118-135-44.ngrok-free.app/create" }}
+          onNavigationStateChange={(data) => handlePayPal(data)}
+          injectedJavaScript={`document.f1.submit()`}
+        />
+      </Modal> */}
     </>
   );
 };
@@ -320,6 +397,8 @@ const styles = StyleSheet.create({
   },
   inputMethod: {
     marginVertical: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     backgroundColor: "white",
     borderRadius: SIZES.radius,
     alignItems: "center",
@@ -331,7 +410,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 2,
-    flexDirection: 'row',
-    justifyContent:'space-between'
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  inner: {
+    width: 12,
+    height: 12,
+    backgroundColor: COLORS.black,
+    borderRadius: 10,
+  },
+  outter: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: COLORS.gray,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dotline: {
+    borderStyle: "dotted",
+    borderWidth: 1,
+    borderRadius: 1,
+    color: COLORS.gray,
   },
 });

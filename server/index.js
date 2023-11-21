@@ -10,6 +10,7 @@ var cron = require('node-cron');
 const paypal = require('paypal-rest-sdk');
 const app = express();
 const cloudinary = require("cloudinary").v2;
+const stripe = require('stripe')('sk_test_...');
 const { apiPublicKey, apiSecretKey } = require('./app/config/config.js');
 
 
@@ -27,9 +28,12 @@ var corsOptions = {
 
 paypal.configure({
   'mode': 'sandbox', //sandbox or live
-  'client_id': 'AaRTEM6WAhaRMH_90zLF6-NWPurmwTscLrkjplrnSPuEBO_Wy2jQ0TaIctf2feIF9k5L7ikQokShpdh6',
-  'client_secret': 'ENbUna3-27VZjPfr5wjL5WVUf8BoIiFt8G5VV8D22Z4zeZuTZtQo4BY1LVXIIcyCtV3l0Z7KLtygaJpj'
+  'client_id': 'Acznkr8xl6vXd6E9vCIP9WGdTToq4BnzBjerQ1DObiYCJfp7yMO11RdpkRcqOCGm-Y1RAoTiPwPTIwYn',
+  'client_secret': 'EHLgb25ODJJC_jgB0IdxtoBI1f7ggS7ho3ZoXAhn078clhQLu9s7apppoqZynL4wJlojKcjTlL-EzRoN'
 });
+
+// access_token
+// A21AAJgOYBLrMe65FcUKp5vpqBxEYdnA0cLQTiWhj89LZyL2btlmxDKgXIWoHqmzw0vNEL5HqVErwaluEpzPvVM0R-iPc3DcQ
 
 app.use(cors(corsOptions));
 app.use(cookieParser());
@@ -124,44 +128,54 @@ app.post("/api/v1/initialize-transaction", async (req, res) => {
 
 app.get('/create', function(req, res){
   //build PayPal payment request
-  var payReq = JSON.stringify({
-      'intent':'sale',
-      'redirect_urls':{
-          'return_url':'http://localhost:6969/process',
-          'cancel_url':'http://localhost:6969/cancel'
-      },
-      'payer':{
-          'payment_method':'paypal'
-      },
-      'transactions':[{
-          'amount':{
-              'total':'7.47',
-              'currency':'USD'
-          },
-          'description':'This is the payment transaction description.'
-      }]
-  });
+  var create_payment_json = {
+    intent: "sale",
+    payer: {
+        payment_method: "paypal"
+    },
+    redirect_urls: {
+        return_url: "https://be-nodejs-project.vercel.app/process",
+        cancel_url: "https://be-nodejs-project.vercel.app/cancel"
+    },
+    transactions: [
+        {
+            item_list: {
+                items: [
+                    {
+                        name: "item1",
+                        sku: "item1",
+                        price: "1.00",
+                        currency: "USD",
+                        quantity: 1
+                    }
+                ],
+                items: [
+                  {
+                      name: "item2",
+                      sku: "item2",
+                      price: "3.00",
+                      currency: "USD",
+                      quantity: 1
+                  }
+              ]
+            },
+            amount: {
+                currency: "USD",
+                total: "4.00"
+            },
+            description: "This is the payment description."
+        }
+    ]
+};
 
-  paypal.payment.create(payReq, function(error, payment){
-      if(error){
-          console.error(error);
-      } else {
-          //capture HATEOAS links
-          var links = {};
-          payment.links.forEach(function(linkObj){
-              links[linkObj.rel] = {
-                  'href': linkObj.href,
-                  'method': linkObj.method
-              };
-          })
-      
-          //if redirect url present, redirect user
-          if (links.hasOwnProperty('approval_url')){
-              res.redirect(links['approval_url'].href);
-          } else {
-              console.error('no redirect URI present');
-          }
-      }
+  paypal.payment.create(create_payment_json, function(error, payment){
+    if (error) {
+      throw error;
+  } else {
+      console.log("Create Payment Response");
+      console.log(payment);
+      res.redirect(payment.links[1].href);
+  }
   });
 });
 
@@ -173,13 +187,17 @@ app.get('/process', function(req, res){
       if(error){
           console.error(error);
       } else {
+        console.log('payment', payment)
           if (payment.state == 'approved'){ 
-              res.send('payment completed successfully');
+              res.status(200).json({ success: true });
           } else {
-              res.send('payment not successful');
+              res.status(200).json({ success: false });
           }
       }
   });
+});
+app.get("/cancel", (req, res) => {
+  res.status(200).json({ success: false });
 });
 // set port, listen for requests
 const PORT = process.env.PORT || 7000;
