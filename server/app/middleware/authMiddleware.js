@@ -2,6 +2,7 @@ const jsonwebtoken = require('jsonwebtoken');
 
 function isAuthenticated(req, res, next) {
   const token = req.cookies.token; 
+  // console.log('req', req)
 
   if (!token) {
     return res.status(401).json({ message: 'Chưa cung cấp token' });

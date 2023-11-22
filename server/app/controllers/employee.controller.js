@@ -387,42 +387,31 @@ exports.logout = async (req, res, next) => {
   }
 };
 
-exports.changePassword = (req, res, next) => {
+exports.changePassword = async (req, res, next) => {
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!",
     });
   }
-
-  const { username, currentPassword, newPassword } = req.body;
-
-  // Check if the provided username exists in the database
-  Employee.checkEmailCodeExist(username, async (err, user) => {
-    if (err) {
-      console.error('Error finding user:', err);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-
-    if (!user) {
+  const { email, currentPassword, newPassword } = req.body;
+  const data = await Employee.checkEmailExist(email);
+  // Check if the provided email exists in the database
+    if (data !== 1) {
       // User not found
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Verify the current password
-    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
-
-    if (!isPasswordValid) {
-      // Current password is incorrect
-      return res.status(401).json({ error: 'Invalid password' });
-    }
-
-    try {
+    else {
       // Hash the new password
       const salt = genSaltSync(10);
       const hashedPassword = hashSync(newPassword, salt);
 
+      const data = {
+        email, hashedPassword
+      }
+
       // Update the password in the database
-      Employee.updatePassword(username, hashedPassword, (err) => {
+      Employee.updatePassword(data, (err, data) => {
         if (err) {
           console.error('Error updating password:', err);
           return res.status(500).json({ error: 'Internal Server Error' });
@@ -431,9 +420,6 @@ exports.changePassword = (req, res, next) => {
         // Password updated successfully
         res.status(200).json({ message: 'Password updated successfully' });
       });
-    } catch (err) {
-      // Handle the error, such as sending an error response
-      res.status(400).json({ message: err.message || 'Error changing password' });
-    }
-  });
+    } 
+  
 };
