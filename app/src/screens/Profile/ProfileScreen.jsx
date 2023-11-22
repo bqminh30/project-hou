@@ -8,7 +8,7 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 import { MaterialIcons, Ionicons, FontAwesome } from "@expo/vector-icons";
 //components
 import Back from "../../components/Back";
@@ -17,19 +17,21 @@ import Spacer from "../../components/Spacer";
 // config
 import { COLORS, SIZES } from "../../config/theme";
 
-const ProfileScreen = () => {
-  const navigation = useNavigation();
+const ProfileScreen = ({navigation}) => {
+  const { user } = useSelector((state) => state.authReducer);
+
+  console.log('user', user)
 
   return (
     <>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={{ backgroundColor: COLORS.white, flex: 1 }}>
-        <View style={{ margin: SIZES.margin }}>
+        {/* <View style={{ margin: SIZES.margin }}> */}
           <View style={styles.header}>
             <Back />
             <Avatar />
           </View>
-        </View>
+        {/* </View> */}
         
         <View style={styles.profile}>
           <View style={styles.container}>
@@ -43,8 +45,8 @@ const ProfileScreen = () => {
                   }}
                 />
                 <View style={{ marginLeft: 10 }}>
-                  <Text style={styles.name}>Bui Quang Minh</Text>
-                  <Text style={styles.date}>bqminh30@gmail.com</Text>
+                  <Text style={styles.name}>{user?.fullname}</Text>
+                  <Text style={styles.date}>{user?.email}</Text>
                 </View>
               </View>
             </View>
@@ -76,9 +78,9 @@ const ProfileScreen = () => {
                 source={require("../../../assets/Icon-profile/Icon_student.png")}
                 style={styles.bellIcon}
               /> */}
-                <Text style={styles.textAction}>Thông tin cá nhân</Text>
+                <Text style={styles.textAction}>Change Profile</Text>
                 <MaterialIcons
-                  style={{ position: "absolute", right: 0 }}
+                  style={{ position: "absolute", right: 20 }}
                   name="navigate-next"
                   size={24}
                   color="black"
@@ -93,9 +95,9 @@ const ProfileScreen = () => {
                 source={require("../../../assets/Icon-profile/Icon_change.png")}
                 style={styles.bellIcon}
               /> */}
-                <Text style={styles.textAction}>Đổi mật khẩu</Text>
+                <Text style={styles.textAction}>Change Password</Text>
                 <MaterialIcons
-                  style={{ position: "absolute", right: 0 }}
+                  style={{ position: "absolute", right: 20 }}
                   name="navigate-next"
                   size={24}
                   color="black"
@@ -108,9 +110,9 @@ const ProfileScreen = () => {
                 source={require("../../../assets/Icon-profile/Icon_logout.png")}
                 style={styles.bellIcon}
               /> */}
-                <Text style={styles.textAction}>Đăng xuất</Text>
+                <Text style={styles.textAction}>Logout</Text>
                 <MaterialIcons
-                  style={{ position: "absolute", right: 0 }}
+                  style={{ position: "absolute", right: 20 }}
                   name="navigate-next"
                   size={24}
                   color="black"
@@ -132,9 +134,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginHorizontal: SIZES.padding,
   },
   profile: {
-    marginHorizontal: SIZES.margin,
+    marginHorizontal: SIZES.padding,
   },
   avatar: {
     height: 60,
@@ -165,21 +168,22 @@ const styles = StyleSheet.create({
   //   flex: 1,
   // },
   content: {
-    marginHorizontal: SIZES.margin,
+    marginHorizontal: SIZES.padding,
   },
   actionPush: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: SIZES.spacing,
+    paddingVertical: 12,
   },
   textAction: {
     fontWeight: 600,
-    fontSize: SIZES.h14,
-    paddingLeft: SIZES.spacing,
+    fontSize: 14,
+    paddingLeft: SIZES.padding,
+    fontFamily: "Poppins-Medium",
   },
   container: {
-    borderBottomWidth: 0.2,
-    borderBottomColor: COLORS.gray,
+    // borderBottomWidth: 0.2,
+    // borderBottomColor: COLORS.gray,
     marginVertical: 10,
   },
   flex: {
@@ -198,7 +202,7 @@ const styles = StyleSheet.create({
   store: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    marginHorizontal: SIZES.margin,
+    marginHorizontal: SIZES.padding,
     gap: 10
   },
   button: {

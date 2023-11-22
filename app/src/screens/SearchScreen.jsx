@@ -145,6 +145,10 @@ const SearchScreen = () => {
     setIsModal(true);
   };
 
+  const handleClearSearch = () => {
+    setDataSearch([]);
+  }
+
   const handleSearchRooms = async () => {
     setLoadinDataSearch(true);
     setDataSearch([]);
@@ -258,6 +262,13 @@ const SearchScreen = () => {
                   </View>
 
                   <Spacer height={10} />
+                  <View style={[styles.flex, {justifyContent:'flex-end'}]}>
+                  <ButtonSearch  background={COLORS.white}
+                    float={"right"}
+                    label={"Clear"}
+                    color={COLORS.black}
+                    onPress={handleClearSearch}/>
+                    <Spacer height={0} width={10} />
                   <ButtonSearch
                     background={COLORS.black}
                     float={"right"}
@@ -265,6 +276,7 @@ const SearchScreen = () => {
                     color={COLORS.white}
                     onPress={handleSearchRooms}
                   />
+                  </View>
                 </View>
               </View>
             </View>
@@ -406,7 +418,7 @@ const SearchScreen = () => {
                   ]}
                 >
                   <Text style={{ paddingBottom: 4, color: COLORS.gray_main }}>
-                    Rooms
+                    Beds
                   </Text>
 
                   <View style={styles.flex}>

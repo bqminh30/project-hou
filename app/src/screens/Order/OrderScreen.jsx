@@ -24,8 +24,6 @@ import VerticalOrder from "../../components/VerticalOrder";
 // redux context
 import { useBooking } from "../../redux/context/BookingContext";
 
-import { hotel_type, hotels_data } from "../../config/data";
-
 const calculateTotalSum = (bookings) => {
   let totalSum = 0;
   if (!bookings) {

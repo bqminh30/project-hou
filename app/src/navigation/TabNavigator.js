@@ -174,7 +174,7 @@ const OrderStack = () => {
 };
 const TabNavigation = () => {
   return (
-    <Stack.Navigator initialRouteName="Information Detail">
+    <Stack.Navigator initialRouteName="Trang chủ">
       <Stack.Screen
         name="Trang chủ"
         component={HomeStack}

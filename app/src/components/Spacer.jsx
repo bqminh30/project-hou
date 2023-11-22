@@ -1,11 +1,11 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 
-const Spacer = ({height}) => {
+const Spacer = ({height, width}) => {
   return (
     <View
       style={{
-        width: '100%',
+        width: width ? width : '100%',
         height: height ? height : 15,
       }}
     />

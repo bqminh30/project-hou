@@ -73,7 +73,7 @@ const RoomDetail = ({ route, navigation }) => {
   const [maxLines, setMaxLines] = useState(4);
   const animationHeight = useRef(new Animated.Value(0)).current;
   const bottomSheetModalRef = useRef(null);
-  const [isModal, setIsModal] = useState(false);
+  const [isModal, setIsModal] = useState(true);
   const snapPoints = useMemo(() => [1, "25%", "40%", "85%"], []);
 
   const { booking, saveBooking } = useBooking();
@@ -207,16 +207,17 @@ const RoomDetail = ({ route, navigation }) => {
 
   const handleSheetChange = useCallback((index) => {
     if (index === -1 || index === 0) {
-      setIsModal(false);
+      setIsModal(true);
     }
   }, []);
+
+  console.log('isModal', isModal)
 
   const handlePress = () => {
     // Mở bottom sheet khi bạn nhấp vào một thành phần trong danh sách
     bottomSheetModalRef.current?.expand();
-    setIsModal(true);
+    setIsModal(false);
   };
-
 
   const handleSaveBooking = () => {
     if (selectedDates.length <= 0) {
@@ -257,7 +258,7 @@ const RoomDetail = ({ route, navigation }) => {
           const existingBooking = booking.bookings.find(
             (bookingItem) => bookingItem.room_id === room_id
           );
-          navigation.navigate('Information Detail')
+          navigation.navigate("Information Detail");
           if (existingBooking) {
             // Handle scenario where booking for this room already exists
             Alert.alert("Marriott", "A booking for this room already exists.", [
@@ -276,7 +277,6 @@ const RoomDetail = ({ route, navigation }) => {
         } else {
           // If there's no existing booking, create a new booking object with an array containing the new booking
           saveBooking({ bookings: [newBookingItem] });
-         
         }
       } else {
         console.log("Invalid dates");
@@ -333,324 +333,310 @@ const RoomDetail = ({ route, navigation }) => {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
-        // keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
-        >
-          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <View style={{ flex: 1, backgroundColor: COLORS.white }}>
-              <StatusBar barStyle="dark-content" />
-              <SafeAreaView style={{ flex: 1 }}>
-                <ScrollView style={{ flex: 1 }}>
-                  <View style={{ margin: SIZES.margin, paddingBottom: 80 }}>
-                    <View style={styles.header}>
-                      <Back />
-                      <Avatar />
-                    </View>
+      >
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <View style={{ flex: 1, backgroundColor: COLORS.white }}>
+            <StatusBar barStyle="dark-content" />
+            <SafeAreaView style={{ flex: 1 }}>
+              <ScrollView nestedScrollEnabled={true}>
+                <View style={{ margin: SIZES.margin, paddingBottom: 80 }}>
+                  <View style={styles.header}>
+                    <Back />
+                    <Avatar />
+                  </View>
 
-                    <Spacer height={10} />
-                    {/* images  */}
-                    <View style={styles.images}>
-                      <Image
-                        source={{ uri: showImage ? showImage : room?.image }}
-                        style={styles.imageMain}
-                      />
-                      <Spacer />
-                      <FlatList
-                        data={room_images}
-                        horizontal={true}
-                        keyExtractor={(item, index) => index.toString()}
-                        removeClippedSubviews={true}
-                        initialNumToRender={10}
-                        renderItem={({ item, index }) => (
-                          <VerticalImage
-                            item={item}
-                            key={item.id}
-                            handleShowImage={handleShowImage}
-                            handleActive={handleActive}
-                            active={active}
-                          />
-                        )}
-                      />
-                    </View>
-                    <Spacer height={10} />
-                    <View>
-                      <Text style={styles.name}>{room?.name} </Text>
-                      <View style={styles.flex}>
-                        <View style={[styles.flex, styles.card]}>
-                          <Text style={styles.typeroom}>
-                            {" "}
-                            {(room?.type_room_id === 1 && "Vip") ||
-                              (room?.type_room_id === 2 && "Normal") ||
-                              (room?.type_room_id === 3 && "New")}
-                          </Text>
-                          <Text style={styles.label}></Text>
-                        </View>
-                        <View
-                          style={[
-                            styles.card,
-                            { backgroundColor: COLORS.main },
-                          ]}
-                        >
-                          <Text style={styles.label}>
-                            {(room?.label === 1 && "Excellent") ||
-                              (room?.label === 2 && "Very good") ||
-                              (room?.label === 3 && "Exceptional") ||
-                              "default"}
-                          </Text>
-                        </View>
+                  <Spacer height={10} />
+                  {/* images  */}
+                  <View style={styles.images}>
+                    <Image
+                      source={{ uri: showImage ? showImage : room?.image }}
+                      style={styles.imageMain}
+                    />
+                    <Spacer />
+                    <FlatList
+                      data={room_images}
+                      horizontal={true}
+                      keyExtractor={(item, index) => index.toString()}
+                      removeClippedSubviews={true}
+                      initialNumToRender={10}
+                      renderItem={({ item, index }) => (
+                        <VerticalImage
+                          item={item}
+                          key={item.id}
+                          handleShowImage={handleShowImage}
+                          handleActive={handleActive}
+                          active={active}
+                        />
+                      )}
+                    />
+                  </View>
+                  <Spacer height={10} />
+                  <View>
+                    <Text style={styles.name}>{room?.name} </Text>
+                    <View style={styles.flex}>
+                      <View style={[styles.flex, styles.card]}>
+                        <Text style={styles.typeroom}>
+                          {" "}
+                          {(room?.type_room_id === 1 && "Vip") ||
+                            (room?.type_room_id === 2 && "Normal") ||
+                            (room?.type_room_id === 3 && "New")}
+                        </Text>
+                        <Text style={styles.label}></Text>
+                      </View>
+                      <View
+                        style={[styles.card, { backgroundColor: COLORS.main }]}
+                      >
+                        <Text style={styles.label}>
+                          {(room?.label === 1 && "Excellent") ||
+                            (room?.label === 2 && "Very good") ||
+                            (room?.label === 3 && "Exceptional") ||
+                            "default"}
+                        </Text>
                       </View>
                     </View>
-                    <Spacer height={4} />
-                    <Text style={styles.title}>{room?.title}</Text>
-                    <Spacer height={5} />
-                    <View
-                      style={[
-                        styles.rating,
-                        { justifyContent: "flex-start", gap: 10 },
-                      ]}
-                    >
-                      <View style={styles.flex}>
-                        <View style={styles.flex}>{starPush}</View>
-                        <Text style={styles.text}>({room?.rating})</Text>
-                      </View>
+                  </View>
+                  <Spacer height={4} />
+                  <Text style={styles.title}>{room?.title}</Text>
+                  <Spacer height={5} />
+                  <View
+                    style={[
+                      styles.rating,
+                      { justifyContent: "flex-start", gap: 10 },
+                    ]}
+                  >
+                    <View style={styles.flex}>
+                      <View style={styles.flex}>{starPush}</View>
+                      <Text style={styles.text}>({room?.rating})</Text>
+                    </View>
 
-                      <Text>
-                        {room?.totalRating}
-                        <Text style={{ color: COLORS.gray_main }}>
-                          {" "}
-                          ratings
-                        </Text>
-                      </Text>
-                      <Text>
-                        {room?.totalReview}
-                        <Text style={{ color: COLORS.gray_main }}>
-                          {" "}
-                          reviews
-                        </Text>
+                    <Text>
+                      {room?.totalRating}
+                      <Text style={{ color: COLORS.gray_main }}> ratings</Text>
+                    </Text>
+                    <Text>
+                      {room?.totalReview}
+                      <Text style={{ color: COLORS.gray_main }}> reviews</Text>
+                    </Text>
+                  </View>
+                  <Spacer height={4} />
+
+                  <View style={[styles.flex, { gap: 10 }]}>
+                    <View style={[styles.flex, { gap: 4 }]}>
+                      <Ionicons name="bed" size={18} color={COLORS.main} />
+                      <Text style={{ color: COLORS.gray_main }}>
+                        {room?.numberBed} Beds
                       </Text>
                     </View>
-                    <Spacer height={4} />
-
-                    <View style={[styles.flex, { gap: 10 }]}>
-                      <View style={[styles.flex, { gap: 4 }]}>
-                        <Ionicons name="bed" size={18} color={COLORS.main} />
-                        <Text style={{ color: COLORS.gray_main }}>
-                          {room?.numberBed} Beds
-                        </Text>
-                      </View>
-                      <View style={[styles.flex, { gap: 4 }]}>
-                        <Ionicons name="people" size={18} color={COLORS.main} />
-                        <Text style={{ color: COLORS.gray_main }}>
-                          {room?.numberPeople} Adults
-                        </Text>
-                      </View>
-                      <View style={[styles.flex, { gap: 4 }]}>
-                        <Ionicons name="person" size={18} color={COLORS.main} />
-                        <Text style={{ color: COLORS.gray_main }}>
-                          {room?.numberChildren} Childrens
-                        </Text>
-                      </View>
+                    <View style={[styles.flex, { gap: 4 }]}>
+                      <Ionicons name="people" size={18} color={COLORS.main} />
+                      <Text style={{ color: COLORS.gray_main }}>
+                        {room?.numberPeople} Adults
+                      </Text>
                     </View>
-                    <Spacer height={4} />
-                    <View>
-                      <Text style={styles.key}>Amenties</Text>
+                    <View style={[styles.flex, { gap: 4 }]}>
+                      <Ionicons name="person" size={18} color={COLORS.main} />
+                      <Text style={{ color: COLORS.gray_main }}>
+                        {room?.numberChildren} Childrens
+                      </Text>
+                    </View>
+                  </View>
+                  <Spacer height={4} />
+                  <View>
+                    <Text style={styles.key}>Amenties</Text>
+                    <ScrollView horizontal={true} style={{ width: "100%" }}>
                       <FlatList
-                        nestedScrollEnabled={true}
                         data={services}
                         horizontal={true}
                         keyExtractor={(item, index) => index.toString()}
+                        style={{paddingLeft: 8}}
                         removeClippedSubviews={true}
                         initialNumToRender={10}
                         renderItem={({ item, index }) => (
-                          <VerticalServices item={item} key={item.id} />
+                          <VerticalServices item={item} key={item?.id} />
                         )}
                       />
-                    </View>
-                    <View>
-                      <View
-                        style={[
-                          styles.flex,
-                          { justifyContent: "space-between" },
-                        ]}
-                      >
-                        <Text style={styles.key}>Overview</Text>
+                    </ScrollView>
+                  </View>
+                  <View>
+                    <View
+                      style={[styles.flex, { justifyContent: "space-between" }]}
+                    >
+                      <Text style={styles.key}>Overview</Text>
 
-                        <TouchableOpacity onPress={toggleCollapsed}>
-                          <View style={styles.flex}>
-                            <Text style={styles.seemore}>
-                              {collapsed ? "see more" : "hide less"}
-                            </Text>
-                            <AntDesign
-                              name={collapsed ? "down" : "up"}
-                              size={18}
-                              color={COLORS.main}
-                            />
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={{ overflow: "hidden" }}>
-                        <Animated.View
-                          scrollEventThrottle={1}
-                          style={{ maxHeight: animationHeight }}
-                        >
-                          <Text
-                            style={styles.paragraph}
-                            numberOfLines={maxLines}
-                          >
-                            <RenderHtml
-                              contentWidth={width}
-                              source={{ html: room?.description }}
-                            />
+                      <TouchableOpacity onPress={toggleCollapsed}>
+                        <View style={styles.flex}>
+                          <Text style={styles.seemore}>
+                            {collapsed ? "see more" : "hide less"}
                           </Text>
-                        </Animated.View>
-
-                        <TouchableOpacity onPress={toggleCollapsed}>
-                          <View
-                            style={[styles.flex, { justifyContent: "center" }]}
-                          >
-                            <Text style={styles.seemore}>
-                              {!collapsed && "hide less"}
-                            </Text>
-                            <AntDesign
-                              name={!collapsed && "up"}
-                              size={18}
-                              color={COLORS.main}
-                            />
-                          </View>
-                        </TouchableOpacity>
-                      </View>
+                          <AntDesign
+                            name={collapsed ? "down" : "up"}
+                            size={18}
+                            color={COLORS.main}
+                          />
+                        </View>
+                      </TouchableOpacity>
                     </View>
-                    <View>
-                      <Text style={styles.key}>Reviews</Text>
-                      <FlatList
-                        nestedScrollEnabled={true}
-                        data={reviews}
-                        horizontal={false}
-                        keyExtractor={(item, index) => index.toString()}
-                        removeClippedSubviews={true}
-                        initialNumToRender={10}
-                        renderItem={({ item, index }) => (
-                          <VerticalReviews item={item} key={item.id} />
-                        )}
-                      />
+                    <View style={{ overflow: "hidden" }}>
+                      <Animated.View
+                        scrollEventThrottle={1}
+                        style={{ maxHeight: animationHeight }}
+                      >
+                        <Text style={styles.paragraph} numberOfLines={maxLines}>
+                          <RenderHtml
+                            contentWidth={width}
+                            source={{ html: room?.description }}
+                          />
+                        </Text>
+                      </Animated.View>
+
+                      <TouchableOpacity onPress={toggleCollapsed}>
+                        <View
+                          style={[styles.flex, { justifyContent: "center" }]}
+                        >
+                          <Text style={styles.seemore}>
+                            {!collapsed && "hide less"}
+                          </Text>
+                          <AntDesign
+                            name={!collapsed && "up"}
+                            size={18}
+                            color={COLORS.main}
+                          />
+                        </View>
+                      </TouchableOpacity>
                     </View>
                   </View>
-                </ScrollView>
-              </SafeAreaView>
-            </View>
-            <BottomSheet
-              ref={bottomSheetModalRef}
-              index={-1}
-              snapPoints={snapPoints}
-              onChange={handleSheetChange}
-              enablePanDownToClose
-              enableOverDrag
-              pressBehavior={"close"}
-              backgroundStyle={{
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
-
-                elevation: 5,
-              }}
-            >
-              <Spacer height={10} />
-              <Text style={styles._title}>Select Date</Text>
-              <View style={styles.modalView}>
-                <Calendar
-                  // Customize the appearance of the calendar
-
-                  // Specify the current date
-                  // current={new Date()}
-                  minDate={new Date()}
-                  // Callback that gets called when the user selects a day
-                  onDayPress={(day) => {
-                    handleDayPress(day);
-                  }}
-                  // Mark specific dates as marked
-                  markingType="period"
-                  // hideExtraDays={true}
-                  hideArrows={false}
-                  markedDates={dateObject}
-                  style={{
-                    height: 320,
-                    borderRadius: SIZES.radius,
-                    width: SIZES.width - 30,
-                  }}
-                  theme={{
-                    backgroundColor: COLORS.gray,
-                    calendarBackground: COLORS.gray,
-                    textSectionTitleColor: "#b6c1cd",
-                    selectedDayBackgroundColor: "red",
-                    selectedDayTextColor: "#ffffff",
-                    todayTextColor: COLORS.black,
-                    dayTextColor: "#2d4150",
-                    textDisabledColor: "#d9efff",
-                  }}
-                />
-                <View
-                  style={[
-                    styles.flex,
-                    {
-                      margin: 20,
-                      gap: 10,
-                      justifyContent: "space-between",
-                    },
-                  ]}
-                >
-                  <View style={styles.passwordContainer}>
-                    <TextInput
-                      
-                      placeholderTextColor={COLORS.gray_main}
-                      autoCorrect={false}
-                      
-                      value={selectedDates[0]}
-                      editable={false}
-                      selectTextOnFocus={false}
-                      placeholder="Check in"
-                    />
-                    <MaterialIcons
-                      name="date-range"
-                      size={18}
-                      color={COLORS.gray_main}
-                    />
-                  </View>
-
-                  <View style={styles.passwordContainer}>
-                    <TextInput
-                      value={selectedDates[1]}
-                      placeholderTextColor={COLORS.gray_main}
-                      autoCorrect={false}
-                      editable={false}
-                      selectTextOnFocus={false}
-                      
-                      placeholder="Check out"
-                    />
-                    <MaterialIcons
-                      name="date-range"
-                      size={18}
-                      color={COLORS.gray_main}
+                  <View>
+                    <Text style={styles.key}>Reviews</Text>
+                    <FlatList
+                      nestedScrollEnabled={true}
+                      data={reviews}
+                      horizontal={false}
+                      keyExtractor={(item, index) => index.toString()}
+                      removeClippedSubviews={true}
+                      initialNumToRender={10}
+                      renderItem={({ item, index }) => (
+                        <VerticalReviews item={item} key={item.id} />
+                      )}
                     />
                   </View>
                 </View>
-              </View>
-              <Text style={styles._title}>Note (optional)</Text>
-              <View style={{ marginHorizontal: 18 }}>
-                <TextInput
-                  style={styles._inputStyle}
-                  placeholderTextColor={COLORS.white}
-                  numberOfLines={4}
-                  multiline={true}
-                  placeholder="I hope that this place is good and comforatble during my vacation"
-                />
-              </View>
-            </BottomSheet>
-          </GestureHandlerRootView>
-        </TouchableWithoutFeedback>
+              </ScrollView>
+            </SafeAreaView>
+          </View>
+
+          <BottomSheet
+            ref={bottomSheetModalRef}
+            index={-1}
+            snapPoints={snapPoints}
+            onChange={handleSheetChange}
+            enablePanDownToClose
+            enableOverDrag
+            pressBehavior={"close"}
+            backgroundStyle={{
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+
+              elevation: 5,
+            }}
+          >
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+              <ScrollView nestedScrollEnabled={true}>
+                <Spacer height={10} />
+                <Text style={styles._title}>Select Date</Text>
+                <View style={styles.modalView}>
+                  <Calendar
+                    // Customize the appearance of the calendar
+
+                    // Specify the current date
+                    // current={new Date()}
+                    minDate={new Date()}
+                    // Callback that gets called when the user selects a day
+                    onDayPress={(day) => {
+                      handleDayPress(day);
+                    }}
+                    // Mark specific dates as marked
+                    markingType="period"
+                    // hideExtraDays={true}
+                    hideArrows={false}
+                    markedDates={dateObject}
+                    style={{
+                      height: 320,
+                      borderRadius: SIZES.radius,
+                      width: SIZES.width - 30,
+                    }}
+                    theme={{
+                      backgroundColor: COLORS.gray,
+                      calendarBackground: COLORS.gray,
+                      textSectionTitleColor: "#b6c1cd",
+                      selectedDayBackgroundColor: "red",
+                      selectedDayTextColor: "#ffffff",
+                      todayTextColor: COLORS.black,
+                      dayTextColor: "#2d4150",
+                      textDisabledColor: "#d9efff",
+                    }}
+                  />
+                  <View
+                    style={[
+                      styles.flex,
+                      {
+                        margin: 20,
+                        gap: 10,
+                        justifyContent: "space-between",
+                      },
+                    ]}
+                  >
+                    <View style={styles.passwordContainer}>
+                      <TextInput
+                        placeholderTextColor={COLORS.gray_main}
+                        autoCorrect={false}
+                        value={selectedDates[0]}
+                        editable={false}
+                        selectTextOnFocus={false}
+                        placeholder="Check in"
+                      />
+                      <MaterialIcons
+                        name="date-range"
+                        size={18}
+                        color={COLORS.gray_main}
+                      />
+                    </View>
+
+                    <View style={styles.passwordContainer}>
+                      <TextInput
+                        value={selectedDates[1]}
+                        placeholderTextColor={COLORS.gray_main}
+                        autoCorrect={false}
+                        editable={false}
+                        selectTextOnFocus={false}
+                        placeholder="Check out"
+                      />
+                      <MaterialIcons
+                        name="date-range"
+                        size={18}
+                        color={COLORS.gray_main}
+                      />
+                    </View>
+                  </View>
+                </View>
+                <Text style={styles._title}>Note (optional)</Text>
+                <View style={{ marginHorizontal: 18 }}>
+                  <TextInput
+                    style={styles._inputStyle}
+                    placeholderTextColor={COLORS.gray_main}
+                    numberOfLines={4}
+                    multiline={true}
+                    placeholder="I hope that this place is good and comforatble during my vacation"
+                  />
+                </View>
+              </ScrollView>
+            </TouchableWithoutFeedback>
+          </BottomSheet>
+        </GestureHandlerRootView>
       </KeyboardAvoidingView>
       <View style={styles.bottom}>
         <View
@@ -678,14 +664,11 @@ const RoomDetail = ({ route, navigation }) => {
               night
             </Text>
           </Text>
-          {!isModal ? (
-          <ButtonBook title={"Booking Now"} onPress={() => handlePress()} />
-           ) : (
-            <ButtonBook
-              title={"Check"}
-              onPress={() => handleSaveBooking()}
-            />
-          )} 
+          {isModal ? (
+            <ButtonBook title={"Booking Now"} onPress={() => handlePress()} />
+          ) : (
+            <ButtonBook title={"Check"} onPress={() => handleSaveBooking()} />
+          )}
         </View>
       </View>
     </>
@@ -841,9 +824,9 @@ const styles = StyleSheet.create({
   },
   _inputStyle: {
     height: 80,
-    backgroundColor: COLORS.gray,
+    backgroundColor: COLORS.grayDefault,
     borderRadius: SIZES.radius,
-    marginTop:4,
-    padding: 8
+    marginTop: 4,
+    padding: 8,
   },
 });

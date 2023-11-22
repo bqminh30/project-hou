@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -114,6 +114,24 @@ const ReviewSummary = ({ navigation }) => {
       setLoading(false);
     }
   };
+  const webViewRef = useRef(null);
+
+  const handleNavigationStateChange = newNavState => {
+    console.log('newNavState', newNavState)
+    const url = newNavState.url;
+    // Xử lý logic khi trang web thay đổi URL sau thanh toán hoặc hủy bỏ
+    if (url.includes('https://be-nodejs-project.vercel.app/process')) {
+      // Xử lý khi thanh toán hoàn tất
+      // Gửi thông điệp về cho ứng dụng React Native rằng thanh toán đã thành công
+      webViewRef.current.postMessage('paymentSuccess');
+      clearPaypalState()
+    } else if (url.includes('https://be-nodejs-project.vercel.app/cancel')) {
+      // Xử lý khi thanh toán bị hủy
+      // Gửi thông điệp về cho ứng dụng React Native rằng thanh toán đã bị hủy
+      webViewRef.current.postMessage('paymentCancelled');
+      clearPaypalState()
+    }
+  };
 
   const onUrlChange = (webviewState) => {
     console.log("webviewStatewebviewState", webviewState);
@@ -167,13 +185,15 @@ const ReviewSummary = ({ navigation }) => {
                 <ScrollView>
                   <View style={styles.header}>
                     <Back />
-                    <Text>Review Summary</Text>
+                    <Text style={styles.headerTitle}>Review Summary</Text>
                     <Avatar />
                   </View>
 
                   <Spacer height={10} />
                   <View>
                     {booking?.bookings?.map((data, index) => {
+                      let formattedNumber = data.total.toFixed(2);
+                      let totalNumber = (data.total + 5).toFixed(2);
                       return (
                         <View key={index}>
                           {/* Infor room  */}
@@ -195,7 +215,6 @@ const ReviewSummary = ({ navigation }) => {
                                 style={{
                                   marginLeft: 10,
                                   width: "70%",
-                                  backgroundColor: "red",
                                 }}
                               >
                                 <Text style={styles.name}>
@@ -209,45 +228,114 @@ const ReviewSummary = ({ navigation }) => {
                                     "default"}
                                 </Text>
                               </View>
-                              <Text style={styles.price}>
-                                $
-                                {data?.room?.priceSale
-                                  ? data?.room?.priceSale
-                                  : data?.room?.price}{" "}
-                                <Text style={styles._price}>
-                                  {data?.room?.priceSale
-                                    ? data?.room?.price
-                                    : ""}
-                                </Text>
-                                <Text
-                                  style={{
-                                    fontSize: 14,
-                                    fontFamily: "Poppins-MediumItalic",
-                                  }}
-                                >
-                                  /night
-                                </Text>
+                              <View
+                                style={[
+                                  styles.flexCol,
+                                  { justifyContent: "center" },
+                                ]}
+                              >
+                                <Text style={styles.price}>${data?.price}</Text>
+                                <Text style={styles._price}>/night</Text>
+                              </View>
+                            </View>
+                          </View>
+                          <Spacer height={8} />
+                          {/* Date Order  */}
+                          <View
+                            style={[styles.card, { flexDirection: "column" }]}
+                          >
+                            <View style={styles.flexRow}>
+                              <Text style={styles.title}>Check in</Text>
+                              <Text style={styles._title}>
+                                {data.checkinDate}
                               </Text>
                             </View>
+                            <Spacer height={8} />
+                            <View style={styles.flexRow}>
+                              <Text style={styles.title}>Check out</Text>
+                              <Text style={styles._title}>
+                                {data.checkoutDate}
+                              </Text>
+                            </View>
+                          </View>
+                          <Spacer height={8} />
+                          {/* Date Order  */}
+                          <View
+                            style={[styles.card, { flexDirection: "column" }]}
+                          >
+                            <View style={styles.flexRow}>
+                              <Text style={styles.title}>
+                                Amount ({data?.dateCount} days)
+                              </Text>
+                              <Text style={styles._title}>
+                                ${formattedNumber}
+                              </Text>
+                            </View>
+                            <Spacer height={8} />
+                            <View style={styles.flexRow}>
+                              <Text style={styles.title}>Tax</Text>
+                              <Text style={styles._title}>$5</Text>
+                            </View>
+                            <Spacer height={8} />
+                            <View
+                              style={{
+                                borderBottomColor: COLORS.grayDefault,
+                                borderBottomWidth: 1,
+                              }}
+                            />
+                            <Spacer height={8} />
+                            <View style={styles.flexRow}>
+                              <Text style={styles.title}>Total</Text>
+                              <Text style={styles._title}>${totalNumber}</Text>
+                            </View>
+                          </View>
+
+                          {/* Payment Method  */}
+                          <Spacer height={8} />
+                          <View style={styles.card}>
+                            {/* <View style={styles.flexRow}> */}
+                            <TouchableOpacity
+                              style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                alignItems: "center",
+                              }}
+                              // onPress={() =>
+                              //   handleChangeMethodPayment('paypal',!showGateway)
+                              // }
+                            >
+                              <Image
+                                style={{ height: 30, width: 30 }}
+                                source={require("../../../assets/paypal.png")}
+                              />
+                              <Text style={{ fontWeight: 600, fontSize: 18 }}>
+                                Paypal
+                              </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.outter}
+                              onPress={() =>
+                                navigation.navigate("Information Detail")
+                              }
+                            >
+                              {/* {showGateway === true && showTitle == 'paypal' && ( */}
+                             
+                                <Text style={styles._title}>Change</Text>
+                              {/* )}  */}
+                            </TouchableOpacity>
+                            {/* </View> */}
                           </View>
                         </View>
                       );
                     })}
                   </View>
-                  {/* <Cards
-          cvc={state.cvc}
-          expiry={state.expiry}
-          focused={state.focus}
-          name={state.name}
-          number={state.number}
-        /> */}
                 </ScrollView>
               </SafeAreaView>
             </View>
           </GestureHandlerRootView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-      {/* <View style={styles.bottom}>
+      <View style={styles.bottom}>
         <View
           style={[
             styles.flex,
@@ -266,17 +354,21 @@ const ReviewSummary = ({ navigation }) => {
             loading={false}
           />
         </View>
-      </View> */}
+      </View>
 
       <Modal visible={!!paypalUrl}>
-        <TouchableOpacity onPress={()=>clearPaypalState()} style={{ margin: 24,width:'8%', marginTop:50 }}>
-          <Text style={{fontSize:25, fontWeight:600}}>x</Text>
+        <TouchableOpacity
+          onPress={() => clearPaypalState()}
+          style={{ margin: 24, width: "8%", marginTop: 50 }}
+        >
+          <Text style={{ fontSize: 25, fontWeight: 600 }}>x</Text>
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <WebView
-            source={{ uri: paypalUrl }}
-            onNavigationStateChange={onUrlChange}
-          />
+        <WebView
+      ref={webViewRef}
+      source={{ uri: 'https://be-nodejs-project.vercel.app/create' }}
+      onNavigationStateChange={handleNavigationStateChange}
+    />
         </View>
       </Modal>
     </>
@@ -293,9 +385,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: SIZES.padding,
   },
+  headerTitle: {
+    fontSize: 18,
+    color: COLORS.main,
+    fontFamily: "Poppins-Medium",
+  },
+  flexRow: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  flexCol: {
+    display: "flex",
+    flexDirection: "column",
+    // justifyContent: "space-between",
+    alignItems: "center",
+    alignContent: "center",
+  },
   title: {
     fontSize: 16,
-    color: COLORS.main,
+    color: COLORS.gray_main,
     fontFamily: "Poppins-Medium",
   },
   inputContainer: {
@@ -315,6 +425,9 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: COLORS.white,
   },
+  outter: {
+    justifyContent:'center'
+  },
   card: {
     marginVertical: 4,
     marginHorizontal: 20,
@@ -332,40 +445,20 @@ const styles = StyleSheet.create({
     elevation: 2,
     flexDirection: "row",
   },
-  inner: {
-    width: 12,
-    height: 12,
-    backgroundColor: COLORS.black,
-    borderRadius: 10,
-  },
-  outter: {
-    width: 20,
-    height: 20,
-    borderWidth: 1,
-    borderColor: COLORS.gray,
-    borderRadius: 15,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  dotline: {
-    borderStyle: "dotted",
-    borderWidth: 1,
-    borderRadius: 1,
-    color: COLORS.gray,
-  },
+
   name: { fontFamily: "Poppins-Medium", fontSize: 18 },
   price: {
     fontFamily: "Poppins-MediumItalic",
-    fontSize: 24,
+    fontSize: 22,
   },
   _title: {
     fontSize: 16,
     fontWeight: 600,
-    paddingHorizontal: 22,
+    fontFamily: "Poppins-Medium",
   },
   _price: {
-    fontSize: 16,
+    fontSize: 14,
+    fontWeight: 600,
     fontFamily: "Poppins-Thin",
-    textDecorationLine: "line-through",
   },
 });

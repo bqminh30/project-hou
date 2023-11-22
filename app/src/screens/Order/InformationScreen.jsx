@@ -33,23 +33,26 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useBooking } from "../../redux/context/BookingContext";
 import Button from "../../components/Button";
 
-const InformationScreen = ({navigation}) => {
+const InformationScreen = ({ navigation }) => {
   const [value, setValue] = useState({
-    fullname: "",
-    email: "",
-    birthday: "",
-    code: "",
-    phone: "",
+    fullname: "Bùi Quang Minh",
+    email: "bqminh30@gmail.com",
+    birthday: "30/10/2001",
+    code: "0000",
+    phone: "0362592858",
+    gender: "1",
   });
 
-  const { booking, setStep, step } = useBooking();
+  const { booking, setStep, step, saveBooking } = useBooking();
 
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedId, setSelectedId] = useState();
+  const [selectedId, setSelectedId] = useState("1");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [showGateway, setShowGateway] = useState(false);
-  const [showTitle, setShowTitle] = useState(false);
+  const [showTitle, setShowTitle] = useState("");
   const [status, setStatus] = useState("Pending");
+
+  console.log("selectedId", selectedId, step);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -88,15 +91,26 @@ const InformationScreen = ({navigation}) => {
   };
 
   const handleChangeMethodPayment = (title, status) => {
-    if(title == 'paypal') {
-      setShowGateway(status)
-      setShowTitle(title)
+    if (title == "paypal") {
+      setShowGateway(status);
+      setShowTitle(title);
     }
-  }
+  };
 
-  const handleReviewSumary = () => {
-    navigation.navigate("Review Summary")
-  }
+  console.log('showTitle', showTitle)
+
+  const handleChangeScreen = (step) => {
+    console.log("value", value);
+    if (step === 0) {
+      saveBooking({ ...booking, profile: value });
+      setStep(1);
+    }
+    if(step === 1){
+      saveBooking({...booking, method: showTitle})
+      navigation.navigate("Review Summary")
+    }
+    // navigation.navigate("Review Summary")
+  };
 
   const radioButtons = useMemo(
     () => [
@@ -109,6 +123,11 @@ const InformationScreen = ({navigation}) => {
         id: "2",
         label: "Female",
         value: "female",
+      },
+      {
+        id: "0",
+        label: "Others",
+        value: "others",
       },
     ],
     []
@@ -142,12 +161,13 @@ const InformationScreen = ({navigation}) => {
               >
                 <ScrollView>
                   <View style={styles.header}>
-                    <Back />
-                    <Text>Book Hotel</Text>
-                    <Avatar />
+                    <Back step={step}/>
+                    <Text style={styles.headerTitle}>Book Hotel</Text>
+                    <View></View>
+                    {/* <Avatar /> */}
                   </View>
                   {/* Your information details */}
-                  {step == 1 && (
+                  {step == 0 && (
                     <View style={{ margin: 20 }}>
                       <Text style={styles.title}>Your Information Details</Text>
                       <View>
@@ -252,7 +272,7 @@ const InformationScreen = ({navigation}) => {
                   )}
 
                   {/* Seelct the payment method */}
-                  {step == 0 && (
+                  {step == 1 && (
                     <View style={{ margin: 20 }}>
                       <Text style={styles.title}>
                         Select the payment method
@@ -290,7 +310,7 @@ const InformationScreen = ({navigation}) => {
                               alignItems: "center",
                             }}
                             onPress={() =>
-                              handleChangeMethodPayment('paypal',!showGateway)
+                              handleChangeMethodPayment("paypal", !showGateway)
                             }
                           >
                             <Image
@@ -304,12 +324,12 @@ const InformationScreen = ({navigation}) => {
                           <TouchableOpacity
                             style={styles.outter}
                             onPress={() =>
-                              handleChangeMethodPayment('paypal',!showGateway)
+                              handleChangeMethodPayment("paypal", !showGateway)
                             }
                           >
-                            {showGateway === true && showTitle == 'paypal' && (
-                            <View style={styles.inner}></View>
-                            )} 
+                            {showGateway === true && showTitle == "paypal" && (
+                              <View style={styles.inner}></View>
+                            )}
                           </TouchableOpacity>
                         </View>
                         <View
@@ -344,7 +364,7 @@ const InformationScreen = ({navigation}) => {
         >
           <Button
             label="Continue"
-            onPress={() => handleReviewSumary()}
+            onPress={() => handleChangeScreen(step)}
             color={COLORS.white}
             background={COLORS.black}
             loading={false}
@@ -372,6 +392,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginHorizontal: SIZES.padding,
+  },
+  headerTitle: {
+    fontSize: 18,
+    color: COLORS.main,
+    fontFamily: "Poppins-Medium",
   },
   title: {
     fontSize: 16,
