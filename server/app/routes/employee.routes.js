@@ -17,7 +17,7 @@ module.exports = app => {
 
     router.get('/list', employees.listEmployee)
 
-    router.post('/change-password', employees.changePassword)
+    router.post('/change-password',isAuthenticated, employees.changePassword)
   
 
     app.use('/api/employee', router);

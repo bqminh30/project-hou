@@ -6,7 +6,6 @@ const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 var imageMiddleware = require("../middleware/image-middleware");
 var multer = require("multer");
 var cloudinary = require("cloudinary").v2;
-const sql = require("../config/db.js");
 
 exports.register = (req, res, next) => {
   if (!req.body) {
@@ -22,15 +21,17 @@ exports.register = (req, res, next) => {
 
   upload(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
-      res.send(err);
+      res.status(400).send(err);
     } else if (err) {
-      res.send(err);
+      res.status(400).send(err);
     } else {
       try {
         let avatar = req.body.image;
         let statusJson = req.body.status;
+        let genderJson = req.body.gender;
         const imagePath = JSON.parse(avatar);
         const statusPath = JSON.parse(statusJson);
+        const genderPath = JSON.parse(genderJson);
 
         let dataImage = "";
         await cloudinary.uploader
@@ -49,6 +50,7 @@ exports.register = (req, res, next) => {
         const address = req.body.address || "";
         const birthday = req.body.birthday || "";
         const status = statusPath === "active" ? 1 : 0 || 0;
+        const gender = genderPath;
         const role_id = req.body.role_id || null;
         let password = req.body.password;
 
@@ -62,6 +64,7 @@ exports.register = (req, res, next) => {
           code,
           dataImage,
           address,
+          gender,
           birthday,
           password,
           status,
@@ -177,6 +180,9 @@ exports.isAuth = async (req, res, next) => {
   }
 };
 
+exports.createFormRoom = (req, res) => {
+  res.render("upload-form");
+};
 exports.update = async (req, res, next) => {
   try {
     var upload = multer({
@@ -186,9 +192,9 @@ exports.update = async (req, res, next) => {
 
     upload(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
-        res.send(err);
+        res.status(404).send(err);
       } else if (err) {
-        res.send(err);
+        res.status(404).send(err);
       } else {
         console.log('req.body', req.body)
         let dataImage = "";
@@ -199,13 +205,13 @@ exports.update = async (req, res, next) => {
         const status = req.body.status;
         const address = req.body.address;
         const birthday = req.body.birthday;
-        const gender = req.body.gender;
+        const gender = req.body.gender || 0;
         const code = req.body.code;
         const role_id = req.body.role_id;
         const createAt = new Date();
 
-        let imageName = req.body.image;
-        const containsCloudinary = imageName.indexOf("res.cloudinary.com") !== -1;
+        let imageName = req.body.avatar;
+        const containsCloudinary = imageName?.indexOf("res.cloudinary.com") !== -1;
         if(containsCloudinary){
           dataImage = imageName
         }else {
@@ -237,35 +243,23 @@ exports.update = async (req, res, next) => {
         const userId = req.params.id;
 
         if (!email || !role_id || !code) {
-          return res.send({
-            status: 400,
+          return res.status(404).send({
+            status: 404,
             message: "Thiếu dữ liệu yêu cầu",
           });
         } else {
           // Kiểm tra xem email hoặc code đã tồn tại chưa
           try {
-            const isEmailCodeExist = await Employee.checkEmailCodeExist(
-              email,
-              code,
-              userId
-            );
-
-            if (isEmailCodeExist) {
-              return res.send({
-                status: 400,
-                message: "Email hoặc code đã tồn tại trong hệ thống",
-              });
-            }
-
+           
             Employee.updateProfile(data, userId);
 
-            res.send({
+            res.status(200).send({
               status: 200,
               message: "Cập nhật thông tin thành công",
             });
           } catch (error) {
-            return res.send({
-              status: 500,
+            return res.status(400).send({
+              status: 404,
               message: `Lỗi khi kiểm tra email hoặc code: ${error}`,
             });
           }
@@ -273,8 +267,8 @@ exports.update = async (req, res, next) => {
       }
     });
   } catch (e) {
-    return res.send({
-      status: 500,
+    return res.status(404).send({
+      status: 404,
       message: `Không có nhân viên ${e}`,
     });
   }
@@ -351,7 +345,7 @@ exports.updateQuick = async (req, res, next) => {
       }
     }
   } catch (e) {
-    return res.send({
+    return res.status(400).send({
       status: 500,
       message: `Không có nhân viên ${e}`,
     });
@@ -380,7 +374,7 @@ exports.logout = async (req, res, next) => {
     res.clearCookie("token");
     res.json({ message: "Đăng xuất thành công" });
   } catch (err) {
-    res.send({
+    res.status(400).send({
       status: 500,
       message: `Lỗi không thể đăng xuất ${err}`,
     });
@@ -393,33 +387,38 @@ exports.changePassword = async (req, res, next) => {
       message: "Content can not be empty!",
     });
   }
-  const { email, currentPassword, newPassword } = req.body;
-  const data = await Employee.checkEmailExist(email);
-  // Check if the provided email exists in the database
-    if (data !== 1) {
-      // User not found
-      return res.status(404).json({ error: 'User not found' });
+
+  const userData = req.user.data
+
+  const { currentPassword, newPassword } = req.body;
+
+  const data = await Employee.checkEmailExist(userData.id);
+
+  try {
+   
+    const isPasswordValid = await compareSync(currentPassword, data[0]?.passwordHash);
+
+    if (!isPasswordValid) {
+      return res.status(403).json({ error: 'Invalid current password' });
     }
 
-    else {
-      // Hash the new password
-      const salt = genSaltSync(10);
-      const hashedPassword = hashSync(newPassword, salt);
+    const hashedNewPassword = await hashSync(newPassword, 10);
+    const passData = {
+      id: userData.id, hashedNewPassword
+    }
 
-      const data = {
-        email, hashedPassword
+    await Employee.updatePassword( passData, (err,data) => {
+      if (err) {
+        console.error('Error updating password:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
       }
 
-      // Update the password in the database
-      Employee.updatePassword(data, (err, data) => {
-        if (err) {
-          console.error('Error updating password:', err);
-          return res.status(500).json({ error: 'Internal Server Error' });
-        }
+      // Password updated successfully
+      res.status(200).json({ message: 'Password updated successfully' });
+    });
 
-        // Password updated successfully
-        res.status(200).json({ message: 'Password updated successfully' });
-      });
-    } 
-  
+  } catch (error) {
+    console.error('Error updating password:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 };

@@ -37,11 +37,11 @@ Employee.regiser = (newEmployee, result) => {
         } else {
           sql.query(
             `
-            INSERT INTO employee (fullname,phonenumber,code, email, passwordHash,address, birthday, avatar,status, role_id, createdAt, updatedAt) 
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+            INSERT INTO employee (fullname,phonenumber,code, email, passwordHash,address,gender, birthday, avatar,status, role_id, createdAt, updatedAt) 
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
             `,
             [newEmployee.fullname, newEmployee.phonenumber, newEmployee.code,
-              newEmployee.email, newEmployee.password, newEmployee.address,
+              newEmployee.email, newEmployee.password, newEmployee.address, newEmployee.gender,
               newEmployee.birthday, newEmployee.dataImage, newEmployee.status,
               newEmployee.role_id, new Date(), new Date()],
             (err, res) => {
@@ -95,20 +95,18 @@ Employee.checkEmailCodeExist = (email, code, userId) => {
   });
 };
 
-Employee.checkEmailExist = (email) => {
-  console.log('email', email)
+Employee.checkEmailExist = (id) => {
   return new Promise((resolve, reject) => {
     const query = `
-        SELECT COUNT(*) AS count
+        SELECT *
         FROM employee
-        WHERE email = ? 
+        WHERE id = ? 
       `;
-    sql.query(query, email, (error, res) => {
+    sql.query(query, id, (error, res) => {
       if (error) {
         return reject(error);
       }
-      console.log('runnnnnn')
-      return resolve(res[0].count);
+      return resolve(res);
     });
   });
 };
@@ -121,6 +119,7 @@ Employee.updateProfile = (data, userId) => {
         data.fullname,
         data.phonenumber,
         data.status,
+        data.gender,
         data.email,
         data.code,
         data.address,
@@ -131,7 +130,6 @@ Employee.updateProfile = (data, userId) => {
         userId,
       ],
       (error, res) => {
-        console.log("error", data, userId);
         if (error) {
           return reject(error);
         }
@@ -178,14 +176,14 @@ Employee.getAll = (result) => {
 
 Employee.updatePassword = (data, result) => {
     sql.query(
-      "UPDATE employee SET passwordHash = ? WHERE email = ?",
+      "UPDATE employee SET passwordHash = ? WHERE id = ?",
       [
-        data.hashedPassword,
-        data.email,
+        data.hashedNewPassword,
+        data.id,
       ],
       (err, res) => {
         if (err) {
-          result(error);
+          result(err);
           return;
         }
         result(null, res);
