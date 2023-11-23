@@ -47,118 +47,84 @@ const ReviewSummary = ({ navigation }) => {
   });
   const { booking, setStep, step } = useBooking();
 
-  console.log("booking", booking);
-
-  const [cardInfo, setCardInfo] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [paypalUrl, setPaypalUrl] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
 
-  const fetchCardDetail = (cardDetail) => {
-    // console.log("my card details",cardDetail)
-    if (cardDetail.complete) {
-      setCardInfo(cardDetail);
-    } else {
-      setCardInfo(null);
-    }
-  };
-
-  const onDone = async () => {
-    let apiData = {
-      amount: 500,
-      currency: "INR",
-    };
-
-    try {
-      const res = await creatPaymentIntent(apiData);
-      console.log("payment intent create succesfully...!!!", res);
-
-      if (res?.data?.paymentIntent) {
-        let confirmPaymentIntent = await confirmPayment(
-          res?.data?.paymentIntent,
-          { paymentMethodType: "Card" }
-        );
-        console.log("confirmPaymentIntent res++++", confirmPaymentIntent);
-        alert("Payment succesfully...!!!");
-      }
-    } catch (error) {
-      console.log("Error rasied during payment intent", error);
-    }
-
-    // console.log("cardInfocardInfocardInfo", cardInfo)
-    // if (!!cardInfo) {
-    //     try {
-    //         const resToken = await createToken({ ...cardInfo, type: 'Card' })
-    //         console.log("resToken", resToken)
-
-    //     } catch (error) {
-    //         alert("Error raised during create token")
-    //     }
-    // }
-  };
-
   const onPressPaypal = async () => {
+    // await axios.get('https://be-nodejs-project.vercel.app/create', booking.bookings)
     setLoading(true);
     try {
       const token = await paypalApi.generateToken();
       const res = await paypalApi.createOrder(token);
       setAccessToken(token);
-      console.log("res++++++", res);
       setLoading(false);
       if (!!res?.links) {
         const findUrl = res.links.find((data) => data?.rel == "approve");
         setPaypalUrl(findUrl.href);
       }
     } catch (error) {
-      console.log("error", error);
       setLoading(false);
     }
   };
   const webViewRef = useRef(null);
 
-  const handleNavigationStateChange = newNavState => {
-    console.log('newNavState', newNavState)
-    const url = newNavState.url;
-    // Xử lý logic khi trang web thay đổi URL sau thanh toán hoặc hủy bỏ
-    if (url.includes('https://be-nodejs-project.vercel.app/process')) {
-      // Xử lý khi thanh toán hoàn tất
-      // Gửi thông điệp về cho ứng dụng React Native rằng thanh toán đã thành công
-      webViewRef.current.postMessage('paymentSuccess');
-      clearPaypalState()
-    } else if (url.includes('https://be-nodejs-project.vercel.app/cancel')) {
-      // Xử lý khi thanh toán bị hủy
-      // Gửi thông điệp về cho ứng dụng React Native rằng thanh toán đã bị hủy
-      webViewRef.current.postMessage('paymentCancelled');
-      clearPaypalState()
-    }
-  };
+  // const handleNavigationStateChange = (newNavState) => {
+  //   console.log("newNavState", newNavState);
+  //   const url = newNavState.url;
+  //   // Xử lý logic khi trang web thay đổi URL sau thanh toán hoặc hủy bỏ
+  //   if (url.includes("https://be-nodejs-project.vercel.app/process")) {
+  //     // Xử lý khi thanh toán hoàn tất
+  //     // Gửi thông điệp về cho ứng dụng React Native rằng thanh toán đã thành công
+  //     webViewRef.current.postMessage("paymentSuccess");
+  //     clearPaypalState();
+  //   } else if (url.includes("https://be-nodejs-project.vercel.app/cancel")) {
+  //     // Xử lý khi thanh toán bị hủy
+  //     // Gửi thông điệp về cho ứng dụng React Native rằng thanh toán đã bị hủy
+  //     webViewRef.current.postMessage("paymentCancelled");
+  //     clearPaypalState();
+  //   }
+  // };
 
   const onUrlChange = (webviewState) => {
     console.log("webviewStatewebviewState", webviewState);
     if (
-      webviewState.url.includes("https://be-nodejs-project.vercel.app/cancel")
+      webviewState.url.includes("https://example.com/cancel")
     ) {
       clearPaypalState();
       return;
     }
     if (
-      webviewState.url.includes("https://be-nodejs-project.vercel.app/process")
+      webviewState.url.includes("https://example.com/return")
     ) {
+      
       const urlValues = queryString.parseUrl(webviewState.url);
-      console.log("my urls value", urlValues);
+      console.log("my urls value 1 ", urlValues);
       const { token } = urlValues.query;
       if (!!token) {
         paymentSucess(token);
       }
     }
+
+    if(webviewState.title.includes("PayPal Checkout")){
+      console.log('webviewState', webviewState)
+      const urlValues = queryString.parseUrl(webviewState.url);
+      console.log("my urls value 2", urlValues);
+      const { token } = urlValues.query;
+      if (!!token) {
+        paymentSucess(token);
+      }
+    }
+    
   };
 
   const paymentSucess = async (id) => {
+    console.log('id', id, accessToken)
     try {
       const res = paypalApi.capturePayment(id, accessToken);
       console.log("capturePayment res++++", res);
-      alert("Payment sucessfull...!!!");
-      clearPaypalState();
+      // alert("Payment sucessfull...!!!");
+      // clearPaypalState();
     } catch (error) {
       console.log("error raised in payment capture", error);
     }
@@ -319,8 +285,8 @@ const ReviewSummary = ({ navigation }) => {
                               }
                             >
                               {/* {showGateway === true && showTitle == 'paypal' && ( */}
-                             
-                                <Text style={styles._title}>Change</Text>
+
+                              <Text style={styles._title}>Change</Text>
                               {/* )}  */}
                             </TouchableOpacity>
                             {/* </View> */}
@@ -351,7 +317,7 @@ const ReviewSummary = ({ navigation }) => {
             onPress={() => onPressPaypal()}
             color={COLORS.white}
             background={COLORS.black}
-            loading={false}
+            loading={isLoading}
           />
         </View>
       </View>
@@ -364,11 +330,11 @@ const ReviewSummary = ({ navigation }) => {
           <Text style={{ fontSize: 25, fontWeight: 600 }}>x</Text>
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-        <WebView
-      ref={webViewRef}
-      source={{ uri: 'https://be-nodejs-project.vercel.app/create' }}
-      onNavigationStateChange={handleNavigationStateChange}
-    />
+          <WebView
+            ref={webViewRef}
+            source={{ uri: paypalUrl  }}
+            onNavigationStateChange={onUrlChange}
+          />
         </View>
       </Modal>
     </>
@@ -426,7 +392,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
   },
   outter: {
-    justifyContent:'center'
+    justifyContent: "center",
   },
   card: {
     marginVertical: 4,

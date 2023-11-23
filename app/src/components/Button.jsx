@@ -6,6 +6,7 @@ import { COLORS, SIZES } from "../config/theme";
 export default function Button({ label, onPress, color, background, loading }) {
   return (
     <TouchableOpacity
+      disabled={loading}
       onPress={onPress}
       style={{
         backgroundColor: background,
@@ -14,14 +15,14 @@ export default function Button({ label, onPress, color, background, loading }) {
         paddingVertical: SIZES.spacing * 1.2,
         flexDirection: "row",
         justifyContent: "center",
-        marginHorizontal: SIZES.spacing
+        marginHorizontal: SIZES.spacing,
       }}
     >
       {loading == true && (
         <ActivityIndicator
           size="small"
           color={color}
-          style={{ paddingRight: 2 }}
+          style={{ paddingRight: 2, fontSize: 15 }}
         />
       )}
 
@@ -30,7 +31,7 @@ export default function Button({ label, onPress, color, background, loading }) {
           color: color,
           textAlign: "center",
           fontWeight: 700,
-          fontSize: SIZES.fs15,
+          fontSize: 16,
         }}
       >
         {label}

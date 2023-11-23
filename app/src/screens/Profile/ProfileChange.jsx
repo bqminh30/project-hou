@@ -15,11 +15,11 @@ import {
   ScrollView,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
+import * as ImagePicker from 'expo-image-picker';
 import RadioGroup from "react-native-radio-buttons-group";
 import PhoneInput from "react-native-international-phone-number";
-import moment from "moment";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useSelector } from "react-redux";
 
 import { MaterialIcons } from "@expo/vector-icons";
 import { COLORS, SIZES } from "../../config/theme";
@@ -27,13 +27,37 @@ import { COLORS, SIZES } from "../../config/theme";
 import Spacer from "../../components/Spacer";
 import Back from "../../components/Back";
 
+const radioButtons = [
+  {
+    id: "Men", 
+    label: "Men",
+    value: "Men",
+  },
+  {
+    id: "Women",
+    label: "Women",
+    value: "Women",
+  },
+  {
+    id: "Others",
+    label: "Others",
+    value: "Others",
+  },
+]; 
+
+// ====================================================
+
+
 const ProfileChange = () => {
+  const { user } = useSelector((state) => state.authReducer);
   const [show, setShow] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedId, setSelectedId] = useState();
   const [selected, setSelected] = useState();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [showImages, setImages] = React.useState(false);
+  const [image, setImage] = useState(user?.avatar);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -48,18 +72,20 @@ const ProfileChange = () => {
     hideDatePicker();
   };
 
-  const radioButtons = [
-    {
-      id: "1", // acts as primary key, should be unique and non-empty string
-      label: "Male",
-      value: "male",
-    },
-    {
-      id: "2",
-      label: "Female",
-      value: "female",
-    },
-  ];
+  
+  const pickImage = async type => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect: [4, 3],
+      quality: 1,
+      selectionLimit: 1,
+    });
+
+    if (!result.canceled) {
+      setImages(true);
+      setImage(result.assets[0]);
+    }
+  };
 
   return (
     <>
@@ -81,6 +107,68 @@ const ProfileChange = () => {
                   <Text style={styles.title}>Your Information Details</Text>
                   <View>
                     <Spacer height={10} />
+                    <View
+                      style={{
+                        alignSelf: 'center',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        color: 'white',
+                      }}>
+                      <TouchableOpacity
+                        onPress={pickImage}
+                        style={{
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: COLORS.grayDefault,
+                          zIndex: 10,
+                          height: 24,
+                          width: 24,
+                          position: 'absolute',
+                          borderRadius: 80,
+                          top: 70,
+                          right: 60,
+                        }}>
+                        <MaterialIcons
+                          style={{opacity: 0.5}}
+                          name="camera-alt"
+                          size={16}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={pickImage}>
+                        {showImages === true ? (
+                          <Image
+                            style={{
+                              zIndex: 1,
+                              height: 80,
+                              width: 80,
+                              borderRadius: 80,
+                              backgroundColor: COLORS.grayDefault,
+                              
+                            }}
+                            resizeMode='cover'
+                            source={{uri: `${image?.uri}`}}
+                          />
+                        ) : (
+                          <Image
+                            style={{
+                              zIndex: 1,
+                              height: 80,
+                              width: 80,
+                              borderRadius: 80,
+                              backgroundColor: COLORS.grayDefault,
+                              
+                            }}
+                            resizeMode='cover'
+                            source={{
+                              uri: user?.avatar,
+                            }}
+                          />
+                        )}
+                      </TouchableOpacity>
+                 
+                    </View>
+                    <Spacer height={30} />
                     <View style={styles.inputContainer}>
                       <TextInput
                         placeholderTextColor={COLORS.gray_main}
