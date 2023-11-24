@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useSelector } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SIZES } from "../config/theme";
 //component
@@ -27,7 +27,9 @@ import VerticalHome from "../components/VerticalHome";
 import VerticalType from "../components/VerticalType";
 import VerticalRecommend from "../components/VerticalRecommend";
 
+import { getRooms, getTypeRooms } from "../redux/actions/roomAction";
 
+// =======================================
 const Home = () => {
   const [searchText, setSearchText] = React.useState("");
   const [roomLimit, setRoomLimit] = React.useState([]);
@@ -36,11 +38,23 @@ const Home = () => {
   const { typerooms, rooms } = useSelector((state) => state.roomReducer);
   const title = 'HOME'
 
+  const dispath = useDispatch();
+
+  const init = async () => {
+    await dispath(getRooms())
+    await dispath(getTypeRooms())
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
   const callApiLimit = async () => {
     const res = await axios.get(
       "https://be-nodejs-project.vercel.app/api/rooms/limit/5"
     );
     setRoomLimit(res.data);
+    
   };
   
   useEffect(() => {

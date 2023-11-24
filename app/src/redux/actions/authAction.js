@@ -6,6 +6,7 @@ import { BASE_URL } from "../../config/config_url";
 export const initialize = () => {
   return async (dispatch) => {
     let token = await AsyncStorage.getItem("tokenUser");
+    console.log('token', token)
     if (token !== null) {
       const response = await axios.get(
         "https://be-nodejs-project.vercel.app/api/customer/check-auth",
@@ -17,6 +18,7 @@ export const initialize = () => {
         }
       );
       const { user } = response.data;
+      console.log('response', response.data)
       dispatch({
         type: type.SET_INITIAL_STATE,
         payload: {

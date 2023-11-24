@@ -13,19 +13,24 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   ScrollView,
+  Alert
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as ImagePicker from 'expo-image-picker';
 import RadioGroup from "react-native-radio-buttons-group";
-import PhoneInput from "react-native-international-phone-number";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { useSelector } from "react-redux";
-
-import { MaterialIcons } from "@expo/vector-icons";
+import moment from "moment";
+import axios from "axios";
+import { MaterialIcons, Foundation } from "@expo/vector-icons";
 import { COLORS, SIZES } from "../../config/theme";
 
 import Spacer from "../../components/Spacer";
 import Back from "../../components/Back";
+import Button from "../../components/Button";
+
+import { initialize } from "../../redux/actions/authAction";
+
 
 const radioButtons = [
   {
@@ -50,11 +55,20 @@ const radioButtons = [
 
 const ProfileChange = () => {
   const { user } = useSelector((state) => state.authReducer);
-  const [show, setShow] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedId, setSelectedId] = useState();
-  const [selected, setSelected] = useState();
+  const dispath = useDispatch();
+  
+  const [value, setValue] = useState({
+    fullname:  user?.fullname,
+    email: user?.email,
+    gender: user?.gender,
+    phonenumber: user?.phonenumber,
+    address: user?.address,
+    code: user?.code
+  })
+
+  console.log('user', user)
+  const [loading, setLoading] = useState(false)
+  const [selectedId, setSelectedId] = useState(user?.gender);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [showImages, setImages] = React.useState(false);
   const [image, setImage] = useState(user?.avatar);
@@ -68,7 +82,8 @@ const ProfileChange = () => {
   };
 
   const handleConfirm = (date) => {
-    console.warn("A date has been picked: ", date);
+    const dateFormated = moment(date).format('YYYY-MM-DD')
+    setValue({...value, birthday: dateFormated })
     hideDatePicker();
   };
 
@@ -85,6 +100,69 @@ const ProfileChange = () => {
       setImages(true);
       setImage(result.assets[0]);
     }
+  };
+
+  const handleInputChange = (fieldName, text) => {
+    setValue({
+      ...value,
+      [fieldName]: text,
+    });
+  };
+
+  const submitPost = async () => {
+      try{
+        let formData = new FormData();
+        let file;
+        showImages === true &&
+          (file = {
+            uri:
+              Platform.OS === 'android'
+                ? image?.uri
+                : image?.uri?.replace('file://', ''),
+            name:
+              image?.fileName ||
+              Math.floor(Math.random() * Math.floor(999999999)) + '.jpg',
+            type: image?.type || 'image/jpeg',
+          });
+        formData.append('avatar', file);
+        formData.append('fullname', value?.fullname);
+        formData.append('phonenumber', value?.phonenumber);
+        formData.append('address', value?.address);
+        formData.append('email', value?.email);
+        formData.append('birthday', value?.birthday);
+        formData.append('gender', selectedId);
+        formData.append('code', value?.code);
+  
+        setLoading(true);
+        await axios
+          .put(`https://be-nodejs-project.vercel.app/api/customer/update/${user.id}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+          .then(response => {
+            Alert.alert('Marriott', 'Update success', [
+              {
+                text: 'Done',
+                style: 'cancel',
+              },
+            ]);
+            setLoading(false);
+            dispath(initialize());
+          })
+          .catch(err => {
+            Alert.alert('Marriott', 'Update Faild', [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+            ]);
+            setLoading(false);
+          });
+      }catch(err){
+        console.log('err', err)
+      }
+    
   };
 
   return (
@@ -161,7 +239,7 @@ const ProfileChange = () => {
                             }}
                             resizeMode='cover'
                             source={{
-                              uri: user?.avatar,
+                              uri: user?.avatar ? `https://be-nodejs-project.vercel.app/upload/${user?.avatar}` : "https://img.freepik.com/premium-vector/man-avatar-profile-round-icon_24640-14044.jpg?w=2000",
                             }}
                           />
                         )}
@@ -173,15 +251,22 @@ const ProfileChange = () => {
                       <TextInput
                         placeholderTextColor={COLORS.gray_main}
                         placeholder="Full Name"
+                        value={value?.fullname}
+                        onChangeText={(text) =>handleInputChange('fullname', text)}
                         style={styles.textInput}
                       />
+                      <Foundation name="text-color" size={20}
+                        color={COLORS.gray_main} />
                     </View>
 
                     <Spacer height={15} />
                     <View style={styles.inputContainer}>
                       <TextInput
                         placeholderTextColor={COLORS.gray_main}
+                        editable={false}
                         autoComplete="email"
+                        value={value?.email}
+                        onChangeText={(text) =>handleInputChange('email', text)}
                         placeholder="Email Address"
                         style={styles.textInput}
                       />
@@ -192,8 +277,36 @@ const ProfileChange = () => {
                       />
                     </View>
                     <Spacer height={15} />
-
-                    <PhoneInput
+                    <View style={styles.inputContainer}>
+                      <TextInput
+                        placeholderTextColor={COLORS.gray_main}
+                        value={value?.address}
+                        onChangeText={(text) =>handleInputChange('address', text)}
+                        placeholder="Address"
+                        style={styles.textInput}
+                      />
+                      <MaterialIcons
+                        name="add-location"
+                        size={20}
+                        color={COLORS.gray_main}
+                      />
+                    </View>
+                    <Spacer height={15} />
+                    <View style={styles.inputContainer}>
+                      <TextInput
+                        placeholderTextColor={COLORS.gray_main}
+                        value={value?.phonenumber}
+                        onChangeText={(text) =>handleInputChange('phonenumber', text)}
+                        placeholder="PhoneNumber"
+                        style={styles.textInput}
+                      />
+                      <MaterialIcons
+                        name="phone"
+                        size={20}
+                        color={COLORS.gray_main}
+                      />
+                    </View>
+                    {/* <PhoneInput
                       phoneInputStyles={{
                         container: {
                           backgroundColor: COLORS.grayDefault,
@@ -207,7 +320,7 @@ const ProfileChange = () => {
                       onChangeSelectedCountry={(selectedCountry) =>
                         setSelectedCountry(selectedCountry)
                       }
-                    />
+                    /> */}
 
                     <Spacer height={15} />
                     <RadioGroup
@@ -223,7 +336,7 @@ const ProfileChange = () => {
                     <View style={styles.inputContainer}>
                       <TextInput
                         placeholderTextColor={COLORS.gray_main}
-                        // autoComplete="email"
+                        value={value?.birthday}
                         placeholder="Birthday"
                         style={styles.textInput}
                         onPressIn={showDatePicker}
@@ -232,6 +345,7 @@ const ProfileChange = () => {
                         name="date-range"
                         size={20}
                         color={COLORS.gray_main}
+                        onPress={showDatePicker}
                       />
                     </View>
 
@@ -245,8 +359,13 @@ const ProfileChange = () => {
                     <Spacer height={15} />
                     <View style={styles.inputContainer}>
                       <TextInput
+                        // keyboardType="numeric"
                         placeholderTextColor={COLORS.gray_main}
                         placeholder="Code"
+                        value={value?.code}
+                        onChangeText={(text) =>handleInputChange('code', text)}
+
+                        
                         style={styles.textInput}
                       />
                     </View>
@@ -257,6 +376,26 @@ const ProfileChange = () => {
           </GestureHandlerRootView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+      <View style={styles.bottom}>
+        <View
+          style={[
+            styles.flex,
+            {
+              marginHorizontal: SIZES.margin,
+              justifyContent: "space-between",
+              marginBottom: 30,
+            },
+          ]}
+        >
+          <Button
+            label="Continue"
+            onPress={submitPost}
+            color={COLORS.white}
+            background={COLORS.black}
+            loading={false}
+          />
+        </View>
+      </View>
     </>
   );
 };
@@ -285,5 +424,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  textInput: { color: "black", fontSize: 16 },
+  textInput: { color: COLORS.black, fontSize: 16, width: "90%" },
+  bottom: {
+    position: "absolute",
+    bottom: 0,
+    height: 100,
+    width: "100%",
+    backgroundColor: COLORS.white,
+  },
 });

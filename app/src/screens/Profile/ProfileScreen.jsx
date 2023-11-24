@@ -67,6 +67,7 @@ const ProfileScreen = ({navigation}) => {
             </View>
           </TouchableOpacity>
         </View>
+        <Spacer height={15} />
         <View style={styles.action}>
           <View style={styles.content}>
            
@@ -164,16 +165,13 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontWeight: 600,
   },
-  // action: {
-  //   flex: 1,
-  // },
   content: {
-    marginHorizontal: SIZES.padding,
+    // marginHorizontal: SIZES.padding,
   },
   actionPush: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 16,
   },
   textAction: {
     fontWeight: 600,
@@ -189,9 +187,6 @@ const styles = StyleSheet.create({
   flex: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  content: {
-    paddingVertical: 10,
   },
   name: {
     fontFamily: "Poppins-Medium",

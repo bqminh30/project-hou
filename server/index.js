@@ -9,6 +9,7 @@ const paypal = require("paypal-rest-sdk");
 const app = express();
 const cloudinary = require("cloudinary").v2;
 const stripe = require("stripe")("sk_test_...");
+const path = require('path');
 const { apiPublicKey, apiSecretKey } = require("./app/config/config.js");
 
 const facilitiesRoutes = require("./app/routes/facilities.routes.js");

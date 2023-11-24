@@ -5,6 +5,7 @@ const Employee = require("../models/employee.model.js");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 var imageMiddleware = require("../middleware/image-middleware");
 var multer = require("multer");
+var fs = require('fs');
 var cloudinary = require("cloudinary").v2;
 
 exports.register = (req, res, next) => {
@@ -107,7 +108,7 @@ exports.login = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.passwordHash;
 
-    user = await Employee.getCustomerByEmail(email);
+    user = await Employee.getEmployeeByEmail(email);
     if (!user) {
       return res.status(400).send({
         message: "Invalid email or password",
@@ -121,14 +122,14 @@ exports.login = async (req, res, next) => {
           process.env.JWT_SECRET,
           {
             algorithm: "HS256",
-            expiresIn: "30d",
+            expiresIn: "360d",
           }
         );
         res.cookie("token", jsontoken, {
           httpOnly: true,
           secure: true,
           SameSite: "strict",
-          expires: new Date(Number(new Date()) + 30 * 24 * 60 * 60 * 1000),
+          expires: new Date(Number(new Date()) + 360 * 24 * 60 * 60 * 1000),
         }); //we add secure: true, when using https.
 
         res.status(200).send({ token: jsontoken, user: user });
@@ -196,7 +197,6 @@ exports.update = async (req, res, next) => {
       } else if (err) {
         res.status(404).send(err);
       } else {
-        console.log('req.body', req.body)
         let dataImage = "";
         // store image in database
         const fullname = req.body.fullname;
@@ -210,8 +210,11 @@ exports.update = async (req, res, next) => {
         const role_id = req.body.role_id;
         const createAt = new Date();
 
+        console.log('req.body', req.body)
         let imageName = req.body.avatar;
         const containsCloudinary = imageName?.indexOf("res.cloudinary.com") !== -1;
+        // const byteArrayBuffer = fs.readFile(imageName.preview);
+        // console.log('byteArrayBuffer',byteArrayBuffer)
         if(containsCloudinary){
           dataImage = imageName
         }else {
@@ -219,7 +222,7 @@ exports.update = async (req, res, next) => {
           await cloudinary.uploader
           .upload(
             imagePath.path
-              ? `G:/ProjectHou/images/p2/${imagePath.path}`
+               ? `G:/ProjectHou/images/p2/${imagePath.path}` 
               : req.body.image
           )
           .then((result) => (dataImage = result.url))
