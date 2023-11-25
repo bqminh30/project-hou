@@ -63,6 +63,7 @@ const ProfileChange = () => {
     gender: user?.gender,
     phonenumber: user?.phonenumber,
     address: user?.address,
+    birthday: user?.birthday,
     code: user?.code
   })
 
@@ -132,10 +133,12 @@ const ProfileChange = () => {
         formData.append('birthday', value?.birthday);
         formData.append('gender', selectedId);
         formData.append('code', value?.code);
+
+        console.log(formData);
   
         setLoading(true);
         await axios
-          .put(`https://be-nodejs-project.vercel.app/api/customer/update/${user.id}`, formData, {
+          .put(`https://507b-113-22-85-115.ngrok-free.app/api/customer/update/${user.id}`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
@@ -164,6 +167,8 @@ const ProfileChange = () => {
       }
     
   };
+
+  const formatDated = moment(value?.birthday).format('YYYY-MM-DD');
 
   return (
     <>
@@ -239,7 +244,7 @@ const ProfileChange = () => {
                             }}
                             resizeMode='cover'
                             source={{
-                              uri: user?.avatar ? `https://be-nodejs-project.vercel.app/upload/${user?.avatar}` : "https://img.freepik.com/premium-vector/man-avatar-profile-round-icon_24640-14044.jpg?w=2000",
+                              uri: user?.avatar ? `https://507b-113-22-85-115.ngrok-free.app/upload/${user?.avatar}` : "https://img.freepik.com/premium-vector/man-avatar-profile-round-icon_24640-14044.jpg?w=2000",
                             }}
                           />
                         )}
@@ -336,7 +341,7 @@ const ProfileChange = () => {
                     <View style={styles.inputContainer}>
                       <TextInput
                         placeholderTextColor={COLORS.gray_main}
-                        value={value?.birthday}
+                        value={formatDated}
                         placeholder="Birthday"
                         style={styles.textInput}
                         onPressIn={showDatePicker}
