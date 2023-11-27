@@ -12,9 +12,11 @@
     "@digieggs/rn-country-code-picker": "^1.4.4",
     "@expo/webpack-config": "^19.0.0",
     "@gorhom/bottom-sheet": "^4.5.1",
+    "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-community/datetimepicker": "7.2.0",
     "@react-native-community/masked-view": "^0.1.11",
+    "@react-native-community/slider": "^4.4.3",
     "@react-native-masked-view/masked-view": "^0.2.9",
     "@react-navigation/bottom-tabs": "^6.5.8",
     "@react-navigation/drawer": "^6.6.3",
@@ -37,6 +39,7 @@
     "expo-device": "~5.4.0",
     "expo-document-picker": "~11.5.4",
     "expo-file-system": "~15.4.5",
+    "expo-image-picker": "~14.3.2",
     "expo-linear-gradient": "~12.3.0",
     "expo-notifications": "~0.20.1",
     "expo-splash-screen": "~0.20.5",
@@ -83,8 +86,7 @@
     "react-native-webview": "13.2.2",
     "react-redux": "^8.1.2",
     "redux": "^4.2.1",
-    "redux-thunk": "^2.4.2",
-    "expo-image-picker": "~14.3.2"
+    "redux-thunk": "^2.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

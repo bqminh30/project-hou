@@ -72,7 +72,7 @@ const ProfileScreen = ({navigation}) => {
           <View style={styles.content}>
            
             <TouchableOpacity
-              onPress={() => navigation.navigate("Thông tin cá nhân")}
+              onPress={() => navigation.navigate("Thông tin Profile")}
             >
               <View style={styles.actionPush}>
                 {/* <Image
