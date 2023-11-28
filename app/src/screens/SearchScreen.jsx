@@ -38,7 +38,7 @@ import Spacer from "../components/Spacer";
 import Avatar from "../components/Avatar";
 import Back from "../components/Back";
 import ButtonSearch from "../components/ButtonSearch";
-import VerticalRecommend from "../components/VerticalRecommend";
+import VerticalSearch from "../components/VerticalSearch";
 
 const arrMent = [
   {
@@ -229,7 +229,7 @@ const SearchScreen = () => {
     setLoadinDataSearch(true);
     setDataSearch([]);
     await axios
-      .post("https://de0a-42-116-131-157.ngrok-free.app/api/rooms/search", {
+      .post("https://be-nodejs-project.vercel.app/api/rooms/search", {
         startDate: startDate,
         endDate: endDate,
         numberRoom: roomCount,
@@ -243,7 +243,7 @@ const SearchScreen = () => {
       .then((res) => {
         setDataSearch(res.data.data);
       })
-      .catch((err) => console.log("err"));
+      .catch((err) => console.log("err",err));
 
     setLoadinDataSearch(false);
   };
@@ -410,13 +410,13 @@ const SearchScreen = () => {
                   <FlatList
                     data={dataSearchUpdate}
                     scrollEventThrottle={10}
-                    contentContainerStyle={{ alignSelf: "flex-start" }}
-                    numColumns={2}
-                    showsVerticalScrollIndicator={false}
-                    showsHorizontalScrollIndicator={false}
+                    // contentContainerStyle={{ alignSelf: "flex-start" }}
+                    // numColumns={2}
+                    // showsVerticalScrollIndicator={false}
+                    // showsHorizontalScrollIndicator={false}
                     keyExtractor={({ item, index }) => `${index}`}
                     renderItem={({ item, index }) => (
-                      <VerticalRecommend item={item} key={item.id} />
+                      <VerticalSearch item={item} key={item.id} />
                     )}
                     style={{ marginBottom: 24 }}
                   />

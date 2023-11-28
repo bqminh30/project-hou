@@ -338,10 +338,13 @@ exports.searchRoom = (req, res) => {
   }
 
   const queryString = `
-    SELECT *
-    FROM room
-    WHERE ${conditions.join(" AND ")} ORDER BY ${til} ${type}
-  `;
+  SELECT *
+  FROM room
+  WHERE ${conditions.join(" AND ")} ${til && type ? 'ORDER BY ' + til + ' ' + type : ''}
+`;
+
+console.log('queryString', queryString)
+
 
   db.query(queryString, values, (err, results) => {
     if (err) {
