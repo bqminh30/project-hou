@@ -144,8 +144,6 @@ app.post("/api/v1/initialize-transaction", async (req, res) => {
 });
 
 app.get("/create", function (req, res) {
-  console.log("req,", req.body);
-
   // Build PayPal payment request
   var create_payment_json = {
     intent: "ORDER", 
@@ -153,8 +151,8 @@ app.get("/create", function (req, res) {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: "https://be-nodejs-project.vercel.app/process",
-      cancel_url: "https://be-nodejs-project.vercel.app/cancel",
+      return_url: "https://a359-58-186-129-74.ngrok-free.app/process",
+      cancel_url: "https://a359-58-186-129-74.ngrok-free.app/cancel",
     },
     transactions: [
       {
@@ -194,10 +192,9 @@ app.get("/create", function (req, res) {
     if (error) {
       throw error;
     } else {
-      console.log(payment);
       for (let i = 0; i < payment.links.length; i++) {
         if (payment.links[i].rel === "approval_url") {
-          res.redirect(payment.links[i].href);
+          res.status(200).json({approval_url: payment.links[i].href});
         }
       }
     }
@@ -212,7 +209,7 @@ app.get("/process", function (req, res) {
     if (error) {
       console.error(error);
     } else {
-      console.log("payment", payment);
+      // console.log("payment", payment);
       if (payment.state == "approved") {
         res.status(200).json({ success: true });
       } else {
@@ -221,8 +218,58 @@ app.get("/process", function (req, res) {
     }
   });
 });
+
 app.get("/cancel", (req, res) => {
   res.status(200).json({ success: false });
+});
+
+app.post('/create-paypal-payment', async (req, res) => {
+  const paymentData = req.body; // Thông tin đặt phòng từ React Native app
+
+  console.log('runnn')
+  const create_payment_json = {
+    intent: 'sale',
+    payer: {
+      payment_method: 'paypal',
+    },
+    redirect_urls: {
+      return_url: 'http://return.url', // URL để PayPal redirect sau khi thanh toán thành công
+      cancel_url: 'http://cancel.url', // URL để PayPal redirect nếu người dùng huỷ thanh toán
+    },
+    transactions: [
+      {
+        item_list: {
+          items: [
+            {
+              name: 'Hotel Booking',
+              price: 100,
+              currency: 'USD', // Đổi sang đơn vị tiền tệ của bạn
+              quantity: 1,
+            },
+          ],
+        },
+        amount: {
+          currency: 'USD', // Đổi sang đơn vị tiền tệ của bạn
+          total: 100,
+        },
+        description: 'Hotel Booking Description',
+      },
+    ],
+  };
+
+  try {
+    // Tạo thanh toán PayPal
+    paypal.payment.create(create_payment_json, function (error, payment) {
+      if (error) {
+        throw error;
+      } else {
+        // Trả về URL để thanh toán PayPal cho ứng dụng React Native
+        res.status(200).json({ approval_url: payment.links[1].href });
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 // set port, listen for requests
 const PORT = process.env.PORT || 7000;

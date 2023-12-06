@@ -268,8 +268,8 @@ exports.searchRoom = (req, res) => {
   const values = [];
 
   if (name) {
-    conditions.push('name LIKE ?'); // Điều kiện tìm kiếm chuỗi với LIKE
-    values.push(`%${name}%`); // Đặt '%' trước và sau giá trị bạn muốn tìm kiếm
+    conditions.push('name LIKE ?'); // Điều kiện Search Room chuỗi với LIKE
+    values.push(`%${name}%`); // Đặt '%' trước và sau giá trị bạn muốn Search Room
   }
   
   
