@@ -48,8 +48,23 @@ const ReviewSummary = ({ navigation }) => {
   const { booking, setStep, step } = useBooking();
 
   const [isLoading, setLoading] = useState(false);
+  const [isShow, setShow] = useState(false);
   const [paypalUrl, setPaypalUrl] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
+
+  const [paypalApprovalURL, setPaypalApprovalURL] = useState('');
+
+  const handleSubmitBooking = async () => {
+    try {
+      // https://be-nodejs-project.vercel.app/api/rooms
+      const response = await axios.post("https://be-nodejs-project.vercel.app/create-paypal-payment");
+      setPaypalApprovalURL(response.data.approval_url);
+      console.log('response.data.approval_url',response.data.approval_url)
+      setShow(true)
+    } catch (error) {
+      console.error('Error fetching PayPal approval URL:', error);
+    }
+  };
 
   const onPressPaypal = async () => {
     // await axios.get('https://be-nodejs-project.vercel.app/create', booking.bookings)
@@ -134,6 +149,12 @@ const ReviewSummary = ({ navigation }) => {
     setPaypalUrl(null);
     setAccessToken(null);
   };
+
+  // const handleSubmitBooking = async () => {
+  //   console.log('runn')
+  //  const data = await axios.post("https://9b67-171-224-177-201.ngrok-free.app/create-paypal-payment")
+  //    console.log('data', data)
+  //  }
 
   return (
     <>
@@ -314,7 +335,7 @@ const ReviewSummary = ({ navigation }) => {
         >
           <Button
             label="Continue"
-            onPress={() => onPressPaypal()}
+            onPress={handleSubmitBooking}
             color={COLORS.white}
             background={COLORS.black}
             loading={isLoading}
@@ -322,18 +343,21 @@ const ReviewSummary = ({ navigation }) => {
         </View>
       </View>
 
-      <Modal visible={!!paypalUrl}>
+      <Modal visible={!!isShow}>
         <TouchableOpacity
-          onPress={() => clearPaypalState()}
+          onPress={() => setShow(false)}
           style={{ margin: 24, width: "8%", marginTop: 50 }}
         >
           <Text style={{ fontSize: 25, fontWeight: 600 }}>x</Text>
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <WebView
-            ref={webViewRef}
-            source={{ uri: paypalUrl  }}
-            onNavigationStateChange={onUrlChange}
+            // ref={webViewRef}
+            source={{ uri: paypalApprovalURL  }}
+            javaScriptEnabled={true}
+        domStorageEnabled={true}
+        startInLoadingState={true}
+        scalesPageToFit={true}
           />
         </View>
       </Modal>

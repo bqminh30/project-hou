@@ -29,7 +29,7 @@ export default function InvoiceNewEditStatusDate() {
       <RHFTextField
         disabled
         name="id"
-        label="Mã đơn đặt phòng"
+        label="Mã đơn Order Room"
         value={`HD-${values?.id}`}
       />
 

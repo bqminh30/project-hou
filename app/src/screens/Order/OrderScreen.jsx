@@ -76,7 +76,7 @@ const OrderScreen = () => {
                 <View>
                   <View style={styles.header}>
                     <Back />
-                    <Text style={styles.title}>Đơn đặt phòng</Text>
+                    <Text style={styles.title}>Đơn Order Room</Text>
                     <Avatar />
                   </View>
                   <Spacer height={10} />

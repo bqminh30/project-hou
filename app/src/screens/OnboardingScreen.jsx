@@ -79,9 +79,9 @@ const OnboardingScreen = () => {
               style={{width: 200, height: 200, objectFit: 'contain'}}
             />
           ),
-          title: "Đặt phòng mọi lúc mọi nơi",
+          title: "Order Room mọi lúc mọi nơi",
           subtitle:
-            "Dịch vụ đặt phòng trực tuyến 24/7",
+            "Dịch vụ Order Room trực tuyến 24/7",
         },
       ]}
     />

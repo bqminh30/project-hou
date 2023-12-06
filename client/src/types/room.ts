@@ -123,6 +123,8 @@ export type IBookingOrderData = {
   updatedAt: Date | null;
   od_detail: string;
   email: string;
+  code: string;
+  phone: string;
   phonenumber: string;
   fullname: string;
   emp_email: string;
@@ -135,7 +137,9 @@ export type IBookingOrderDetail = {
   status: string;
   dateCount: string;
   personCount: string;
+  childCount: string;
   total: string;
+  price: string;
   room_name: string;
   room_id: string;
 };

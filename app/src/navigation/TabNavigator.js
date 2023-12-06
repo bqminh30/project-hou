@@ -27,7 +27,7 @@ const HomeStack = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name="Trang chủ"
+        name="Home"
         component={Home}
         lazy={true}
         options={({ route }) => ({
@@ -36,7 +36,7 @@ const HomeStack = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === "Trang chủ") {
+            if (route.name === "Home") {
               iconName = focused ? "home" : "home-outline";
             }
 
@@ -49,7 +49,7 @@ const HomeStack = () => {
         })}
       />
       <Tab.Screen
-        name="Tìm kiếm"
+        name="Search Room"
         component={SearchScreen}
         lazy={true}
         options={({ route }) => ({
@@ -58,7 +58,7 @@ const HomeStack = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === "Tìm kiếm") {
+            if (route.name === "Search Room") {
               iconName = focused ? "search-circle" : "search-circle-outline";
             }
 
@@ -72,7 +72,7 @@ const HomeStack = () => {
       />
 
       <Tab.Screen
-        name="Đặt phòng"
+        name="Order Room"
         component={OrderScreen}
         lazy={true}
         options={({ route }) => ({
@@ -84,7 +84,7 @@ const HomeStack = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === "Đặt phòng") {
+            if (route.name === "Order Room") {
               iconName = focused ? "cart" : "cart-outline";
             }
 
@@ -97,7 +97,7 @@ const HomeStack = () => {
         })}
       />
       <Tab.Screen
-        name="Cá nhân"
+        name="Profile"
         component={ProfileScreen}
         lazy={true}
         options={({ route }) => ({
@@ -106,7 +106,7 @@ const HomeStack = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === "Cá nhân") {
+            if (route.name === "Profile") {
               iconName = focused ? "person-circle" : "person-circle-outline";
             }
 
@@ -126,7 +126,7 @@ const OrderStack = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name="Cá nhân"
+        name="Profile"
         component={Home}
         lazy={true}
         options={({ route }) => ({
@@ -135,7 +135,7 @@ const OrderStack = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === "Cá nhân") {
+            if (route.name === "Profile") {
               iconName = focused ? "person-circle" : "person-circle-outline";
             }
 
@@ -148,7 +148,7 @@ const OrderStack = () => {
         })}
       />
       <Tab.Screen
-        name="Cá nhân"
+        name="Profile"
         component={Home}
         lazy={true}
         options={({ route }) => ({
@@ -157,7 +157,7 @@ const OrderStack = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === "Cá nhân") {
+            if (route.name === "Profile") {
               iconName = focused ? "person-circle" : "person-circle-outline";
             }
 
@@ -174,9 +174,9 @@ const OrderStack = () => {
 };
 const TabNavigation = () => {
   return (
-    <Stack.Navigator initialRouteName="Trang chủ">
+    <Stack.Navigator initialRouteName="Home">
       <Stack.Screen
-        name="Trang chủ"
+        name="Home"
         component={HomeStack}
         options={{ unmountOnBlur: true, headerShown: false }}
       />
@@ -201,7 +201,7 @@ const TabNavigation = () => {
         options={{ unmountOnBlur: true, headerShown: false }}
       />
       <Stack.Screen
-        name="Thông tin cá nhân"
+        name="Thông tin Profile"
         component={ProfileChange}
         options={{ unmountOnBlur: true, headerShown: false }}
       />

@@ -39,7 +39,8 @@ import Spacer from "../components/Spacer";
 import Avatar from "../components/Avatar";
 import Back from "../components/Back";
 import ButtonSearch from "../components/ButtonSearch";
-import VerticalRecommend from "../components/VerticalRecommend";
+// import VerticalRecommend from "../components/VerticalRecommend";
+import VerticalRecommendSearch from "../components/VerticalRecommendSearch";
 
 
 const SearchScreen = () => {
@@ -330,7 +331,7 @@ const SearchScreen = () => {
                     showsHorizontalScrollIndicator={false}
                     keyExtractor={({ item, index }) => `${index}`}
                     renderItem={({ item, index }) => (
-                      <VerticalRecommend item={item} key={item.id} />
+                      <VerticalRecommendSearch item={item} key={item.id} title={"SEARCH"}/>
                     )}
                     style={{ marginBottom: 24 }}
                   />

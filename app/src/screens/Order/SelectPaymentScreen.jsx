@@ -31,6 +31,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 // redux context
 import { useBooking } from "../../redux/context/BookingContext";
 import Button from "../../components/Button";
+import { Axios } from "axios";
 
 const SelectPaymentScreen = () => {
   const [value, setValue] = useState({
@@ -86,6 +87,10 @@ const SelectPaymentScreen = () => {
     ],
     []
   );
+  const handleSubmitBooking = async () => {
+   await Axios.post("https://9b67-171-224-177-201.ngrok-free.app/create-paypal-payment")
+    console.log('data', data)
+  }
 
   if (booking == null) {
     return (
@@ -239,7 +244,7 @@ const SelectPaymentScreen = () => {
         >
           <Button
             label="Continue"
-            onPress=""
+            onPress={handleSubmitBooking}
             color={COLORS.white}
             background={COLORS.black}
             loading={false}

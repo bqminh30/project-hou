@@ -4,7 +4,7 @@ export const hotels_data = [
         name: 'Golden Tulip',
         price: 100,
         priceSale: 90,
-        description : 'Ứng dụng “ đặt phòng khách sạn MARRIOTT ” mang lại lợi ích cho cả người dùng và khách sạn. Người dùng sẽ có khả năng tìm kiếm và đặt phòng khách sạn một cách thuận tiện, tiết kiệm thời gian. Đồng thời, họ còn được hưởng các ưu đãi và khuyến mãi độc quyền. Đối với khách sạn, ứng dụng sẽ giúp khả năng tiếp cận thị trường và cải thiện quản lý đặt phòng.',
+        description : 'Ứng dụng “ Order Room khách sạn MARRIOTT ” mang lại lợi ích cho cả người dùng và khách sạn. Người dùng sẽ có khả năng Search Room và Order Room khách sạn một cách thuận tiện, tiết kiệm thời gian. Đồng thời, họ còn được hưởng các ưu đãi và khuyến mãi độc quyền. Đối với khách sạn, ứng dụng sẽ giúp khả năng tiếp cận thị trường và cải thiện quản lý Order Room.',
         image : 'https://pix8.agoda.net/hotelImages/22423667/-1/c8b11fd11884172c23959f0ccb4ebfc0.jpg?ca=19&ce=1',
         images: [
             {

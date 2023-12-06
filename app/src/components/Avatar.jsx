@@ -1,14 +1,15 @@
 import React from 'react'
 import { Text, View, Image, TouchableOpacity, StyleSheet } from 'react-native'
-import {COLORS, SIZES} from '../config/theme'
+import { useNavigation } from "@react-navigation/native";
 
 const Avatar = () => {
+  const navigation = useNavigation();
   return (
-    // <View style={styles.avatar}>
+    <TouchableOpacity onPress={()=> navigation.navigate("Profile")}>
         <Image style={styles.avatar} source={{
           uri : "https://img.freepik.com/premium-vector/man-avatar-profile-round-icon_24640-14044.jpg?w=2000"
         }} />
-    // </View>
+    </TouchableOpacity>
   )
 }
 

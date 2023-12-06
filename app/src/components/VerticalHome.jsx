@@ -30,7 +30,7 @@ const VerticalHome = ({ item, title }) => {
           ? navigation.navigate("Chi tiết phòng", {
               room_id: item.id,
             })
-          : navigation.navigate("Trang chủ", {
+          : navigation.navigate("Home", {
               screen: "Chi tiết phòng",
               params: {
                 room_id: item.id,
