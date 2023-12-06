@@ -1,0 +1,81 @@
+ <View style={[styles.search]}>
+                <View style={{ padding: 12 }}>
+                  <Text style={styles.headerTitlte}>Search Room</Text>
+                  {/* Input search  */}
+                  <View style={styles.sectionStyle}>
+                    <Ionicons
+                      name="md-search-sharp"
+                      size={24}
+                      color={COLORS.black}
+                      style={styles.imageStyle}
+                    />
+                    <TextInput
+                      style={{ flex: 1 }}
+                      placeholder="Searchs for rooms"
+                      placeholderTextColor={COLORS.gray_main}
+                      underlineColorAndroid="transparent"
+                      value={searchText}
+                      onChangeText={(text) => setSearchText(text)}
+                      onSubmitEditing={Keyboard.dismiss}
+                    />
+                    {searchText !== "" && (
+                      <TouchableOpacity onPress={() => setSearchText("")}>
+                        <Ionicons
+                          name="close"
+                          size={24}
+                          color={COLORS.greenMain}
+                          style={styles.imageStyle}
+                        />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  {/* Date and member  */}
+                  <View
+                    style={[
+                      styles.search,
+                      {
+                        flexDirection: "row",
+                        justifyContent: "space-around",
+                      },
+                    ]}
+                  >
+                    <View style={styles.option}>
+                      <TouchableOpacity onPress={() => setModalVisible(true)}>
+                        <Text style={styles.title}>Stay Dates</Text>
+                        {setSelectedDates && (
+                          <Text>
+                            {startDate} - {endDate}
+                          </Text>
+                        )}
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.option}>
+                      <TouchableOpacity onPress={() => handlePress()}>
+                        <Text style={styles.title}>Rooms & Guests</Text>
+                        <Text>
+                          {roomCount} Rooms: {memberCount} Adults{" "}
+                          {childrenCount > 0 && `, ${childrenCount} Childrens`}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <Spacer height={10} />
+                  <View style={[styles.flex, {justifyContent:'flex-end'}]}>
+                  <ButtonSearch  background={COLORS.white}
+                    float={"right"}
+                    label={"Clear"}
+                    color={COLORS.black}
+                    onPress={handleClearSearch}/>
+                    <Spacer height={0} width={10} />
+                  <ButtonSearch
+                    background={COLORS.black}
+                    float={"right"}
+                    label={"Search Room"}
+                    color={COLORS.white}
+                    onPress={handleSearchRooms}
+                  />
+                  </View>
+                </View>
+              </View>

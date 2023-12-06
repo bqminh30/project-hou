@@ -49,7 +49,7 @@ const HomeStack = () => {
         })}
       />
       <Tab.Screen
-        name="Search Room"
+        name="Tìm kiếm"
         component={SearchScreen}
         lazy={true}
         options={({ route }) => ({
@@ -58,7 +58,7 @@ const HomeStack = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === "Search Room") {
+            if (route.name === "Tìm kiếm") {
               iconName = focused ? "search-circle" : "search-circle-outline";
             }
 
@@ -72,7 +72,7 @@ const HomeStack = () => {
       />
 
       <Tab.Screen
-        name="Order Room"
+        name="Đặt phòng"
         component={OrderScreen}
         lazy={true}
         options={({ route }) => ({
@@ -84,7 +84,7 @@ const HomeStack = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === "Order Room") {
+            if (route.name === "Đặt phòng") {
               iconName = focused ? "cart" : "cart-outline";
             }
 
